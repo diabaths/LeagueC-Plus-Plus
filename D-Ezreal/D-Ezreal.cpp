@@ -452,8 +452,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	AutoImmobile();
 	killsteal();
 	UseItems();
-	stucktear();
-	
+	stucktear();	
 }
 
 PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
