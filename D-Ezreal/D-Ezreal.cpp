@@ -228,13 +228,9 @@ void JungleClear()
 	if (FarmQ->Enabled() && Q->IsReady())
 		for (auto jMinion : GEntityList->GetAllMinions(false, false, true))
 		{
-			if (jMinion != nullptr && !jMinion->IsDead())
+			if (jMinion->IsValidTarget(myHero, Q->Range()))
 			{
-				if (myHero->IsValidTarget(jMinion, Q->Range()))
-				{
-					Q->CastOnTarget(jMinion, kHitChanceMedium);
-				}
-
+				Q->CastOnTarget(jMinion, kHitChanceMedium);
 			}
 		}
 }
