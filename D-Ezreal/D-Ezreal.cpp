@@ -181,7 +181,6 @@ void Combo()
 		if (Q->IsReady())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-			if(target->IsValidTarget(myHero, Q->Range()))
 			Q->CastOnTarget(target, kHitChanceHigh);
 		}
 	}
@@ -190,7 +189,6 @@ void Combo()
 		if (W->IsReady() && !Q->IsReady())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
-			if(target->IsValidTarget(myHero, W->Range()))
 			W->CastOnTarget(target, kHitChanceHigh);
 		}
 	}
