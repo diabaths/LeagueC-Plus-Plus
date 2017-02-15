@@ -135,7 +135,7 @@ void stucktear()
 {
 	if (StackTear->Enabled() && myHero->ManaPercent() > StackManaPercent->GetInteger())
 	{
-		if(Tear->IsOwned() || Manamune->IsOwned() && !myHero->IsRecalling() && CountEnemiesInRange(1000) <= 0)
+		if(Tear->IsOwned() || Manamune->IsOwned() && !myHero->IsRecalling() && !CountEnemiesInRange(2000) >= 1)
 		{
 			Q->CastOnPosition(myHero->ServerPosition());
 		}
@@ -153,7 +153,7 @@ void Combo()
 	}
 	if (ComboW->Enabled())
 	{
-		if (W->IsReady())
+		if (W->IsReady() && !Q->IsReady())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
 			W->CastOnTarget(target, kHitChanceHigh);
@@ -253,7 +253,7 @@ void Harass()
 	}
 	if (HarassW->Enabled())
 	{
-		if (W->IsReady())
+		if (W->IsReady() && !Q->IsReady())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
 			W->CastOnTarget(target, kHitChanceHigh);
