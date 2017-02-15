@@ -205,7 +205,7 @@ void Combo()
 				{
 					auto dmg = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotR);
 					if (Enemy->IsValidTarget(myHero, R->Range()) && !Enemy->IsInvulnerable()
-						&& !GEntityList->Player()->IsValidTarget(Enemy, Q->Range()))
+						&& !Enemy->IsValidTarget(myHero, Q->Range()))
 					{
 						if (Enemy->GetHealth() <= dmg && R->IsReady())
 						{
