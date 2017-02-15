@@ -15,6 +15,7 @@ IMenu* HarassMenu;
 IMenu* FarmMenu;
 IMenu* MiscMenu;
 IMenu* Drawings;
+IMenu* ItemsMenu;
 IMenuOption* ComboQ;
 IMenuOption* ComboW;
 IMenuOption* ComboR;
@@ -33,6 +34,9 @@ IMenuOption* KillstealQ;
 IMenuOption* KillstealW;
 IMenuOption* ImmobileQ;
 IMenuOption* ImmobileW;
+IMenuOption* Blade_Cutlass;
+IMenuOption* MyHpPreBlade;
+IMenuOption* EnemyHpPreBlade;
 IMenuOption* DrawReady;
 IMenuOption* DrawQ;
 IMenuOption* DrawW;
@@ -50,6 +54,8 @@ ISpell* Ignite;
 
 IInventoryItem* Tear;
 IInventoryItem* Manamune;
+IInventoryItem* blade;
+IInventoryItem* Cutlass;
 
 void  Menu()
 {
@@ -82,6 +88,11 @@ void  Menu()
 	ImmobileQ = MiscMenu->CheckBox("Use Q in Immobile", true);
 	ImmobileW = MiscMenu->CheckBox("Use W in Immobile", true);
 
+	ItemsMenu = MainMenu->AddMenu("Items Setting");
+	Blade_Cutlass = ItemsMenu->CheckBox("Blade-Cutlass", true);
+	MyHpPreBlade = ItemsMenu->AddInteger("Use Blade-Cutlass if my HP <", 10, 100, 35);
+	EnemyHpPreBlade = ItemsMenu->AddInteger("Use Blade-Cutlass if Enemy HP <", 10, 100, 35);
+
 	DrawReady = Drawings->CheckBox("Draw Only Ready Spells", true);
 	DrawQ = Drawings->CheckBox("Draw Q", true);
 	DrawW = Drawings->CheckBox("Draw W", false);
@@ -112,6 +123,8 @@ void LoadSpells()
 	Ignite = GPluginSDK->CreateSpell(GEntityList->Player()->GetSpellSlot("summonerdot"), 600);
 	Tear = GPluginSDK->CreateItemForId(3070, 0);
 	Manamune = GPluginSDK->CreateItemForId(3004, 0);
+	blade = GPluginSDK->CreateItemForId(3153, 550);
+	Cutlass = GPluginSDK->CreateItemForId(3144, 550);
 }
 
 float GetDistance(IUnit* Player, IUnit* target)
@@ -133,11 +146,31 @@ int CountEnemiesInRange(float range)
 }
 void stucktear()
 {
+	if (CountEnemiesInRange(2000) >= 1)
+		return;
+	if(GOrbwalking->GetOrbwalkingMode() == kModeCombo || GOrbwalking->GetOrbwalkingMode() == kModeMixed|| GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+		return;
 	if (StackTear->Enabled() && myHero->ManaPercent() > StackManaPercent->GetInteger())
 	{
-		if(Tear->IsOwned() || Manamune->IsOwned() && !myHero->IsRecalling() && !CountEnemiesInRange(2000) >= 1)
+		if ((Tear->IsOwned() || Manamune->IsOwned()) && !myHero->IsRecalling())
 		{
 			Q->CastOnPosition(myHero->ServerPosition());
+		}
+	}
+}
+
+void UseItems()
+{
+	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+	{
+		for (auto enemy : GEntityList->GetAllHeros(false, true))
+		if ((blade->IsOwned() || Cutlass->IsOwned()) && Blade_Cutlass->Enabled() && myHero->IsValidTarget(enemy, 550))
+		{
+			if (myHero->HealthPercent() < MyHpPreBlade->GetInteger() || enemy->HealthPercent() < EnemyHpPreBlade->GetInteger())
+			{
+				blade->CastOnTarget(enemy);
+				Cutlass->CastOnTarget(enemy);
+			}
 		}
 	}
 }
@@ -148,6 +181,7 @@ void Combo()
 		if (Q->IsReady())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+			if(target->IsValidTarget(myHero, Q->Range()))
 			Q->CastOnTarget(target, kHitChanceHigh);
 		}
 	}
@@ -156,6 +190,7 @@ void Combo()
 		if (W->IsReady() && !Q->IsReady())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
+			if(target->IsValidTarget(myHero, W->Range()))
 			W->CastOnTarget(target, kHitChanceHigh);
 		}
 	}
@@ -195,44 +230,35 @@ void Combo()
 	}
 	}*/
 }
-
-void Farm()
+PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 {
-	if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
+	if (!GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 		return;
-	if (FarmQ->Enabled())
-	{
-		if (Q->IsReady())
-		{
-			int MinionDie = 0;
-			for (auto minions : GEntityList->GetAllMinions(false, true, false))
-			{
-				if (minions != nullptr && minions->IsValidTarget(myHero, Q->Range()))
-				{
-					auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
-					auto dmg1 = GDamage->GetAutoAttackDamage(myHero, minions, false);
-					if (minions->GetHealth() <= dmg || minions->GetHealth() <= dmg1 || minions->GetHealth() <= dmg + dmg1)
-						MinionDie++;
-				}
-				if (MinionDie >= 1)
-					Q->CastOnTarget(minions, kHitChanceMedium);
-			}
-		}
-	}
-}
-
-void JungleClear()
-{
 	if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
 		return;
 	if (FarmQ->Enabled() && Q->IsReady())
+	{
+		int MinionDie = 0;
+		for (auto minions : GEntityList->GetAllMinions(false, true, false))
+		{
+			if (minions != nullptr && minions->IsValidTarget(myHero, Q->Range()))
+			{
+				auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
+				auto dmg1 = GDamage->GetAutoAttackDamage(myHero, minions, false);
+				if (minions->GetHealth() <= dmg || minions->GetHealth() <= dmg1 || minions->GetHealth() <= dmg + dmg1)
+					MinionDie++;
+			}
+			if (MinionDie >= 1)
+				Q->CastOnUnit(minions);
+		}
 		for (auto jMinion : GEntityList->GetAllMinions(false, false, true))
 		{
-			if (jMinion->IsValidTarget(myHero, Q->Range()))
+			if (jMinion != nullptr && !jMinion->IsDead() && jMinion->IsValidTarget(myHero, Q->Range()))
 			{
-				Q->CastOnTarget(jMinion, kHitChanceMedium);
+				Q->CastOnUnit(jMinion);
 			}
 		}
+	}
 }
 
 void Harass()
@@ -244,6 +270,7 @@ void Harass()
 		if (Q->IsReady())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+			if(target->IsValidTarget(myHero, Q->Range()))
 			Q->CastOnTarget(target, kHitChanceHigh);
 		}
 	}
@@ -252,6 +279,7 @@ void Harass()
 		if (W->IsReady() && !Q->IsReady())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
+			if(target->IsValidTarget(myHero, W->Range()))
 			W->CastOnTarget(target, kHitChanceHigh);
 		}
 	}
@@ -416,21 +444,16 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	{
 		Combo();
 	}
-	if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
-	{
-		Farm();
-		JungleClear();
-	}
+	
 	if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
 	{
 		Harass();
 	}
 	AutoImmobile();
 	killsteal();
-	if (GOrbwalking->GetOrbwalkingMode() == kModeNone)
-	{
-		stucktear();
-	}
+	UseItems();
+	stucktear();
+	
 }
 
 PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
@@ -442,6 +465,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 
 	GEventManager->AddEventHandler(kEventOnGameUpdate, OnGameUpdate);
 	GEventManager->AddEventHandler(kEventOnRender, OnRender);
+	GEventManager->AddEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);
 
 
 }
@@ -453,5 +477,6 @@ PLUGIN_API void OnUnload()
 
 	GEventManager->RemoveEventHandler(kEventOnGameUpdate, OnGameUpdate);
 	GEventManager->RemoveEventHandler(kEventOnRender, OnRender);
+	GEventManager->RemoveEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);
 
 }
