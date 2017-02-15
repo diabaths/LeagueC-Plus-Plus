@@ -26,6 +26,9 @@ IMenuOption* HarassW;
 IMenuOption* HarassManaPercent;
 IMenuOption* FarmQ;
 IMenuOption* FarmManaPercent;
+IMenuOption* StackTear;
+IMenuOption* StackManaPercent;
+IMenuOption* UseIgnitekillsteal;
 IMenuOption* KillstealQ;
 IMenuOption* KillstealW;
 IMenuOption* ImmobileQ;
@@ -42,6 +45,11 @@ ISpell2* Q;
 ISpell2* W;
 ISpell2* E;
 ISpell2* R;
+
+ISpell* Ignite;
+
+IInventoryItem* Tear;
+IInventoryItem* Manamune;
 
 void  Menu()
 {
@@ -66,6 +74,9 @@ void  Menu()
 	FarmManaPercent = FarmMenu->AddInteger("Mana Percent for Farm", 10, 100, 70);
 
 	MiscMenu = MainMenu->AddMenu("Misc Setting");
+	StackTear = MiscMenu->CheckBox("Stack Tear", true);
+	StackManaPercent = MiscMenu->AddInteger("Mana Percent To Stuck", 10, 100, 95);
+	UseIgnitekillsteal = MiscMenu->CheckBox("Use Ignite to killsteal", true);
 	KillstealQ = MiscMenu->CheckBox("Use Q to killsteal", true);
 	KillstealW = MiscMenu->CheckBox("Use W to killsteal", true);
 	ImmobileQ = MiscMenu->CheckBox("Use Q in Immobile", true);
@@ -81,6 +92,7 @@ void LoadSpells()
 	Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, false, static_cast<eCollisionFlags>(kCollidesWithHeroes | kCollidesWithMinions | kCollidesWithYasuoWall));
 	W = GPluginSDK->CreateSpell2(kSlotW, kLineCast, true, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
 	R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, true, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
+	E = GPluginSDK->CreateSpell2(kSlotE, kCircleCast, false, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall | kCollidesWithMinions));
 
 	Q->SetOverrideRange(1150);
 	W->SetOverrideRange(950);
@@ -97,9 +109,38 @@ void LoadSpells()
 	W->SetOverrideSpeed(1600);
 	R->SetOverrideSpeed(2000);
 
+	Ignite = GPluginSDK->CreateSpell(GEntityList->Player()->GetSpellSlot("summonerdot"), 600);
+	Tear = GPluginSDK->CreateItemForId(3070, 0);
+	Manamune = GPluginSDK->CreateItemForId(3004, 0);
 }
 
+float GetDistance(IUnit* Player, IUnit* target)
+{
+	return (Player->GetPosition() - target->GetPosition()).Length2D();
+}
 
+int CountEnemiesInRange(float range)
+{
+	int enemies = 0;
+	for (auto enemy : GEntityList->GetAllHeros(false, true))
+	{
+		if (enemy != nullptr && GetDistance(GEntityList->Player(), enemy) <= range)
+		{
+			enemies++;
+		}
+	}
+	return enemies;
+}
+void stucktear()
+{
+	if (StackTear->Enabled() && myHero->ManaPercent() > StackManaPercent->GetInteger())
+	{
+		if(Tear->IsOwned() || Manamune->IsOwned() && !myHero->IsRecalling() && CountEnemiesInRange(1000) <= 0)
+		{
+			Q->CastOnPosition(myHero->ServerPosition());
+		}
+	}
+}
 void Combo()
 {
 	if (ComboQ->Enabled())
@@ -163,9 +204,19 @@ void Farm()
 	{
 		if (Q->IsReady())
 		{
-			Q->AttackMinions();
-
-			Q->LastHitMinion();
+			int MinionDie = 0;
+			for (auto minions : GEntityList->GetAllMinions(false, true, false))
+			{
+				if (minions != nullptr && minions->IsValidTarget(myHero, Q->Range()))
+				{
+					auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
+					auto dmg1 = GDamage->GetAutoAttackDamage(myHero, minions, false);
+					if (minions->GetHealth() <= dmg || minions->GetHealth() <= dmg1 || minions->GetHealth() <= dmg + dmg1)
+						MinionDie++;
+				}
+				if (MinionDie >= 1)
+					Q->CastOnTarget(minions, kHitChanceMedium);
+			}
 		}
 	}
 }
@@ -179,9 +230,9 @@ void JungleClear()
 		{
 			if (jMinion != nullptr && !jMinion->IsDead())
 			{
-				if (FarmQ->Enabled() && Q->IsReady() && myHero->IsValidTarget(jMinion, Q->Range()))
+				if (myHero->IsValidTarget(jMinion, Q->Range()))
 				{
-					Q->CastOnUnit(jMinion);
+					Q->CastOnTarget(jMinion, kHitChanceMedium);
 				}
 
 			}
@@ -256,7 +307,7 @@ void killsteal()
 			}
 			if (KillstealW->Enabled())
 			{
-				auto dmg = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotW);
+				auto dmg = GDamage->GetSpellDamage(myHero, Enemy, kSlotW);
 				if (Enemy->IsValidTarget(myHero, W->Range()) && !Enemy->IsInvulnerable())
 				{
 					if (Enemy->GetHealth() <= dmg && W->IsReady())
@@ -265,10 +316,64 @@ void killsteal()
 					}
 				}
 			}
+			if (UseIgnitekillsteal->Enabled() && Ignite->GetSpellSlot() != kSlotUnknown && Enemy->IsVisible())
+			{
+				auto dmg = GDamage->GetSpellDamage(myHero, Enemy, kSummonerSpellIgnite);
+				if (Enemy->GetHealth() <= dmg && Enemy->IsValidTarget(myHero, Ignite->GetSpellRange()) && Enemy->IsValidTarget())
+				{
+					Ignite->CastOnUnit(Enemy);
+				}
+			}
 		}
 	}
 }
 
+/*void Usepotion()
+{
+	if (AutoPotion->Enabled() && !myHero->IsRecalling() && !myHero->IsDead())
+	{
+		if (Biscuit->IsReady() && !myHero->GetBuffDataByName("ItemMiniRegenPotion") && !myHero->GetBuffDataByName("ItemCrystalFlask"))
+		{
+			if (myHero->GetMaxHealth() > myHero->GetHealth() + 170 && myHero->GetMaxMana() > myHero->GetMana() + 10 && CountEnemiesInRange(1000) > 0
+				&& myHero->GetHealth() < GEntityList->Player()->GetMaxHealth() * 0.75)
+			{
+				Biscuit->CastOnPlayer();
+			}
+			else if (myHero->GetMaxHealth() > myHero->GetHealth() + 170 && myHero->GetMaxMana() > myHero->GetMana() + 10 && CountEnemiesInRange(1000) == 0
+				&& myHero->GetHealth() < myHero->GetMaxHealth() * 0.6)
+			{
+				Biscuit->CastOnPlayer();
+			}
+		}
+		else if (HealthPot->IsReady() && !myHero->GetBuffDataByName("RegenerationPotion") && !myHero->GetBuffDataByName("ItemCrystalFlask"))
+		{
+			if (myHero->GetMaxHealth() > myHero->GetHealth() + 150 && CountEnemiesInRange(1000) > 0 &&
+				myHero->GetHealth() < myHero->GetMaxHealth() * 0.75)
+			{
+				HealthPot->CastOnPlayer();
+			}
+			else if (myHero->GetMaxHealth() > myHero->GetHealth() + 150 && CountEnemiesInRange(1000) == 0 &&
+				myHero->GetHealth() < myHero->GetMaxHealth() * 0.6)
+			{
+				HealthPot->CastOnPlayer();
+			}
+		}
+		else if (CorruptPot->IsReady() && !myHero->GetBuffDataByName("ItemDarkCrystalFlask") && !myHero->GetBuffDataByName("RegenerationPotion")
+			&& !myHero->GetBuffDataByName("ItemCrystalFlask") && !myHero->GetBuffDataByName("ItemMiniRegenPotion"))
+		{
+			if (myHero->GetMaxHealth() > myHero->GetHealth() + 120 && myHero->GetMaxMana() > myHero->GetMana() + 60 && CountEnemiesInRange(1000) > 0
+				&& (myHero->GetHealth() < myHero->GetMaxHealth() * 0.7 || myHero->GetMana() < myHero->GetMaxMana() * 0.5))
+			{
+				CorruptPot->CastOnPlayer();
+			}
+			else if (myHero->GetMaxHealth() > myHero->GetHealth() + 120 && myHero->GetMaxMana() > myHero->GetMana() + 60 && CountEnemiesInRange(1000) == 0
+				&& (myHero->GetHealth() < myHero->GetMaxHealth() * 0.7 || myHero->GetMana() < myHero->GetMaxMana() * 0.5))
+			{
+				CorruptPot->CastOnPlayer();
+			}
+		}
+	}
+}*/
 
 PLUGIN_EVENT(void) OnRender()
 {
@@ -289,6 +394,26 @@ PLUGIN_EVENT(void) OnRender()
 		if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), R->Range()); }
 	}
 }
+
+/*void SkinChanger()
+{
+	if (myHero->GetSkinId() != ChangeSkin->GetInteger())
+	{
+		myHero->SetSkinId(ChangeSkin->GetInteger());
+	}
+}
+
+PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
+{
+	if (args.Sender->IsEnemy(myHero) && args.Sender->IsHero())
+	{
+		if (AutoEGapcloser->Enabled() && E->IsReady() && !args.IsTargeted)
+		{
+			E->CastOnPosition(args.Sender->ServerPosition(GapCloserSpell, E->Range()));
+		}
+	}
+}*/
+
 PLUGIN_EVENT(void) OnGameUpdate()
 {
 	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
@@ -298,7 +423,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 	{
 		Farm();
-		//JungleClear();
+		JungleClear();
 	}
 	if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
 	{
@@ -306,6 +431,10 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	}
 	AutoImmobile();
 	killsteal();
+	if (GOrbwalking->GetOrbwalkingMode() == kModeNone)
+	{
+		stucktear();
+	}
 }
 
 PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
