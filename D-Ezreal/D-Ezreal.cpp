@@ -16,6 +16,8 @@ IMenu* FarmMenu;
 IMenu* MiscMenu;
 IMenu* Drawings;
 IMenu* ItemsMenu;
+IMenu* PotionMenu;
+IMenuOption* UseIgnitecombo;
 IMenuOption* ComboQ;
 IMenuOption* ComboW;
 IMenuOption* ComboR;
@@ -37,6 +39,8 @@ IMenuOption* ImmobileW;
 IMenuOption* Blade_Cutlass;
 IMenuOption* MyHpPreBlade;
 IMenuOption* EnemyHpPreBlade;
+IMenuOption* usepotion;
+IMenuOption* usepotionhpper;
 IMenuOption* DrawReady;
 IMenuOption* DrawQ;
 IMenuOption* DrawW;
@@ -56,17 +60,23 @@ IInventoryItem* Tear;
 IInventoryItem* Manamune;
 IInventoryItem* blade;
 IInventoryItem* Cutlass;
+IInventoryItem* HealthPot;
+IInventoryItem* CorruptPot;
+IInventoryItem* Biscuit;
+IInventoryItem* RefillPot;
+IInventoryItem* hunter;
 
 void  Menu()
 {
 	MainMenu = GPluginSDK->AddMenu("D-Ezreal");
 
 	ComboMenu = MainMenu->AddMenu("Combo Settings");
+	UseIgnitecombo = ComboMenu->CheckBox("Use Ignite", true);
 	ComboQ = ComboMenu->CheckBox("Use Q", true);
 	ComboW = ComboMenu->CheckBox("Use W", true);
 	ComboR = ComboMenu->CheckBox("Use R if Is killable", true);
-	ComboRAOEuse = ComboMenu->CheckBox("Use R if hit x Enemys", false);
-	ComboRAOE = ComboMenu->AddInteger("Use R if hit X Enemys", 1, 5, 3);
+	//ComboRAOEuse = ComboMenu->CheckBox("Use R if hit x Enemys", false);
+	//ComboRAOE = ComboMenu->AddInteger("Use R if hit X Enemys", 1, 5, 3);
 
 
 	HarassMenu = MainMenu->AddMenu("Harass Setting");
@@ -82,7 +92,7 @@ void  Menu()
 	MiscMenu = MainMenu->AddMenu("Misc Setting");
 	StackTear = MiscMenu->CheckBox("Stack Tear", true);
 	StackManaPercent = MiscMenu->AddInteger("Mana Percent To Stuck", 10, 100, 95);
-	UseIgnitekillsteal = MiscMenu->CheckBox("Use Ignite to killsteal", true);
+	UseIgnitekillsteal = MiscMenu->CheckBox("Use Ignite to killsteal", false);
 	KillstealQ = MiscMenu->CheckBox("Use Q to killsteal", true);
 	KillstealW = MiscMenu->CheckBox("Use W to killsteal", true);
 	ImmobileQ = MiscMenu->CheckBox("Use Q in Immobile", true);
@@ -92,6 +102,10 @@ void  Menu()
 	Blade_Cutlass = ItemsMenu->CheckBox("Blade-Cutlass", true);
 	MyHpPreBlade = ItemsMenu->AddInteger("Use Blade-Cutlass if my HP <", 10, 100, 35);
 	EnemyHpPreBlade = ItemsMenu->AddInteger("Use Blade-Cutlass if Enemy HP <", 10, 100, 35);
+
+	PotionMenu = MainMenu->AddMenu("Potion Setting");
+	usepotion = PotionMenu->CheckBox("Use potions", true);
+	usepotionhpper = PotionMenu->AddInteger("Use potions if HP <", 10, 100, 35);
 
 	DrawReady = Drawings->CheckBox("Draw Only Ready Spells", true);
 	DrawQ = Drawings->CheckBox("Draw Q", true);
@@ -125,6 +139,11 @@ void LoadSpells()
 	Manamune = GPluginSDK->CreateItemForId(3004, 0);
 	blade = GPluginSDK->CreateItemForId(3153, 550);
 	Cutlass = GPluginSDK->CreateItemForId(3144, 550);
+	HealthPot = GPluginSDK->CreateItemForId(2003, 0);
+	CorruptPot = GPluginSDK->CreateItemForId(2033, 0);
+	RefillPot = GPluginSDK->CreateItemForId(2031, 0);
+	Biscuit = GPluginSDK->CreateItemForId(2010, 0);
+	hunter = GPluginSDK->CreateItemForId(2032, 0);
 }
 
 float GetDistance(IUnit* Player, IUnit* target)
@@ -164,18 +183,30 @@ void UseItems()
 	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 	{
 		for (auto enemy : GEntityList->GetAllHeros(false, true))
-		if ((blade->IsOwned() || Cutlass->IsOwned()) && Blade_Cutlass->Enabled() && myHero->IsValidTarget(enemy, 550))
-		{
-			if (myHero->HealthPercent() < MyHpPreBlade->GetInteger() || enemy->HealthPercent() < EnemyHpPreBlade->GetInteger())
+			if (Blade_Cutlass->Enabled() && myHero->IsValidTarget(enemy, 550))
 			{
-				blade->CastOnTarget(enemy);
-				Cutlass->CastOnTarget(enemy);
+				if (myHero->HealthPercent() < MyHpPreBlade->GetInteger() || enemy->HealthPercent() < EnemyHpPreBlade->GetInteger())
+				{
+					if (blade->IsOwned() && blade->IsReady())
+						blade->CastOnTarget(enemy);
+					if (Cutlass->IsOwned() && Cutlass->IsReady())
+						Cutlass->CastOnTarget(enemy);
+				}
 			}
-		}
 	}
 }
+	
 void Combo()
 {
+	if (UseIgnitecombo->Enabled() && Ignite->GetSpellSlot() != kSlotUnknown)
+	{
+		for (auto target : GEntityList->GetAllHeros(false, true))
+			if (target != nullptr &&  target->IsValidTarget())
+				if (target->GetHealth() <= 0.3*target->GetMaxHealth())
+				{
+					Ignite->CastOnUnit(target);
+				}
+	}
 	if (ComboQ->Enabled())
 	{
 		if (Q->IsReady())
@@ -199,61 +230,57 @@ void Combo()
 		{
 			if (Enemy != nullptr && !Enemy->IsDead())
 			{
-				if (ComboR->Enabled())
+				auto dmg = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotR);
+				if (Enemy->IsValidTarget(myHero, R->Range()) && !Enemy->IsInvulnerable()
+					&& !Enemy->IsValidTarget(myHero, Q->Range()))
 				{
-					auto dmg = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotR);
-					if (Enemy->IsValidTarget(myHero, R->Range()) && !Enemy->IsInvulnerable()
-						&& !Enemy->IsValidTarget(myHero, Q->Range()))
+					if (Enemy->GetHealth() <= dmg && R->IsReady())
 					{
-						if (Enemy->GetHealth() <= dmg && R->IsReady())
-						{
-							R->CastOnTarget(Enemy, kHitChanceHigh);
-						}
+						R->CastOnTarget(Enemy, kHitChanceHigh);
 					}
 				}
 			}
 		}
 	}
 
+
 	/*if (R->IsReady() && ComboRAOEuse->Enabled())
 	{
-	auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, float(RRange->GetInteger()));
-	if (target != nullptr &&  GEntityList->Player()->IsValidTarget(target, RRange->GetInteger()))
-	{
-	int enemies = 0;
-	Vec3 pos = Vec3();
-	R->FindBestCastPosition(false, true, pos, enemies);
-	if (enemies >= ComboRAOE->GetInteger())
-	R->CastOnPosition(pos);
-	}
+		for (auto target : GEntityList->GetAllHeros(false, true))
+			if (target != nullptr &&  target->IsValidTarget(myHero, R->Range()))
+			{
+				R->CastOnTargetAoE(target, 3, kHitChanceLow);
+			}
 	}*/
 }
 PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 {
-	if (!GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
-		return;
-	if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
-		return;
-	if (FarmQ->Enabled() && Q->IsReady())
+	if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 	{
-		int MinionDie = 0;
-		for (auto minions : GEntityList->GetAllMinions(false, true, false))
+		if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
+			return;
+		if (FarmQ->Enabled() && Q->IsReady())
 		{
-			if (minions != nullptr && minions->IsValidTarget(myHero, Q->Range()))
+			int MinionDie = 0;
+			for (auto minions : GEntityList->GetAllMinions(false, true, false))
 			{
-				auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
-				auto dmg1 = GDamage->GetAutoAttackDamage(myHero, minions, false);
-				if (minions->GetHealth() <= dmg || minions->GetHealth() <= dmg1 || minions->GetHealth() <= dmg + dmg1)
-					MinionDie++;
+				if (minions != nullptr && minions->IsValidTarget(myHero, Q->Range()))
+				{
+					auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
+					auto dmg1 = GDamage->GetAutoAttackDamage(myHero, minions, true);
+					if (minions->GetHealth() <= dmg || minions->GetHealth() <= dmg1 || minions->GetHealth() <= dmg1 +dmg)
+						MinionDie++;
+				}
+				if (MinionDie >= 1)
+					Q->CastOnTarget(minions, kHitChanceLow);
+				
 			}
-			if (MinionDie >= 1)
-				Q->CastOnUnit(minions);
-		}
-		for (auto jMinion : GEntityList->GetAllMinions(false, false, true))
-		{
-			if (jMinion != nullptr && !jMinion->IsDead() && jMinion->IsValidTarget(myHero, Q->Range()))
+			for (auto jMinion : GEntityList->GetAllMinions(false, false, true))
 			{
-				Q->CastOnUnit(jMinion);
+				if (jMinion != nullptr && !jMinion->IsDead() && jMinion->IsValidTarget(myHero, Q->Range()))
+				{
+					Q->CastOnUnit(jMinion);
+				}
 			}
 		}
 	}
@@ -341,7 +368,7 @@ void killsteal()
 			if (UseIgnitekillsteal->Enabled() && Ignite->GetSpellSlot() != kSlotUnknown && Enemy->IsVisible())
 			{
 				auto dmg = GDamage->GetSpellDamage(myHero, Enemy, kSummonerSpellIgnite);
-				if (Enemy->GetHealth() <= dmg && Enemy->IsValidTarget(myHero, Ignite->GetSpellRange()) && Enemy->IsValidTarget())
+				if (Enemy->GetHealth() <= dmg && Enemy->IsValidTarget(myHero, Ignite->GetSpellRange()))
 				{
 					Ignite->CastOnUnit(Enemy);
 				}
@@ -350,53 +377,47 @@ void killsteal()
 	}
 }
 
-/*void Usepotion()
+void Usepotion()
 {
-	if (AutoPotion->Enabled() && !myHero->IsRecalling() && !myHero->IsDead())
+	if (usepotion->Enabled() && !myHero->IsRecalling() && !myHero->IsDead())
 	{
-		if (Biscuit->IsReady() && !myHero->GetBuffDataByName("ItemMiniRegenPotion") && !myHero->GetBuffDataByName("ItemCrystalFlask"))
+		bool usepotions = myHero->GetHealth() < myHero->GetMaxHealth()* usepotionhpper->GetInteger() / 100;
+		if (usepotions)
 		{
-			if (myHero->GetMaxHealth() > myHero->GetHealth() + 170 && myHero->GetMaxMana() > myHero->GetMana() + 10 && CountEnemiesInRange(1000) > 0
-				&& myHero->GetHealth() < GEntityList->Player()->GetMaxHealth() * 0.75)
+			GGame->PrintChat("Phase : pro");
+			if (myHero->GetBuffDataByName("ItemDarkCrystalFlask") || myHero->GetBuffDataByName("ItemMiniRegenPotion")
+				|| myHero->GetBuffDataByName("ItemCrystalFlask") || myHero->GetBuffDataByName("RegenerationPotion"))
+				return;
+			
+			if (Biscuit->IsOwned())
 			{
+				GGame->PrintChat("Phase : 3");
 				Biscuit->CastOnPlayer();
 			}
-			else if (myHero->GetMaxHealth() > myHero->GetHealth() + 170 && myHero->GetMaxMana() > myHero->GetMana() + 10 && CountEnemiesInRange(1000) == 0
-				&& myHero->GetHealth() < myHero->GetMaxHealth() * 0.6)
+			else if (HealthPot->IsOwned())
 			{
-				Biscuit->CastOnPlayer();
-			}
-		}
-		else if (HealthPot->IsReady() && !myHero->GetBuffDataByName("RegenerationPotion") && !myHero->GetBuffDataByName("ItemCrystalFlask"))
-		{
-			if (myHero->GetMaxHealth() > myHero->GetHealth() + 150 && CountEnemiesInRange(1000) > 0 &&
-				myHero->GetHealth() < myHero->GetMaxHealth() * 0.75)
-			{
+				GGame->PrintChat("Phase : 4");
 				HealthPot->CastOnPlayer();
 			}
-			else if (myHero->GetMaxHealth() > myHero->GetHealth() + 150 && CountEnemiesInRange(1000) == 0 &&
-				myHero->GetHealth() < myHero->GetMaxHealth() * 0.6)
+			else if (CorruptPot->IsOwned())
 			{
-				HealthPot->CastOnPlayer();
-			}
-		}
-		else if (CorruptPot->IsReady() && !myHero->GetBuffDataByName("ItemDarkCrystalFlask") && !myHero->GetBuffDataByName("RegenerationPotion")
-			&& !myHero->GetBuffDataByName("ItemCrystalFlask") && !myHero->GetBuffDataByName("ItemMiniRegenPotion"))
-		{
-			if (myHero->GetMaxHealth() > myHero->GetHealth() + 120 && myHero->GetMaxMana() > myHero->GetMana() + 60 && CountEnemiesInRange(1000) > 0
-				&& (myHero->GetHealth() < myHero->GetMaxHealth() * 0.7 || myHero->GetMana() < myHero->GetMaxMana() * 0.5))
-			{
+				GGame->PrintChat("Phase : 5");
 				CorruptPot->CastOnPlayer();
 			}
-			else if (myHero->GetMaxHealth() > myHero->GetHealth() + 120 && myHero->GetMaxMana() > myHero->GetMana() + 60 && CountEnemiesInRange(1000) == 0
-				&& (myHero->GetHealth() < myHero->GetMaxHealth() * 0.7 || myHero->GetMana() < myHero->GetMaxMana() * 0.5))
+			else if (RefillPot->IsOwned())
 			{
-				CorruptPot->CastOnPlayer();
+				GGame->PrintChat("Phase : 6");
+				RefillPot->CastOnPlayer();
+			}
+			else if (hunter->IsOwned())
+			{
+				GGame->PrintChat("Phase : 6");
+				hunter->CastOnPlayer();
 			}
 		}
 	}
-}*/
-
+}
+		
 PLUGIN_EVENT(void) OnRender()
 {
 	if (DrawReady->Enabled())
@@ -450,7 +471,8 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	AutoImmobile();
 	killsteal();
 	UseItems();
-	stucktear();	
+	stucktear();
+	//Usepotion();
 }
 
 PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
