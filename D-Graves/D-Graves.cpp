@@ -7,7 +7,7 @@
 
 
 
-PluginSetup("D-ezreal");
+PluginSetup("D-Graves");
 
 IMenu* MainMenu;
 IMenu* ComboMenu;
@@ -17,9 +17,9 @@ IMenu* MiscMenu;
 IMenu* Drawings;
 IMenu* ItemsMenu;
 IMenu* PotionMenu;
-IMenuOption* UseIgnitecombo;
 IMenuOption* ComboQ;
 IMenuOption* ComboW;
+IMenuOption* ComboE;
 IMenuOption* ComboR;
 IMenuOption* ComboRAOE;
 IMenuOption* ComboRAOEuse;
@@ -28,17 +28,17 @@ IMenuOption* HarassQ;
 IMenuOption* HarassW;
 IMenuOption* HarassManaPercent;
 IMenuOption* FarmQ;
+IMenuOption* FarmW;
+IMenuOption* FarmE;
 IMenuOption* FarmManaPercent;
-IMenuOption* StackTear;
-IMenuOption* StackManaPercent;
-IMenuOption* UseIgnitekillsteal;
+IMenuOption* SemiR;
 IMenuOption* KillstealQ;
 IMenuOption* KillstealW;
-IMenuOption* ImmobileQ;
-IMenuOption* ImmobileW;
+IMenuOption* GapcloseW;
 IMenuOption* Blade_Cutlass;
 IMenuOption* MyHpPreBlade;
 IMenuOption* EnemyHpPreBlade;
+IMenuOption* useYoumuu;
 IMenuOption* usepotion;
 IMenuOption* usepotionhpper;
 IMenuOption* DrawReady;
@@ -54,12 +54,12 @@ ISpell2* W;
 ISpell2* E;
 ISpell2* R;
 
-ISpell* Ignite;
+ISpell* smite;
 
-IInventoryItem* Tear;
-IInventoryItem* Manamune;
+
 IInventoryItem* blade;
 IInventoryItem* Cutlass;
+IInventoryItem* Youmuu;
 IInventoryItem* HealthPot;
 IInventoryItem* CorruptPot;
 IInventoryItem* Biscuit;
@@ -68,17 +68,15 @@ IInventoryItem* hunter;
 
 void  Menu()
 {
-	MainMenu = GPluginSDK->AddMenu("D-Ezreal");
+	MainMenu = GPluginSDK->AddMenu("D-Graves");
 
 	ComboMenu = MainMenu->AddMenu("Combo Settings");
-	UseIgnitecombo = ComboMenu->CheckBox("Use Ignite", true);
 	ComboQ = ComboMenu->CheckBox("Use Q", true);
 	ComboW = ComboMenu->CheckBox("Use W", true);
+	ComboE = ComboMenu->CheckBox("Use E", true);
 	ComboR = ComboMenu->CheckBox("Use R if Is killable", true);
-	//ComboRAOEuse = ComboMenu->CheckBox("Use R if hit x Enemys", false);
-	//ComboRAOE = ComboMenu->AddInteger("Use R if hit X Enemys", 1, 5, 3);
-
-
+	ComboRAOEuse = ComboMenu->CheckBox("Use R if hit 3 Enemys", false);
+	
 	HarassMenu = MainMenu->AddMenu("Harass Setting");
 	HarassQ = HarassMenu->CheckBox("Use Q", true);
 	HarassW = HarassMenu->CheckBox("Use W", true);
@@ -87,21 +85,22 @@ void  Menu()
 
 	FarmMenu = MainMenu->AddMenu("Farm/Jungle Setting");
 	FarmQ = FarmMenu->CheckBox("Use Q Farm", true);
+	FarmW = FarmMenu->CheckBox("Use W Farm", true);
+	FarmE = FarmMenu->CheckBox("Use E(reload) Jungle only", true);
 	FarmManaPercent = FarmMenu->AddInteger("Mana Percent for Farm", 10, 100, 70);
 
 	MiscMenu = MainMenu->AddMenu("Misc Setting");
-	StackTear = MiscMenu->CheckBox("Stack Tear", true);
-	StackManaPercent = MiscMenu->AddInteger("Mana Percent To Stuck", 10, 100, 95);
-	UseIgnitekillsteal = MiscMenu->CheckBox("Use Ignite to killsteal", false);
+	SemiR= MiscMenu->AddKey("Semi-Manual R", 84);
 	KillstealQ = MiscMenu->CheckBox("Use Q to killsteal", true);
 	KillstealW = MiscMenu->CheckBox("Use W to killsteal", true);
-	ImmobileQ = MiscMenu->CheckBox("Use Q in Immobile", true);
-	ImmobileW = MiscMenu->CheckBox("Use W in Immobile", true);
+	GapcloseW = MiscMenu->CheckBox("Use W to Gapclose", true);
+	//Gapclose E = MiscMenu->CheckBox("Use E to Gapclose", true);
 
 	ItemsMenu = MainMenu->AddMenu("Items Setting");
 	Blade_Cutlass = ItemsMenu->CheckBox("Blade-Cutlass", true);
 	MyHpPreBlade = ItemsMenu->AddInteger("Use Blade-Cutlass if my HP <", 10, 100, 35);
 	EnemyHpPreBlade = ItemsMenu->AddInteger("Use Blade-Cutlass if Enemy HP <", 10, 100, 35);
+	useYoumuu = ItemsMenu->CheckBox("Use Youmuu's", true);
 
 	PotionMenu = MainMenu->AddMenu("Potion Setting");
 	usepotion = PotionMenu->CheckBox("Use potions", true);
@@ -114,31 +113,33 @@ void  Menu()
 }
 void LoadSpells()
 {
-	Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, false, static_cast<eCollisionFlags>(kCollidesWithHeroes | kCollidesWithMinions | kCollidesWithYasuoWall));
-	W = GPluginSDK->CreateSpell2(kSlotW, kLineCast, true, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
+	Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, true, static_cast<eCollisionFlags>(kCollidesWithWalls | kCollidesWithYasuoWall));
+	W = GPluginSDK->CreateSpell2(kSlotW, kCircleCast, true, true, static_cast<eCollisionFlags>(kCollidesWithNothing));
+	E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall | kCollidesWithMinions));
 	R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, true, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
-	E = GPluginSDK->CreateSpell2(kSlotE, kCircleCast, false, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall | kCollidesWithMinions));
 
-	Q->SetOverrideRange(1150);
+	Q->SetOverrideRange(950);
 	W->SetOverrideRange(950);
-	R->SetOverrideRange(3000);
+	E->SetOverrideRange(450);
+	R->SetOverrideRange(1500);
 
 	Q->SetOverrideDelay(0.25);
-	W->SetOverrideDelay(0.25);
-	R->SetOverrideDelay(1.1);
+	W->SetOverrideDelay(0.35);
+	R->SetOverrideDelay(0.25);
 
 	Q->SetOverrideRadius(60);
-	W->SetOverrideRadius(80);
-	R->SetOverrideRadius(160);
+	W->SetOverrideRadius(150);
+	R->SetOverrideRadius(100);
 	Q->SetOverrideSpeed(2000);
-	W->SetOverrideSpeed(1600);
-	R->SetOverrideSpeed(2000);
+	W->SetOverrideSpeed(1650);
+	R->SetOverrideSpeed(2100);
 
-	Ignite = GPluginSDK->CreateSpell(GEntityList->Player()->GetSpellSlot("summonerdot"), 600);
-	Tear = GPluginSDK->CreateItemForId(3070, 0);
-	Manamune = GPluginSDK->CreateItemForId(3004, 0);
+	smite = GPluginSDK->CreateSpell(myHero->GetSpellSlot("smite"), 570);
+
 	blade = GPluginSDK->CreateItemForId(3153, 550);
 	Cutlass = GPluginSDK->CreateItemForId(3144, 550);
+	Youmuu = GPluginSDK->CreateItemForId(3142, 0);
+	
 	HealthPot = GPluginSDK->CreateItemForId(2003, 0);
 	CorruptPot = GPluginSDK->CreateItemForId(2033, 0);
 	RefillPot = GPluginSDK->CreateItemForId(2031, 0);
@@ -163,69 +164,38 @@ int CountEnemiesInRange(float range)
 	}
 	return enemies;
 }
-void stucktear()
-{
-	if (CountEnemiesInRange(2000) >= 1 || GGame->IsChatOpen())
-		return;
-	if(GOrbwalking->GetOrbwalkingMode() == kModeCombo || GOrbwalking->GetOrbwalkingMode() == kModeMixed|| GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
-		return;
-	if (StackTear->Enabled() && myHero->ManaPercent() > StackManaPercent->GetInteger())
-	{
-		if ((Tear->IsOwned() || Manamune->IsOwned()) && !myHero->IsRecalling())
-		{
-			Q->CastOnPosition(myHero->ServerPosition());
-		}
-	}
-}
+
 
 void UseItems()
 {
 	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 	{
 		for (auto enemy : GEntityList->GetAllHeros(false, true))
-			if (Blade_Cutlass->Enabled() && myHero->IsValidTarget(enemy, 550))
+		{
+			if (enemy != nullptr)
 			{
-				if (myHero->HealthPercent() < MyHpPreBlade->GetInteger() || enemy->HealthPercent() < EnemyHpPreBlade->GetInteger())
+				if (Blade_Cutlass->Enabled() && myHero->IsValidTarget(enemy, 550))
 				{
-					if (blade->IsOwned() && blade->IsReady())
-						blade->CastOnTarget(enemy);
-					if (Cutlass->IsOwned() && Cutlass->IsReady())
-						Cutlass->CastOnTarget(enemy);
+					if (myHero->HealthPercent() < MyHpPreBlade->GetInteger() || enemy->HealthPercent() < EnemyHpPreBlade->GetInteger())
+					{
+						if (blade->IsOwned() && blade->IsReady())
+							blade->CastOnTarget(enemy);
+						if (Cutlass->IsOwned() && Cutlass->IsReady())
+							Cutlass->CastOnTarget(enemy);
+					}
+				}
+				if (useYoumuu->Enabled() && Youmuu->IsReady() && Youmuu->IsOwned())
+				{
+					if (myHero->IsValidTarget(enemy, 550))
+						Youmuu->CastOnPlayer();
 				}
 			}
+		}
 	}
 }
-	
+
 void Combo()
 {
-	if (UseIgnitecombo->Enabled() && Ignite->GetSpellSlot() != kSlotUnknown)
-	{
-		for (auto target : GEntityList->GetAllHeros(false, true))
-			if (target != nullptr &&   myHero->IsValidTarget(target, 600))
-				if (target->GetHealth() <= 0.3*target->GetMaxHealth())
-				{
-					Ignite->CastOnUnit(target);
-				}
-	}
-	if (ComboQ->Enabled())
-	{
-		if (Q->IsReady())
-		{
-			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-			if (target != nullptr &&  myHero->IsValidTarget(target, Q->Range()))
-			Q->CastOnTarget(target, kHitChanceHigh);
-		}
-	}
-	if (ComboW->Enabled())
-	{
-		if (W->IsReady() && !Q->IsReady())
-		{
-			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
-			if (target != nullptr && myHero->IsValidTarget(target, W->Range()))
-			W->CastOnTarget(target, kHitChanceHigh);
-		}
-	}
-
 	if (ComboR->Enabled() && R->IsReady())
 	{
 		for (auto Enemy : GEntityList->GetAllHeros(false, true))
@@ -234,7 +204,7 @@ void Combo()
 			{
 				auto dmg = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotR);
 				if (myHero->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable()
-					&& !Enemy->IsValidTarget(myHero, Q->Range()))
+					&& !myHero->IsValidTarget(Enemy, Q->Range()))
 				{
 					if (Enemy->GetHealth() <= dmg && R->IsReady())
 					{
@@ -247,53 +217,102 @@ void Combo()
 
 	if (R->IsReady() && ComboRAOEuse->Enabled())
 	{
-		for (auto Enemy : GEntityList->GetAllHeros(false, true))
-		{
-			if (Enemy != nullptr && !Enemy->IsDead())
+		for (auto target : GEntityList->GetAllHeros(false, true))
+			if (target != nullptr &&  myHero->IsValidTarget(target, R->Range()))
 			{
-				//auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, R->Range());
-				if (Enemy != nullptr &&  myHero->IsValidTarget(Enemy, R->Range()))
-				{
-					R->CastOnTargetAoE(Enemy, 3, kHitChanceLow);
-				}
+				R->CastOnTargetAoE(target, 3, kHitChanceLow);
 			}
-		}
 	}
 }
+
 PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 {
+	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo || (GOrbwalking->GetOrbwalkingMode() == kModeMixed && myHero->ManaPercent() > HarassManaPercent->GetInteger()))
+	{
+		if (source == myHero || target != nullptr)
+		{
+			auto useQ = ComboQ->GetInteger() || HarassQ->GetInteger();
+			auto useW = ComboW->GetInteger() || HarassW->GetInteger();
+			if (useQ)
+			{
+				if (Q->IsReady())
+				{
+					auto t = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+					if (t != nullptr &&  myHero->IsValidTarget(t, Q->Range()))
+						Q->CastOnTarget(t, kHitChanceHigh);
+				}
+			}
+			if (useW)
+			{
+				if (W->IsReady())
+				{
+					auto t = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
+					if (t != nullptr &&  myHero->IsValidTarget(t, W->Range()))
+						W->CastOnTarget(t, kHitChanceHigh);
+				}
+			}
+		}		
+	}
+	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && ComboE)
+	{
+		if (source == myHero || target != nullptr)
+		if (!myHero->GetBuffDataByName("GravesBasicAttackAmmo2") && E->IsReady())
+		{
+			auto t = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+			if (t != nullptr &&  myHero->IsValidTarget(t, Q->Range()))
+			E->CastOnPosition(GGame->CursorPosition());
+		}
+	}
 	if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 	{
 		if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
 			return;
-		if (FarmQ->Enabled() && Q->IsReady())
+		for (auto minions : GEntityList->GetAllMinions(false, true, false))
 		{
-			int MinionDie = 0;
-			for (auto minions : GEntityList->GetAllMinions(false, true, false))
+			if (FarmQ->Enabled() && Q->IsReady())
 			{
-				if (minions != nullptr && minions->IsValidTarget(minions, Q->Range()))
+				if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))
 				{
-					auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
-					auto dmg1 = GDamage->GetAutoAttackDamage(myHero, minions, true);
-					if (minions->GetHealth() <= dmg || minions->GetHealth() <= dmg1 || minions->GetHealth() <= dmg1 +dmg)
-						MinionDie++;
+					Q->CastOnTargetAoE(minions, 3, kHitChanceLow);
 				}
-				if (MinionDie >= 1)
-					Q->CastOnTarget(minions, kHitChanceLow);
-				
+				else Q->LastHitMinion();
 			}
-			for (auto jMinion : GEntityList->GetAllMinions(false, false, true))
+			if (FarmW->Enabled() && W->IsReady())
 			{
-				if (jMinion != nullptr && !jMinion->IsDead() && myHero->IsValidTarget(jMinion, Q->Range()))
+				if (minions != nullptr && myHero->IsValidTarget(minions, W->Range()))
+				{
+					W->CastOnTargetAoE(minions, 3, kHitChanceLow);
+				}
+				else W->LastHitMinion();
+			}
+		}
+		for (auto jMinion : GEntityList->GetAllMinions(false, false, true))
+		{
+			if (FarmQ->Enabled() && Q->IsReady())
+			{
+				if (jMinion != nullptr && myHero->IsValidTarget(jMinion, Q->Range()))
 				{
 					Q->CastOnUnit(jMinion);
+				}
+			}
+			if (FarmW->Enabled() && W->IsReady())
+			{
+				if (jMinion != nullptr && myHero->IsValidTarget(jMinion, W->Range()))
+				{
+					W->CastOnUnit(jMinion);
+				}
+			}
+			if (FarmE->Enabled() && E->IsReady())
+			{
+				if (jMinion != nullptr && myHero->IsValidTarget(jMinion, 500))
+				{
+					E->CastOnPosition(GGame->CursorPosition());
 				}
 			}
 		}
 	}
 }
-
-void Harass()
+/*void Harass()
 {
 	if (myHero->ManaPercent() < HarassManaPercent->GetInteger())
 		return;
@@ -302,8 +321,8 @@ void Harass()
 		if (Q->IsReady())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-			if (target != nullptr &&   myHero->IsValidTarget(target, Q->Range()))
-			Q->CastOnTarget(target, kHitChanceHigh);
+			if (target->IsValidTarget(myHero, Q->Range()))
+				Q->CastOnTarget(target, kHitChanceHigh);
 		}
 	}
 	if (HarassW->Enabled())
@@ -311,42 +330,12 @@ void Harass()
 		if (W->IsReady() && !Q->IsReady())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
-			if (target != nullptr &&   myHero->IsValidTarget(target, W->Range()))
-			W->CastOnTarget(target, kHitChanceHigh);
+			if (target->IsValidTarget(myHero, W->Range()))
+				W->CastOnTarget(target, kHitChanceHigh);
 		}
 	}
-}
+}*/
 
-void AutoImmobile()
-{
-	if (GGame->IsChatOpen()) return;
-	if (Q->IsReady())
-	{
-		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-		if (target != nullptr && myHero->IsValidTarget(target, Q->Range()) && !target->IsInvulnerable())
-		{
-			if (ImmobileQ->Enabled())
-			{
-				{
-					Q->CastOnTarget(target, kHitChanceImmobile);
-				}
-			}
-		}
-	}
-	if (W->IsReady())
-	{
-		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
-		if (target != nullptr && myHero->IsValidTarget(target, W->Range()) && !target->IsInvulnerable())
-		{
-			if (ImmobileW->Enabled())
-			{
-				{
-					W->CastOnTarget(target, kHitChanceImmobile);
-				}
-			}
-		}
-	}
-}
 void killsteal()
 {
 	if (GGame->IsChatOpen()) return;
@@ -374,14 +363,6 @@ void killsteal()
 					{
 						W->CastOnTarget(Enemy, kHitChanceHigh);
 					}
-				}
-			}
-			if (UseIgnitekillsteal->Enabled() && Ignite->GetSpellSlot() != kSlotUnknown && Enemy->IsVisible())
-			{
-				auto dmg = GDamage->GetSpellDamage(myHero, Enemy, kSummonerSpellIgnite);
-				if (Enemy->GetHealth() <= dmg && myHero->IsValidTarget(Enemy, Ignite->GetSpellRange()))
-				{
-					Ignite->CastOnUnit(Enemy);
 				}
 			}
 		}
@@ -431,7 +412,7 @@ void Usepotion()
 		}
 	}
 }
-		
+
 PLUGIN_EVENT(void) OnRender()
 {
 	if (DrawReady->Enabled())
@@ -452,40 +433,41 @@ PLUGIN_EVENT(void) OnRender()
 	}
 }
 
-/*void SkinChanger()
-{
-	if (myHero->GetSkinId() != ChangeSkin->GetInteger())
-	{
-		myHero->SetSkinId(ChangeSkin->GetInteger());
-	}
-}
 
 PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
 {
 	if (args.Sender->IsEnemy(myHero) && args.Sender->IsHero())
 	{
-		if (AutoEGapcloser->Enabled() && E->IsReady() && !args.IsTargeted)
+		if (GapcloseW->Enabled() && W->IsReady() && !args.IsTargeted)
 		{
-			E->CastOnPosition(args.Sender->ServerPosition(GapCloserSpell, E->Range()));
+			auto t = args.Sender;
+			if (myHero->IsValidTarget(t, W->Range()))
+				if (!t->IsMelee())
+				{
+					W->CastOnTarget(args.Sender);
+				}
+				else W->CastOnPlayer();
 		}
 	}
-}*/
+}
 
 PLUGIN_EVENT(void) OnGameUpdate()
 {
+	if (GetAsyncKeyState(SemiR->GetInteger()) && R->IsReady())
+	{
+		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, R->Range());
+		if (target != nullptr && myHero->IsValidTarget(target, R->Range()))
+		{
+			R->CastOnTarget(target, kHitChanceHigh);
+		}
+	}
 	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 	{
 		Combo();
 	}
-	
-	if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
-	{
-		Harass();
-	}
-	AutoImmobile();
+
 	killsteal();
 	UseItems();
-	stucktear();
 	Usepotion();
 }
 
@@ -499,24 +481,25 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	GEventManager->AddEventHandler(kEventOnGameUpdate, OnGameUpdate);
 	GEventManager->AddEventHandler(kEventOnRender, OnRender);
 	GEventManager->AddEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);
-	if (strcmp(GEntityList->Player()->ChampionName(), "Ezreal") == 0)
+	GEventManager->AddEventHandler(kEventOnGapCloser, OnGapcloser);
+
+	if (strcmp(GEntityList->Player()->ChampionName(), "Graves") == 0)
 	{
-		GGame->PrintChat("D-Ezreal : Loaded");
+		GGame->PrintChat("D-Graves : Loaded");
 	}
 	else
 	{
-		GGame->PrintChat("You are not playing Ezreal...");
+		GGame->PrintChat("You are not playing Graves...");
 	}
 }
-	
+
 
 PLUGIN_API void OnUnload()
 {
 	MainMenu->Remove();
 
-
 	GEventManager->RemoveEventHandler(kEventOnGameUpdate, OnGameUpdate);
 	GEventManager->RemoveEventHandler(kEventOnRender, OnRender);
 	GEventManager->RemoveEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);
-
+	GEventManager->RemoveEventHandler(kEventOnGapCloser, OnGapcloser);
 }
