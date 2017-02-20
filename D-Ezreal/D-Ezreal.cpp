@@ -75,7 +75,7 @@ void  Menu()
 	ComboQ = ComboMenu->CheckBox("Use Q", true);
 	ComboW = ComboMenu->CheckBox("Use W", true);
 	ComboR = ComboMenu->CheckBox("Use R if Is killable", true);
-	//ComboRAOEuse = ComboMenu->CheckBox("Use R if hit x Enemys", false);
+	ComboRAOEuse = ComboMenu->CheckBox("Use R if hit 3 Enemys", false);
 	//ComboRAOE = ComboMenu->AddInteger("Use R if hit X Enemys", 1, 5, 3);
 
 
@@ -228,16 +228,16 @@ void Combo()
 		if (Q->IsReady())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-			if (target != nullptr &&  myHero->IsValidTarget(target, Q->Range()))
+			if (myHero->IsValidTarget(target, Q->Range()))
 			Q->CastOnTarget(target, kHitChanceHigh);
 		}
 	}
 	if (ComboW->Enabled())
 	{
-		if (W->IsReady() && !Q->IsReady())
+		if (W->IsReady())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
-			if (target != nullptr && myHero->IsValidTarget(target, W->Range()))
+			if (myHero->IsValidTarget(target, W->Range()))
 			W->CastOnTarget(target, kHitChanceHigh);
 		}
 	}
@@ -318,16 +318,16 @@ void Harass()
 		if (Q->IsReady())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-			if (target != nullptr &&   myHero->IsValidTarget(target, Q->Range()))
+			if (myHero->IsValidTarget(target, Q->Range()))
 			Q->CastOnTarget(target, kHitChanceHigh);
 		}
 	}
 	if (HarassW->Enabled())
 	{
-		if (W->IsReady() && !Q->IsReady())
+		if (W->IsReady())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
-			if (target != nullptr &&   myHero->IsValidTarget(target, W->Range()))
+			if (myHero->IsValidTarget(target, W->Range()))
 			W->CastOnTarget(target, kHitChanceHigh);
 		}
 	}
