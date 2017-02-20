@@ -13,6 +13,7 @@ IMenu* MainMenu;
 IMenu* ComboMenu;
 IMenu* HarassMenu;
 IMenu* FarmMenu;
+IMenu* JungleMenu;
 IMenu* MiscMenu;
 IMenu* Drawings;
 IMenu* ItemsMenu;
@@ -29,6 +30,8 @@ IMenuOption* HarassW;
 IMenuOption* HarassManaPercent;
 IMenuOption* FarmQ;
 IMenuOption* FarmManaPercent;
+IMenuOption* JungleQ;
+IMenuOption* JungleManaPercent;
 IMenuOption* StackTear;
 IMenuOption* StackManaPercent;
 IMenuOption* UseIgnitekillsteal;
@@ -85,9 +88,13 @@ void  Menu()
 	HarassManaPercent = HarassMenu->AddInteger("Mana Percent for harass", 10, 100, 70);
 	Drawings = MainMenu->AddMenu("Drawings");
 
-	FarmMenu = MainMenu->AddMenu("Farm/Jungle Setting");
+	FarmMenu = MainMenu->AddMenu("LaneClear Setting");
 	FarmQ = FarmMenu->CheckBox("Use Q Farm", true);
 	FarmManaPercent = FarmMenu->AddInteger("Mana Percent for Farm", 10, 100, 70);
+
+	JungleMenu = MainMenu->AddMenu("Jungle Setting");
+	JungleQ = JungleMenu->CheckBox("Use Q Jungle", true);
+	JungleManaPercent = JungleMenu->AddInteger("Mana Percent for Farm", 10, 100, 70);
 
 	MiscMenu = MainMenu->AddMenu("Misc Setting");
 	StackTear = MiscMenu->CheckBox("Stack Tear", true);
@@ -291,13 +298,19 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 				{
 					auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
 					auto dmg1 = GDamage->GetAutoAttackDamage(myHero, minions, true);
-					if (minions->GetHealth() <= dmg || minions->GetHealth() <= dmg1 || minions->GetHealth() <= dmg1 +dmg)
+					if (!myHero->GetRealAutoAttackRange(minions) || minions->GetHealth() <= dmg || minions->GetHealth() <= dmg1 || minions->GetHealth() <= dmg1 + dmg)
 						MinionDie++;
 				}
-				if (MinionDie >= 1)
-					Q->CastOnUnit(minions);
-				
+				if (MinionDie >0)
+					Q->CastOnTarget(minions, kHitChanceLow);
+				else Q->LastHitMinion();
+
 			}
+		}
+		if (myHero->ManaPercent() < JungleManaPercent->GetInteger())
+			return;
+		if (JungleQ->Enabled() && Q->IsReady())
+		{
 			for (auto jMinion : GEntityList->GetAllMinions(false, false, true))
 			{
 				if (jMinion != nullptr && !jMinion->IsDead() && myHero->IsValidTarget(jMinion, Q->Range()))
@@ -308,7 +321,6 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 		}
 	}
 }
-
 void Harass()
 {
 	if (myHero->ManaPercent() < HarassManaPercent->GetInteger())

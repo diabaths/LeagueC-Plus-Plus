@@ -14,6 +14,7 @@ IMenu* ComboMenu;
 IMenu* HarassMenu;
 IMenu* Smitemenu;
 IMenu* FarmMenu;
+IMenu* JungleMenu;
 IMenu* MiscMenu;
 IMenu* Drawings;
 IMenu* ItemsMenu;
@@ -34,6 +35,10 @@ IMenuOption* FarmQ;
 IMenuOption* FarmW;
 IMenuOption* FarmE;
 IMenuOption* FarmManaPercent;
+IMenuOption* JungleQ;
+IMenuOption* JungleW;
+IMenuOption* JungleE;
+IMenuOption* JungleManaPercent;
 IMenuOption* SemiR;
 IMenuOption* KillstealQ;
 IMenuOption* KillstealW;
@@ -91,11 +96,16 @@ void  Menu()
 	usesmitetarget = Smitemenu->CheckBox("Use Smite on target", true);
 	usesmitejungle = Smitemenu->AddInteger("Smite 0=Smite all Monsters, 1=Smite only Epic", 0, 1, 0);
 
-	FarmMenu = MainMenu->AddMenu("Farm/Jungle Setting");
+	FarmMenu = MainMenu->AddMenu("LaneClear Setting");
 	FarmQ = FarmMenu->CheckBox("Use Q Farm", true);
 	FarmW = FarmMenu->CheckBox("Use W Farm", true);
-	FarmE = FarmMenu->CheckBox("Use E(reload) Jungle only", true);
 	FarmManaPercent = FarmMenu->AddInteger("Mana Percent for Farm", 10, 100, 70);
+
+	JungleMenu = MainMenu->AddMenu("Jungle Setting");
+	JungleQ = JungleMenu->CheckBox("Use Q Jungle", true);
+	JungleW = JungleMenu->CheckBox("Use W Jungle", true);
+	JungleE = JungleMenu->CheckBox("Use E Jungle", true);
+	JungleManaPercent = JungleMenu->AddInteger("Mana Percent for Farm", 10, 100, 70);
 
 	MiscMenu = MainMenu->AddMenu("Misc Setting");
 	KillstealQ = MiscMenu->CheckBox("Use Q to killsteal", true);
@@ -364,10 +374,10 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 	}
 	if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 	{
-		if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
-			return;
 		for (auto minions : GEntityList->GetAllMinions(false, true, false))
 		{
+			if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
+				return;
 			if (FarmQ->Enabled() && Q->IsReady())
 			{
 				if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))
@@ -387,21 +397,23 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 		}
 		for (auto jMinion : GEntityList->GetAllMinions(false, false, true))
 		{
-			if (FarmQ->Enabled() && Q->IsReady())
+			if (myHero->ManaPercent() < JungleManaPercent->GetInteger())
+				return;
+			if (JungleQ->Enabled() && Q->IsReady())
 			{
 				if (jMinion != nullptr && myHero->IsValidTarget(jMinion, Q->Range()))
 				{
 					Q->CastOnUnit(jMinion);
 				}
 			}
-			if (FarmW->Enabled() && W->IsReady())
+			if (JungleW->Enabled() && W->IsReady())
 			{
 				if (jMinion != nullptr && myHero->IsValidTarget(jMinion, W->Range()))
 				{
 					W->CastOnUnit(jMinion);
 				}
 			}
-			if (FarmE->Enabled() && E->IsReady())
+			if (JungleE->Enabled() && E->IsReady())
 			{
 				if (jMinion != nullptr && myHero->IsValidTarget(jMinion, 500))
 				{
