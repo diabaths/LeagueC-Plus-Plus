@@ -1,4 +1,4 @@
-// D-Ezreal.cpp : Defines the exported functions for the DLL application.
+// D-Graves.cpp : Defines the exported functions for the DLL application.
 //
 
 //#include "stdafx.h"
@@ -12,6 +12,7 @@ PluginSetup("D-Graves");
 IMenu* MainMenu;
 IMenu* ComboMenu;
 IMenu* HarassMenu;
+IMenu* Smitemenu;
 IMenu* FarmMenu;
 IMenu* MiscMenu;
 IMenu* Drawings;
@@ -27,6 +28,8 @@ IMenuOption* RRange;
 IMenuOption* HarassQ;
 IMenuOption* HarassW;
 IMenuOption* HarassManaPercent;
+IMenuOption* usesmitetarget;
+IMenuOption* usesmitejungle;
 IMenuOption* FarmQ;
 IMenuOption* FarmW;
 IMenuOption* FarmE;
@@ -76,12 +79,17 @@ void  Menu()
 	ComboE = ComboMenu->CheckBox("Use E", true);
 	ComboR = ComboMenu->CheckBox("Use R if Is killable", true);
 	ComboRAOEuse = ComboMenu->CheckBox("Use R if hit 3 Enemys", false);
+	SemiR = ComboMenu->AddKey("Semi-Manual R", 84);
 	
 	HarassMenu = MainMenu->AddMenu("Harass Setting");
 	HarassQ = HarassMenu->CheckBox("Use Q", true);
 	HarassW = HarassMenu->CheckBox("Use W", true);
 	HarassManaPercent = HarassMenu->AddInteger("Mana Percent for harass", 10, 100, 70);
 	Drawings = MainMenu->AddMenu("Drawings");
+
+	Smitemenu = MainMenu->AddMenu("Smite Setting");
+	usesmitetarget = Smitemenu->CheckBox("Use Smite on target", true);
+	usesmitejungle = Smitemenu->AddInteger("Smite 0=Smite all Monsters, 1=Smite only Epic", 0, 1, 0);
 
 	FarmMenu = MainMenu->AddMenu("Farm/Jungle Setting");
 	FarmQ = FarmMenu->CheckBox("Use Q Farm", true);
@@ -90,7 +98,6 @@ void  Menu()
 	FarmManaPercent = FarmMenu->AddInteger("Mana Percent for Farm", 10, 100, 70);
 
 	MiscMenu = MainMenu->AddMenu("Misc Setting");
-	SemiR= MiscMenu->AddKey("Semi-Manual R", 84);
 	KillstealQ = MiscMenu->CheckBox("Use Q to killsteal", true);
 	KillstealW = MiscMenu->CheckBox("Use W to killsteal", true);
 	GapcloseW = MiscMenu->CheckBox("Use W to Gapclose", true);
@@ -134,7 +141,17 @@ void LoadSpells()
 	W->SetOverrideSpeed(1650);
 	R->SetOverrideSpeed(2100);
 
-	smite = GPluginSDK->CreateSpell(myHero->GetSpellSlot("smite"), 570);
+	
+	auto slot1 = GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot1);
+	auto slot2 = GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot2);
+	if (strcmp(slot1, "SummonerSmite") == 0)
+	{
+	smite = GPluginSDK->CreateSpell(kSummonerSlot2, 570);
+	}
+	if (strcmp(slot2, "SummonerSmite") == 0)
+	{
+	smite = GPluginSDK->CreateSpell(kSummonerSlot2, 570);
+	}
 
 	blade = GPluginSDK->CreateItemForId(3153, 550);
 	Cutlass = GPluginSDK->CreateItemForId(3144, 550);
@@ -165,6 +182,58 @@ int CountEnemiesInRange(float range)
 	return enemies;
 }
 
+void smitetarget()
+{
+	if (smite->GetSpellSlot() == kSlotUnknown) return;
+	if (!usesmitetarget->Enabled() || !smite->IsReady()) return;
+	for (auto enemy : GEntityList->GetAllHeros(false, true))
+	{
+		if (enemy != nullptr && myHero->IsValidTarget(enemy, 570))
+		{
+			auto Dmg = GDamage->GetSummonerSpellDamage(myHero, enemy, kSummonerSpellSmite);
+
+			smite->CastOnUnit(enemy);
+		}
+	}
+}
+void Smiteuse()
+{
+	if (smite->GetSpellSlot() != kSlotUnknown && smite->IsReady())
+	{
+		auto minions = GEntityList->GetAllMinions(false, false, true);
+		for (IUnit* minion : minions)
+		{
+			auto smitestage = usesmitejungle->GetInteger();
+			if (smitestage == 0)
+			{
+				if (strstr(minion->GetObjectName(), "Blue") || strstr(minion->GetObjectName(), "Gromp")
+					|| strstr(minion->GetObjectName(), "Murkwolf") || strstr(minion->GetObjectName(), "Razorbeak")
+					|| strstr(minion->GetObjectName(), "RiftHerald") || strstr(minion->GetObjectName(), "Red")
+					|| strstr(minion->GetObjectName(), "Krug") || strstr(minion->GetObjectName(), "Dragon")
+					|| strstr(minion->GetObjectName(), "Baron"))
+				{
+					auto Dmg = GDamage->GetSummonerSpellDamage(myHero, minion, kSummonerSpellSmite);
+					if (minion != nullptr && !minion->IsDead() && minion->GetHealth() <= Dmg && myHero->IsValidTarget(minion, 570))
+					{
+						smite->CastOnUnit(minion);
+					}
+				}
+			}
+			if (smitestage == 1)
+			{
+				if (strstr(minion->GetObjectName(), "RiftHerald") || strstr(minion->GetObjectName(), "Dragon")
+					|| strstr(minion->GetObjectName(), "Baron"))
+				{
+					auto Dmg = GDamage->GetSummonerSpellDamage(myHero, minion, kSummonerSpellSmite);
+					if (minion != nullptr && !minion->IsDead() && minion->GetHealth() <= Dmg && myHero->IsValidTarget(minion, 570))
+					{
+						smite->CastOnUnit(minion);
+					}
+				}
+			}
+		}
+	}
+}
 
 void UseItems()
 {
@@ -196,17 +265,21 @@ void UseItems()
 
 void Combo()
 {
+	smitetarget();
 	if (ComboR->Enabled() && R->IsReady())
 	{
 		for (auto Enemy : GEntityList->GetAllHeros(false, true))
 		{
 			if (Enemy != nullptr && !Enemy->IsDead())
 			{
-				auto dmg = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotR);
+				auto Rlvl = GEntityList->Player()->GetSpellLevel(kSlotR) - 1;
+				auto BaseDamage = std::vector<double>({ 250, 400, 550 }).at(Rlvl);
+				auto ADMultiplier = 1.25 * GEntityList->Player()->BonusDamage();
+				auto TotalD = BaseDamage + ADMultiplier;
 				if (myHero->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable()
-					&& !myHero->IsValidTarget(Enemy, Q->Range()))
+					&& GetDistance(myHero, Enemy) >= 800)
 				{
-					if (Enemy->GetHealth() <= dmg && R->IsReady())
+					if (Enemy->GetHealth() <= TotalD && R->IsReady())
 					{
 						R->CastOnTarget(Enemy, kHitChanceHigh);
 					}
@@ -227,12 +300,12 @@ void Combo()
 
 PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 {
-	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo || (GOrbwalking->GetOrbwalkingMode() == kModeMixed && myHero->ManaPercent() > HarassManaPercent->GetInteger()))
+	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo )
 	{
 		if (source == myHero || target != nullptr)
 		{
-			auto useQ = ComboQ->GetInteger() || HarassQ->GetInteger();
-			auto useW = ComboW->GetInteger() || HarassW->GetInteger();
+			auto useQ = ComboQ->Enabled();
+			auto useW = ComboW->Enabled();
 			if (useQ)
 			{
 				if (Q->IsReady())
@@ -253,7 +326,33 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 			}
 		}		
 	}
-	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && ComboE)
+	if (GOrbwalking->GetOrbwalkingMode() == kModeMixed && myHero->ManaPercent() > HarassManaPercent->GetInteger())
+	{
+		if (source == myHero || target != nullptr)
+		{
+			auto useQ = HarassQ->Enabled();
+			auto useW = HarassW->Enabled();
+			if (useQ)
+			{
+				if (Q->IsReady())
+				{
+					auto t = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+					if (t != nullptr &&  myHero->IsValidTarget(t, Q->Range()))
+						Q->CastOnTarget(t, kHitChanceHigh);
+				}
+			}
+			if (useW)
+			{
+				if (W->IsReady())
+				{
+					auto t = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
+					if (t != nullptr &&  myHero->IsValidTarget(t, W->Range()))
+						W->CastOnTarget(t, kHitChanceHigh);
+				}
+			}
+		}
+	}
+	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && ComboE->Enabled())
 	{
 		if (source == myHero || target != nullptr)
 		if (!myHero->GetBuffDataByName("GravesBasicAttackAmmo2") && E->IsReady())
@@ -273,7 +372,7 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 			{
 				if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))
 				{
-					Q->CastOnTargetAoE(minions, 3, kHitChanceLow);
+					Q->CastOnUnit(minions);
 				}
 				else Q->LastHitMinion();
 			}
@@ -281,7 +380,7 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 			{
 				if (minions != nullptr && myHero->IsValidTarget(minions, W->Range()))
 				{
-					W->CastOnTargetAoE(minions, 3, kHitChanceLow);
+					W->CastOnUnit(minions);
 				}
 				else W->LastHitMinion();
 			}
@@ -469,6 +568,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	killsteal();
 	UseItems();
 	Usepotion();
+	Smiteuse();
 }
 
 PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
@@ -500,6 +600,6 @@ PLUGIN_API void OnUnload()
 
 	GEventManager->RemoveEventHandler(kEventOnGameUpdate, OnGameUpdate);
 	GEventManager->RemoveEventHandler(kEventOnRender, OnRender);
-	GEventManager->RemoveEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);
+	GEventManager->RemoveEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);	
 	GEventManager->RemoveEventHandler(kEventOnGapCloser, OnGapcloser);
 }

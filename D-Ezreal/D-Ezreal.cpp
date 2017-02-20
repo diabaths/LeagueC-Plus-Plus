@@ -71,7 +71,7 @@ void  Menu()
 	MainMenu = GPluginSDK->AddMenu("D-Ezreal");
 
 	ComboMenu = MainMenu->AddMenu("Combo Settings");
-	UseIgnitecombo = ComboMenu->CheckBox("Use Ignite", true);
+	//UseIgnitecombo = ComboMenu->CheckBox("Use Ignite", true);
 	ComboQ = ComboMenu->CheckBox("Use Q", true);
 	ComboW = ComboMenu->CheckBox("Use W", true);
 	ComboR = ComboMenu->CheckBox("Use R if Is killable", true);
@@ -92,7 +92,7 @@ void  Menu()
 	MiscMenu = MainMenu->AddMenu("Misc Setting");
 	StackTear = MiscMenu->CheckBox("Stack Tear", true);
 	StackManaPercent = MiscMenu->AddInteger("Mana Percent To Stuck", 10, 100, 95);
-	UseIgnitekillsteal = MiscMenu->CheckBox("Use Ignite to killsteal", false);
+	//UseIgnitekillsteal = MiscMenu->CheckBox("Use Ignite to killsteal", false);
 	KillstealQ = MiscMenu->CheckBox("Use Q to killsteal", true);
 	KillstealW = MiscMenu->CheckBox("Use W to killsteal", true);
 	ImmobileQ = MiscMenu->CheckBox("Use Q in Immobile", true);
@@ -134,7 +134,7 @@ void LoadSpells()
 	W->SetOverrideSpeed(1600);
 	R->SetOverrideSpeed(2000);
 
-	Ignite = GPluginSDK->CreateSpell(GEntityList->Player()->GetSpellSlot("summonerdot"), 600);
+	
 	Tear = GPluginSDK->CreateItemForId(3070, 0);
 	Manamune = GPluginSDK->CreateItemForId(3004, 0);
 	blade = GPluginSDK->CreateItemForId(3153, 550);
@@ -144,6 +144,31 @@ void LoadSpells()
 	RefillPot = GPluginSDK->CreateItemForId(2031, 0);
 	Biscuit = GPluginSDK->CreateItemForId(2010, 0);
 	hunter = GPluginSDK->CreateItemForId(2032, 0);
+}
+
+static bool InFountain(IUnit *unit)
+{
+	//TODO: Implement
+	return unit->HasBuff("kappachino");
+}
+
+int EnemiesInRange(IUnit* Source, float range)
+{
+	auto Targets = GEntityList->GetAllHeros(false, true);
+	auto enemiesInRange = 0;
+
+	for (auto target : Targets)
+	{
+		if (target != nullptr)
+		{
+			auto flDistance = (target->GetPosition() - Source->GetPosition()).Length();
+			if (flDistance < range)
+			{
+				enemiesInRange++;
+			}
+		}
+	}
+	return enemiesInRange;
 }
 
 float GetDistance(IUnit* Player, IUnit* target)
@@ -197,16 +222,7 @@ void UseItems()
 }
 	
 void Combo()
-{
-	if (UseIgnitecombo->Enabled() && Ignite->GetSpellSlot() != kSlotUnknown)
-	{
-		for (auto target : GEntityList->GetAllHeros(false, true))
-			if (target != nullptr &&   myHero->IsValidTarget(target, 600))
-				if (target->GetHealth() <= 0.3*target->GetMaxHealth())
-				{
-					Ignite->CastOnUnit(target);
-				}
-	}
+{	
 	if (ComboQ->Enabled())
 	{
 		if (Q->IsReady())
@@ -376,22 +392,8 @@ void killsteal()
 					}
 				}
 			}
-			if (UseIgnitekillsteal->Enabled() && Ignite->GetSpellSlot() != kSlotUnknown && Enemy->IsVisible())
-			{
-				auto dmg = GDamage->GetSpellDamage(myHero, Enemy, kSummonerSpellIgnite);
-				if (Enemy->GetHealth() <= dmg && myHero->IsValidTarget(Enemy, Ignite->GetSpellRange()))
-				{
-					Ignite->CastOnUnit(Enemy);
-				}
-			}
 		}
 	}
-}
-
-static bool InFountain(IUnit *unit)
-{
-	//TODO: Implement
-	return unit->HasBuff("kappachino");
 }
 
 void Usepotion()
