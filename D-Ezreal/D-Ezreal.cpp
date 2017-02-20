@@ -295,7 +295,7 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 						MinionDie++;
 				}
 				if (MinionDie >= 1)
-					Q->CastOnTarget(minions, kHitChanceLow);
+					Q->CastOnUnit(minions);
 				
 			}
 			for (auto jMinion : GEntityList->GetAllMinions(false, false, true))
