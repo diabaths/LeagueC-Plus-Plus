@@ -29,8 +29,8 @@ IMenuOption* RRange;
 IMenuOption* HarassQ;
 IMenuOption* HarassW;
 IMenuOption* HarassManaPercent;
-IMenuOption* usesmitetarget;
-IMenuOption* usesmitejungle;
+//IMenuOption* usesmitetarget;
+//IMenuOption* usesmitejungle;
 IMenuOption* FarmQ;
 IMenuOption* FarmW;
 IMenuOption* FarmE;
@@ -92,9 +92,9 @@ void  Menu()
 	HarassManaPercent = HarassMenu->AddInteger("Mana Percent for harass", 10, 100, 70);
 	Drawings = MainMenu->AddMenu("Drawings");
 
-	Smitemenu = MainMenu->AddMenu("Smite Setting");
+	/*Smitemenu = MainMenu->AddMenu("Smite Setting");
 	usesmitetarget = Smitemenu->CheckBox("Use Smite on target", true);
-	usesmitejungle = Smitemenu->AddInteger("Smite 0=Smite all Monsters, 1=Smite only Epic", 0, 1, 0);
+	usesmitejungle = Smitemenu->AddInteger("Smite 0=Smite all Monsters, 1=Smite only Epic", 0, 1, 0);*/
 
 	FarmMenu = MainMenu->AddMenu("LaneClear Setting");
 	FarmQ = FarmMenu->CheckBox("Use Q Farm", true);
@@ -192,7 +192,7 @@ int CountEnemiesInRange(float range)
 	return enemies;
 }
 
-void smitetarget()
+/*void smitetarget()
 {
 	if (smite->GetSpellSlot() == kSlotUnknown) return;
 	if (!usesmitetarget->Enabled() || !smite->IsReady()) return;
@@ -243,7 +243,7 @@ void Smiteuse()
 			}
 		}
 	}
-}
+}*/
 
 void UseItems()
 {
@@ -275,7 +275,7 @@ void UseItems()
 
 void Combo()
 {
-	smitetarget();
+	//smitetarget();
 	if (ComboR->Enabled() && R->IsReady())
 	{
 		for (auto Enemy : GEntityList->GetAllHeros(false, true))
@@ -580,7 +580,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	killsteal();
 	UseItems();
 	Usepotion();
-	Smiteuse();
+	//Smiteuse();
 }
 
 PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
