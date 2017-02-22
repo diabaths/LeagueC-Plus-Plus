@@ -154,14 +154,14 @@ void LoadSpells()
 	
 	auto slot1 = GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot1);
 	auto slot2 = GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot2);
-	if (strcmp(slot1, "SummonerSmite") == 0)
+	/*if (strcmp(slot1, "SummonerSmite") == 0)
 	{
 	smite = GPluginSDK->CreateSpell(kSummonerSlot2, 570);
 	}
 	if (strcmp(slot2, "SummonerSmite") == 0)
 	{
 	smite = GPluginSDK->CreateSpell(kSummonerSlot2, 570);
-	}
+	}*/
 
 	blade = GPluginSDK->CreateItemForId(3153, 550);
 	Cutlass = GPluginSDK->CreateItemForId(3144, 550);

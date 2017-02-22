@@ -286,9 +286,7 @@ void Combo()
 PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 {
 	if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
-	{
-		if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
-			return;
+	{		
 		if (FarmQ->Enabled() && Q->IsReady())
 		{
 			int MinionDie = 0;
@@ -301,20 +299,21 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 					if (!myHero->GetRealAutoAttackRange(minions) || minions->GetHealth() <= dmg || minions->GetHealth() <= dmg1 || minions->GetHealth() <= dmg1 + dmg)
 						MinionDie++;
 				}
+				if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
+					return;
 				if (MinionDie >0)
-					Q->CastOnTarget(minions, kHitChanceLow);
-				else Q->LastHitMinion();
+					Q->CastOnTarget(minions, kHitChanceLow) || Q->LastHitMinion();
 
 			}
-		}
-		if (myHero->ManaPercent() < JungleManaPercent->GetInteger())
-			return;
+		}		
 		if (JungleQ->Enabled() && Q->IsReady())
-		{
+		{			
 			for (auto jMinion : GEntityList->GetAllMinions(false, false, true))
 			{
 				if (jMinion != nullptr && !jMinion->IsDead() && myHero->IsValidTarget(jMinion, Q->Range()))
 				{
+					if (myHero->ManaPercent() < JungleManaPercent->GetInteger())
+						return;
 					Q->CastOnUnit(jMinion);
 				}
 			}
