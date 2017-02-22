@@ -446,7 +446,7 @@ void UseItems()
 }
 void Heal()
 {
-	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo || !myHero->IsRecalling())
 		return;
 	if (E->IsReady())
 	{
@@ -493,7 +493,7 @@ void Combo()
 			if (Q->IsReady())
 			{
 				auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
-				if (target != nullptr &&  myHero->IsValidTarget(target, Q->Range()))
+				if (target != nullptr &&  target->IsValidTarget())
 					Q->CastOnTarget(target, kHitChanceMedium);
 			}
 		}
@@ -509,7 +509,7 @@ void Combo()
 		if (ComboR->Enabled() && R->IsReady())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, W->Range());
-			if (target != nullptr &&  myHero->IsValidTarget(target, W->Range()))
+			if (target != nullptr &&  target->IsValidTarget(target, W->Range()))
 			{
 				if (GetDistance(myHero, target) <= 325 || target->HasBuff("nidaleepassivehunted"))
 				{
@@ -580,13 +580,9 @@ void Harass()
 		if (Q->IsReady())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-			if (target->IsValidTarget(myHero, Q->Range()))
+			if (target != nullptr && target->IsValidTarget(myHero, Q->Range()))
 				Q->CastOnTarget(target, kHitChanceHigh);
 		}
-	}
-	if (!IsHuman() && R->IsReady() && Q->IsReady())
-	{
-		R->CastOnPlayer();
 	}
 }
 

@@ -302,7 +302,7 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 				if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
 					return;
 				if (MinionDie >0)
-					Q->CastOnTarget(minions, kHitChanceLow) || Q->LastHitMinion();
+					Q->CastOnUnit(minions)|| Q->LastHitMinion();
 
 			}
 		}		
