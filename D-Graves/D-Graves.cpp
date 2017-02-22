@@ -286,10 +286,9 @@ void Combo()
 				auto BaseDamage = std::vector<double>({ 250, 400, 550 }).at(Rlvl);
 				auto ADMultiplier = 1.25 * GEntityList->Player()->BonusDamage();
 				auto TotalD = BaseDamage + ADMultiplier;
-				if (myHero->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable()
-					&& GetDistance(myHero, Enemy) >= 800)
+				if (myHero->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable())
 				{
-					if (Enemy->GetHealth() <= TotalD && R->IsReady())
+					if (Enemy->GetHealth() <= TotalD+50 && R->IsReady())
 					{
 						R->CastOnTarget(Enemy, kHitChanceHigh);
 					}
