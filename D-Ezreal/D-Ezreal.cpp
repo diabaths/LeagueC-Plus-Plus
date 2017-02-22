@@ -301,9 +301,13 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 				}
 				if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
 					return;
-				if (MinionDie >0)
+				if (MinionDie >1)
 					Q->CastOnUnit(minions)|| Q->LastHitMinion();
-
+				auto dmg1 = GDamage->GetAutoAttackDamage(myHero, minions, true);
+				if (!myHero->GetRealAutoAttackRange(minions) && minions->GetHealth()<dmg1)
+				{
+					Q->LastHitMinion();
+				}
 			}
 		}		
 		if (JungleQ->Enabled() && Q->IsReady())
