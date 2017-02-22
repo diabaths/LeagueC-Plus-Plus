@@ -18,6 +18,7 @@ IMenu* MiscMenu;
 IMenu* Drawings;
 IMenu* ItemsMenu;
 IMenu* PotionMenu;
+IMenuOption* SemiR;
 IMenuOption* UseIgnitecombo;
 IMenuOption* ComboQ;
 IMenuOption* ComboW;
@@ -78,7 +79,7 @@ void  Menu()
 	ComboQ = ComboMenu->CheckBox("Use Q", true);
 	ComboW = ComboMenu->CheckBox("Use W", true);
 	ComboR = ComboMenu->CheckBox("Use R if Is killable", true);
-	ComboRAOEuse = ComboMenu->CheckBox("Use R if hit 3 Enemys", false);
+	//ComboRAOEuse = ComboMenu->CheckBox("Use R if hit 3 Enemys", false);
 	//ComboRAOE = ComboMenu->AddInteger("Use R if hit X Enemys", 1, 5, 3);
 
 
@@ -97,6 +98,7 @@ void  Menu()
 	JungleManaPercent = JungleMenu->AddInteger("Mana Percent for Farm", 10, 100, 70);
 
 	MiscMenu = MainMenu->AddMenu("Misc Setting");
+	//SemiR = MiscMenu->AddKey("Semi-Manual R", 84);
 	StackTear = MiscMenu->CheckBox("Stack Tear", true);
 	StackManaPercent = MiscMenu->AddInteger("Mana Percent To Stuck", 10, 100, 95);
 	//UseIgnitekillsteal = MiscMenu->CheckBox("Use Ignite to killsteal", false);
@@ -257,7 +259,7 @@ void Combo()
 			{
 				auto dmg = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotR);
 				if (myHero->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable()
-					&& !Enemy->IsValidTarget(myHero, Q->Range()))
+					&& !myHero->IsValidTarget(Enemy, Q->Range()))
 				{
 					if (Enemy->GetHealth() <= dmg && R->IsReady())
 					{
@@ -292,7 +294,7 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 			int MinionDie = 0;
 			for (auto minions : GEntityList->GetAllMinions(false, true, false))
 			{
-				if (minions != nullptr && minions->IsValidTarget(minions, Q->Range()))
+				if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))
 				{
 					auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
 					auto dmg1 = GDamage->GetAutoAttackDamage(myHero, minions, true);
@@ -490,6 +492,14 @@ PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
 
 PLUGIN_EVENT(void) OnGameUpdate()
 {
+	if (GetAsyncKeyState(SemiR->GetInteger()) && R->IsReady())
+	{
+		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, R->Range());
+		if (target != nullptr && myHero->IsValidTarget(target, R->Range()))
+		{
+			R->CastOnTargetAoE(target, 3, kHitChanceHigh);
+		}
+	}
 	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 	{
 		Combo();
