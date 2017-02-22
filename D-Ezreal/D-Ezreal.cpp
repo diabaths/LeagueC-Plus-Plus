@@ -270,7 +270,7 @@ void Combo()
 		}
 	}
 
-	if (R->IsReady() && ComboRAOEuse->Enabled())
+	/*if (R->IsReady() && ComboRAOEuse->Enabled())
 	{
 		for (auto Enemy : GEntityList->GetAllHeros(false, true))
 		{
@@ -283,7 +283,7 @@ void Combo()
 				}
 			}
 		}
-	}
+	}*/
 }
 PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 {
@@ -492,14 +492,14 @@ PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
 
 PLUGIN_EVENT(void) OnGameUpdate()
 {
-	if (GetAsyncKeyState(SemiR->GetInteger()) && R->IsReady())
+	/*if (GetAsyncKeyState(SemiR->GetInteger()) && R->IsReady())
 	{
 		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, R->Range());
 		if (target != nullptr && myHero->IsValidTarget(target, R->Range()))
 		{
 			R->CastOnTargetAoE(target, 3, kHitChanceHigh);
 		}
-	}
+	}*/
 	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 	{
 		Combo();
