@@ -29,8 +29,8 @@ IMenuOption* RRange;
 IMenuOption* HarassQ;
 IMenuOption* HarassW;
 IMenuOption* HarassManaPercent;
-//IMenuOption* usesmitetarget;
-//IMenuOption* usesmitejungle;
+IMenuOption* usesmitetarget;
+IMenuOption* usesmitejungle;
 IMenuOption* FarmQ;
 IMenuOption* FarmW;
 IMenuOption* FarmE;
@@ -92,9 +92,9 @@ void  Menu()
 	HarassManaPercent = HarassMenu->AddInteger("Mana Percent for harass", 10, 100, 70);
 	Drawings = MainMenu->AddMenu("Drawings");
 
-	/*Smitemenu = MainMenu->AddMenu("Smite Setting");
+	Smitemenu = MainMenu->AddMenu("Smite Setting");
 	usesmitetarget = Smitemenu->CheckBox("Use Smite on target", true);
-	usesmitejungle = Smitemenu->AddInteger("Smite 0=Smite all Monsters, 1=Smite only Epic", 0, 1, 0);*/
+	usesmitejungle = Smitemenu->AddInteger("Smite 0=Smite all Monsters, 1=Smite only Epic", 0, 1, 0);
 
 	FarmMenu = MainMenu->AddMenu("LaneClear Setting");
 	FarmQ = FarmMenu->CheckBox("Use Q Farm", true);
@@ -154,14 +154,14 @@ void LoadSpells()
 	
 	auto slot1 = GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot1);
 	auto slot2 = GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot2);
-	/*if (strcmp(slot1, "SummonerSmite") == 0)
+	if (strcmp(slot1, "SummonerSmite") == 0)
 	{
-	smite = GPluginSDK->CreateSpell(kSummonerSlot2, 570);
+		smite = GPluginSDK->CreateSpell(kSummonerSlot1, 570);
 	}
 	if (strcmp(slot2, "SummonerSmite") == 0)
 	{
-	smite = GPluginSDK->CreateSpell(kSummonerSlot2, 570);
-	}*/
+		smite = GPluginSDK->CreateSpell(kSummonerSlot2, 570);
+	}
 
 	blade = GPluginSDK->CreateItemForId(3153, 550);
 	Cutlass = GPluginSDK->CreateItemForId(3144, 550);
@@ -192,9 +192,9 @@ int CountEnemiesInRange(float range)
 	return enemies;
 }
 
-/*void smitetarget()
+void smitetarget()
 {
-	if (smite->GetSpellSlot() == kSlotUnknown) return;
+	if (smite == nullptr) return;
 	if (!usesmitetarget->Enabled() || !smite->IsReady()) return;
 	for (auto enemy : GEntityList->GetAllHeros(false, true))
 	{
@@ -208,7 +208,7 @@ int CountEnemiesInRange(float range)
 }
 void Smiteuse()
 {
-	if (smite->GetSpellSlot() != kSlotUnknown && smite->IsReady())
+	if (smite !=nullptr && smite->IsReady())
 	{
 		auto minions = GEntityList->GetAllMinions(false, false, true);
 		for (IUnit* minion : minions)
@@ -243,7 +243,7 @@ void Smiteuse()
 			}
 		}
 	}
-}*/
+}
 
 void UseItems()
 {
@@ -275,7 +275,7 @@ void UseItems()
 
 void Combo()
 {
-	//smitetarget();
+	smitetarget();
 	if (ComboR->Enabled() && R->IsReady())
 	{
 		for (auto Enemy : GEntityList->GetAllHeros(false, true))
@@ -579,7 +579,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	killsteal();
 	UseItems();
 	Usepotion();
-	//Smiteuse();
+	Smiteuse();
 }
 
 PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)

@@ -20,6 +20,7 @@ IMenu* MiscMenu;
 IMenu* Drawings;
 IMenu* ItemsMenu;
 IMenu* PotionMenu;
+IMenuOption* useIgnite;
 IMenuOption* ComboQ;
 IMenuOption* ComboW;
 IMenuOption* ComboE;
@@ -73,8 +74,9 @@ IMenuOption* usepotionhpper;
 IMenuOption* DrawReady;
 IMenuOption* DrawQ;
 IMenuOption* DrawW;
-IMenuOption* DrawE;
-IMenuOption* DrawR;
+IMenuOption* DrawQCougar;
+IMenuOption* DrawWCougar;
+IMenuOption* DrawECougar;
 
 IUnit* myHero;
 
@@ -103,6 +105,7 @@ void  Menu()
 	MainMenu = GPluginSDK->AddMenu("D-NIdalee++");
 
 	ComboMenu = MainMenu->AddMenu("Combo Settings");
+	useIgnite = ComboMenu->CheckBox("Use Ignite", true);
 	ComboQ = ComboMenu->CheckBox("Use Q", true);
 	ComboW = ComboMenu->CheckBox("Use W", true);
 	ComboE = ComboMenu->CheckBox("Use E", true);
@@ -138,11 +141,10 @@ void  Menu()
 	JungleAutoswitch = JungleMenu->CheckBox("Auto Switch Form", true);
 	JungleManaPercent = JungleMenu->AddInteger("if Mana % >", 10, 100, 70);
 
-	//SmiteMenu = MainMenu->AddMenu("Smite Setting");
-	//usesmitetarget = SmiteMenu->CheckBox("Use Smite on target", true);
-	//usesmitejungle = SmiteMenu->AddInteger("Smite 0=Smite all Monsters, 1=Smite only Epic", 0, 1, 0);
-	;
-
+	SmiteMenu = MainMenu->AddMenu("Smite Setting");
+	usesmitetarget = SmiteMenu->CheckBox("Use Smite on target", true);
+	usesmitejungle = SmiteMenu->AddInteger("Smite 0=Smite all Monsters, 1=Smite only Epic", 0, 1, 0);
+	
 	HealMenu = MainMenu->AddMenu("Heal Setting");
 	HealE = HealMenu->CheckBox("Use E to heal", true);
 	HealmanaPercent = HealMenu->AddInteger("Heal me if Mana % >", 10, 100, 40);
@@ -169,9 +171,11 @@ void  Menu()
 	usepotionhpper = PotionMenu->AddInteger("Use potions if HP <", 10, 100, 35);
 
 	DrawReady = Drawings->CheckBox("Draw Only Ready Spells", true);
-	DrawQ = Drawings->CheckBox("Draw Q", true);
-	DrawW = Drawings->CheckBox("Draw W", false);
-	DrawR = Drawings->CheckBox("Draw R", true);
+	DrawQ = Drawings->CheckBox("Draw Q Human", true);
+	DrawW = Drawings->CheckBox("Draw W Human", false);
+	DrawQCougar = Drawings->CheckBox("Draw Q Cougar", false);
+	DrawWCougar = Drawings->CheckBox("Draw W Cougar", false);
+	DrawECougar = Drawings->CheckBox("Draw E Cougar", true);
 }
 void LoadSpells()
 {
@@ -180,6 +184,7 @@ void LoadSpells()
 
 	W = GPluginSDK->CreateSpell2(kSlotW, kCircleCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
 	W->SetOverrideRange(875);
+	W->SetOverrideRadius(50);
 
 	E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, false, static_cast<eCollisionFlags> (kCollidesWithNothing));
 	E->SetOverrideRange(600);
@@ -199,13 +204,20 @@ void LoadSpells()
 	auto slot2 = GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot2);
 	if (strcmp(slot1, "SummonerSmite") == 0)
 	{
-		smite = GPluginSDK->CreateSpell(kSummonerSlot2, 570);
+		smite = GPluginSDK->CreateSpell(kSummonerSlot1, 570);
 	}
 	if (strcmp(slot2, "SummonerSmite") == 0)
 	{
 		smite = GPluginSDK->CreateSpell(kSummonerSlot2, 570);
 	}
-	//Ignite = GPluginSDK->CreateSpell(myHero->GetSpellSlot("summonerdot"), 600);
+	if (strcmp(slot1, "SummonerDot") == 0)
+	{
+		Ignite = GPluginSDK->CreateSpell(kSummonerSlot1, 600);
+	}
+	if (strcmp(slot2, "SummonerDot") == 0)
+	{
+		Ignite = GPluginSDK->CreateSpell(kSummonerSlot2, 600);
+	}
 	
 	blade = GPluginSDK->CreateItemForId(3153, 550);
 	Cutlass = GPluginSDK->CreateItemForId(3144, 550);
@@ -216,9 +228,7 @@ void LoadSpells()
 	RefillPot = GPluginSDK->CreateItemForId(2031, 0);
 	Biscuit = GPluginSDK->CreateItemForId(2010, 0);
 	hunter = GPluginSDK->CreateItemForId(2032, 0);
-}
-
-
+} 
 
 void GetBuffName()
 {
@@ -251,9 +261,9 @@ int CountEnemiesInRange(float range)
 	}
 	return enemies;
 }
-/*void smitetarget()
+void smitetarget()
 {
-	if (smite->GetSpellSlot() == kSlotUnknown) return;
+	if (smite == nullptr) return;
 	if (!usesmitetarget->Enabled() || !smite->IsReady()) return;
 	for (auto enemy : GEntityList->GetAllHeros(false, true))
 	{
@@ -267,42 +277,41 @@ int CountEnemiesInRange(float range)
 }
 void Smiteuse()
 {
-	if (smite->GetSpellSlot() != kSlotUnknown && smite->IsReady())
+	if (smite == nullptr || !smite->IsReady()) return;
+	auto minions = GEntityList->GetAllMinions(false, false, true);
+	for (IUnit* minion : minions)
 	{
-		auto minions = GEntityList->GetAllMinions(false, false, true);
-		for (IUnit* minion : minions)
+		auto smitestage = usesmitejungle->GetInteger();
+		if (smitestage == 0)
 		{
-			auto smitestage = usesmitejungle->GetInteger();
-			if (smitestage == 0)
+			if (strstr(minion->GetObjectName(), "Blue") || strstr(minion->GetObjectName(), "Gromp")
+				|| strstr(minion->GetObjectName(), "Murkwolf") || strstr(minion->GetObjectName(), "Razorbeak")
+				|| strstr(minion->GetObjectName(), "RiftHerald") || strstr(minion->GetObjectName(), "Red")
+				|| strstr(minion->GetObjectName(), "Krug") || strstr(minion->GetObjectName(), "Dragon")
+				|| strstr(minion->GetObjectName(), "Baron"))
 			{
-				if (strstr(minion->GetObjectName(), "Blue") || strstr(minion->GetObjectName(), "Gromp")
-					|| strstr(minion->GetObjectName(), "Murkwolf") || strstr(minion->GetObjectName(), "Razorbeak")
-					|| strstr(minion->GetObjectName(), "RiftHerald") || strstr(minion->GetObjectName(), "Red")
-					|| strstr(minion->GetObjectName(), "Krug") || strstr(minion->GetObjectName(), "Dragon")
-					|| strstr(minion->GetObjectName(), "Baron"))
+				auto Dmg = GDamage->GetSummonerSpellDamage(myHero, minion, kSummonerSpellSmite);
+				if (minion != nullptr && !minion->IsDead() && minion->GetHealth() <= Dmg && myHero->IsValidTarget(minion, 570))
 				{
-					auto Dmg = GDamage->GetSummonerSpellDamage(myHero, minion, kSummonerSpellSmite);
-					if (minion != nullptr && !minion->IsDead() && minion->GetHealth() <= Dmg && myHero->IsValidTarget(minion, 570))
-					{
-						smite->CastOnUnit(minion);
-					}
+					smite->CastOnUnit(minion);
 				}
 			}
-			if (smitestage == 1)
+		}
+		if (smitestage == 1)
+		{
+			if (strstr(minion->GetObjectName(), "RiftHerald") || strstr(minion->GetObjectName(), "Dragon")
+				|| strstr(minion->GetObjectName(), "Baron"))
 			{
-				if (strstr(minion->GetObjectName(), "RiftHerald") || strstr(minion->GetObjectName(), "Dragon")
-					|| strstr(minion->GetObjectName(), "Baron"))
+				auto Dmg = GDamage->GetSummonerSpellDamage(myHero, minion, kSummonerSpellSmite);
+				if (minion != nullptr && !minion->IsDead() && minion->GetHealth() <= Dmg && myHero->IsValidTarget(minion, 570))
 				{
-					auto Dmg = GDamage->GetSummonerSpellDamage(myHero, minion, kSummonerSpellSmite);
-					if (minion != nullptr && !minion->IsDead() && minion->GetHealth() <= Dmg && myHero->IsValidTarget(minion, 570))
-					{
-						smite->CastOnUnit(minion);
-					}
+					smite->CastOnUnit(minion);
 				}
 			}
 		}
 	}
-}*/
+}
+
 	
 void Laneclear()
 {
@@ -484,8 +493,15 @@ void Heal()
 }
 void Combo()
 {
-	//smitetarget();
-	
+	smitetarget();
+	if (useIgnite->Enabled() && Ignite !=nullptr && Ignite->IsReady())
+	{
+		auto Enemy = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
+		if (Enemy->HealthPercent() <= 30 && Enemy->IsValidTarget(myHero, Ignite->GetSpellRange()) && Enemy->IsValidTarget())
+		{
+			Ignite->CastOnUnit(Enemy);
+		}
+	}
 	if (IsHuman())
 	{
 		if (ComboQ->Enabled())
@@ -519,7 +535,7 @@ void Combo()
 		}
 	}
 
-	
+
 	if (!IsHuman())
 	{
 		if (ComboWCougar->Enabled())
@@ -565,7 +581,7 @@ void Combo()
 			}
 		}
 	}
-	if(ComboE->Enabled() && IsHuman() && myHero->HealthPercent() < 20 && E->IsReady())
+	if (ComboE->Enabled() && IsHuman() && myHero->HealthPercent() < 20 && E->IsReady())
 	{
 		E->CastOnPlayer();
 	}
@@ -662,13 +678,13 @@ PLUGIN_EVENT(void) OnRender()
 
 			if (W->IsReady() && DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W->Range()); }
 		}
-		if (!IsHuman())
+		else if (!IsHuman())
 		{
-			if (QC->IsReady() && DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), QC->Range()); }
+			if (QC->IsReady() && DrawQCougar->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), QC->Range()); }
 
-			if (WC->IsReady() && DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), WC->Range()); }
+			if (WC->IsReady() && DrawWCougar->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), WC->Range()); }
 
-			if (EC->IsReady() && DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), EC->Range()); }
+			if (EC->IsReady() && DrawECougar->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), EC->Range()); }
 		}
 	}
 	else
@@ -679,13 +695,13 @@ PLUGIN_EVENT(void) OnRender()
 
 			if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W->Range()); }
 		}
-		if (!IsHuman())
+		else if (!IsHuman())
 		{
-			if (DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), QC->Range()); }
+			if (DrawQCougar->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), QC->Range()); }
 
-			if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), WC->Range()); }
+			if (DrawWCougar->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), WC->Range()); }
 
-			if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), EC->Range()); }
+			if (DrawECougar->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), EC->Range()); }
 		}
 	}
 }
@@ -716,7 +732,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	UseItems();
 	Usepotion();
 	Heal();
-	//Smiteuse();
+	Smiteuse();
 	
 }
 
@@ -728,7 +744,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	myHero = GEntityList->Player();
 
 	GEventManager->AddEventHandler(kEventOnGameUpdate, OnGameUpdate);
-	//GEventManager->AddEventHandler(kEventOnRender, OnRender);
+	GEventManager->AddEventHandler(kEventOnRender, OnRender);
 		
 	if (strcmp(GEntityList->Player()->ChampionName(), "Nidalee") == 0)
 	{
@@ -746,5 +762,5 @@ PLUGIN_API void OnUnload()
 	MainMenu->Remove();
 
 	GEventManager->RemoveEventHandler(kEventOnGameUpdate, OnGameUpdate);
-	//GEventManager->RemoveEventHandler(kEventOnRender, OnRender);
+	GEventManager->RemoveEventHandler(kEventOnRender, OnRender);
 }

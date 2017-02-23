@@ -79,7 +79,7 @@ void  Menu()
 	ComboQ = ComboMenu->CheckBox("Use Q", true);
 	ComboW = ComboMenu->CheckBox("Use W", true);
 	ComboR = ComboMenu->CheckBox("Use R if Is killable", true);
-	//ComboRAOEuse = ComboMenu->CheckBox("Use R if hit 3 Enemys", false);
+	ComboRAOEuse = ComboMenu->CheckBox("Use R if hit 3 Enemys", false);
 	//ComboRAOE = ComboMenu->AddInteger("Use R if hit X Enemys", 1, 5, 3);
 
 
@@ -123,7 +123,7 @@ void  Menu()
 }
 void LoadSpells()
 {
-	Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, false, static_cast<eCollisionFlags>(kCollidesWithHeroes | kCollidesWithMinions | kCollidesWithYasuoWall));
+	Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, false, static_cast<eCollisionFlags>(kCollidesWithMinions | kCollidesWithYasuoWall));
 	W = GPluginSDK->CreateSpell2(kSlotW, kLineCast, true, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
 	R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, true, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
 	E = GPluginSDK->CreateSpell2(kSlotE, kCircleCast, false, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall | kCollidesWithMinions));
@@ -270,20 +270,19 @@ void Combo()
 		}
 	}
 
-	/*if (R->IsReady() && ComboRAOEuse->Enabled())
+	if (R->IsReady() && ComboRAOEuse->Enabled())
 	{
 		for (auto Enemy : GEntityList->GetAllHeros(false, true))
 		{
 			if (Enemy != nullptr && !Enemy->IsDead())
 			{
-				//auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, R->Range());
 				if (Enemy != nullptr &&  myHero->IsValidTarget(Enemy, R->Range()))
 				{
 					R->CastOnTargetAoE(Enemy, 3, kHitChanceLow);
 				}
 			}
 		}
-	}*/
+	}
 }
 PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 {
@@ -308,7 +307,7 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 				auto dmg1 = GDamage->GetAutoAttackDamage(myHero, minions, true);
 				if (!myHero->GetRealAutoAttackRange(minions) && minions->GetHealth()<dmg1)
 				{
-					Q->LastHitMinion();
+					Q->CastOnUnit(minions);
 				}
 			}
 		}		
