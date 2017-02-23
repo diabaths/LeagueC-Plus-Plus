@@ -42,6 +42,7 @@ IMenuOption* FarmECougar;
 IMenuOption* FarmAutoswitch;
 IMenuOption* FarmManaPercent;
 
+IMenuOption* smitejungle;
 IMenuOption* usesmitetarget;
 IMenuOption* usesmitejungle;
 
@@ -143,7 +144,8 @@ void  Menu()
 
 	SmiteMenu = MainMenu->AddMenu("Smite Setting");
 	usesmitetarget = SmiteMenu->CheckBox("Use Smite on target", true);
-	usesmitejungle = SmiteMenu->AddInteger("Smite 0=Smite all Monsters, 1=Smite only Epic", 0, 1, 0);
+	smitejungle = SmiteMenu->CheckBox("Use Smite in Jungle", true);
+	usesmitejungle = SmiteMenu->AddInteger("0=Smite all Monst, 1=Smite only Epic", 0, 1, 0);
 	
 	HealMenu = MainMenu->AddMenu("Heal Setting");
 	HealE = HealMenu->CheckBox("Use E to heal", true);
@@ -732,7 +734,10 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	UseItems();
 	Usepotion();
 	Heal();
-	Smiteuse();
+	if (smitejungle->Enabled())
+	{
+		Smiteuse();
+	}
 	
 }
 

@@ -29,6 +29,7 @@ IMenuOption* RRange;
 IMenuOption* HarassQ;
 IMenuOption* HarassW;
 IMenuOption* HarassManaPercent;
+IMenuOption* smitejungle;
 IMenuOption* usesmitetarget;
 IMenuOption* usesmitejungle;
 IMenuOption* FarmQ;
@@ -94,7 +95,8 @@ void  Menu()
 
 	Smitemenu = MainMenu->AddMenu("Smite Setting");
 	usesmitetarget = Smitemenu->CheckBox("Use Smite on target", true);
-	usesmitejungle = Smitemenu->AddInteger("Smite 0=Smite all Monsters, 1=Smite only Epic", 0, 1, 0);
+	smitejungle= Smitemenu->CheckBox("Use Smite in Jungle", true);
+	usesmitejungle = Smitemenu->AddInteger("0=Smite all Monst, 1=Smite only Epic", 0, 1, 0);
 
 	FarmMenu = MainMenu->AddMenu("LaneClear Setting");
 	FarmQ = FarmMenu->CheckBox("Use Q Farm", true);
@@ -579,7 +581,10 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	killsteal();
 	UseItems();
 	Usepotion();
-	Smiteuse();
+	if (smitejungle->Enabled())
+	{
+		Smiteuse();
+	}
 }
 
 PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)

@@ -238,7 +238,7 @@ void Combo()
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
 			if (myHero->IsValidTarget(target, Q->Range()))
-			Q->CastOnTarget(target, kHitChanceHigh);
+			Q->CastOnTarget(target, kHitChanceMedium);
 		}
 	}
 	if (ComboW->Enabled())
