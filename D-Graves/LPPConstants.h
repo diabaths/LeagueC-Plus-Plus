@@ -188,7 +188,8 @@ enum eLeagueEvents
 	kEventOnExitVisible,
 	kEventOnUpdateChargedSpell,
 	kEventOnPlayAnimation,
-	kEventOnPauseAnimation
+	kEventOnPauseAnimation,
+	kEventOnJungleNotification
 };
 
 enum eTargetPriority
@@ -196,7 +197,12 @@ enum eTargetPriority
 	QuickestKill,				/* Prioritize the quickest kill based on damage type */
 	ClosestPriority,			/* Prioritize based on distance */
 	ClosestToCursorPriority,	/* Prioritize based on distance from cursor */
-	LowestHealthPriority		/* Prioritize based on lowest health */
+	LowestHealthPriority,		/* Prioritize based on lowest health */
+	MostStacks,					/* Prioritizes based on most stacks (e.g Vayne W, Twitch passive, etc.) */
+	MostAD,						/* Prioritizes based on highest AD */
+	MostAP,						/* Prioritizes based on highest AP */
+	LeastAttacks,				/* Prioritizes based on least number of physical damage attacks to kill */
+	LeastCasts,					/* Prioritizes based on least number of spell cast attacks to kill */
 };
 
 enum eDamageType

@@ -143,6 +143,12 @@ public:
 		return (vecThis + (Other - vecThis).VectorNormalize() * Len);
 	}
 
+	Vec2 Extend(Vec2 const Other, float Len) const
+	{
+		Vec2 vecThis = *this;
+		return (vecThis + (Other - vecThis).VectorNormalize() * Len);
+	}
+
 	float Length()
 	{
 		return sqrtf(x * x + y * y);
@@ -297,6 +303,12 @@ public:
 	}
 
 	Vec3 Extend(Vec3 const Other, float Len)
+	{
+		Vec3 vecThis = *this;
+		return (vecThis + (Other - vecThis).VectorNormalize() * Len);
+	}
+
+	Vec3 Extend(Vec3 const Other, float Len) const
 	{
 		Vec3 vecThis = *this;
 		return (vecThis + (Other - vecThis).VectorNormalize() * Len);

@@ -311,7 +311,7 @@ void Combo()
 
 PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 {
-	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo )
+	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 	{
 		if (source == myHero || target != nullptr)
 		{
@@ -335,90 +335,90 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 						W->CastOnTarget(t, kHitChanceHigh);
 				}
 			}
-		}		
-	}
-	if (GOrbwalking->GetOrbwalkingMode() == kModeMixed && myHero->ManaPercent() > HarassManaPercent->GetInteger())
-	{
-		if (source == myHero || target != nullptr)
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeMixed && myHero->ManaPercent() > HarassManaPercent->GetInteger())
 		{
-			auto useQ = HarassQ->Enabled();
-			auto useW = HarassW->Enabled();
-			if (useQ)
+			if (source == myHero || target != nullptr)
 			{
-				if (Q->IsReady())
+				auto useQ = HarassQ->Enabled();
+				auto useW = HarassW->Enabled();
+				if (useQ)
+				{
+					if (Q->IsReady())
+					{
+						auto t = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+						if (t != nullptr &&  myHero->IsValidTarget(t, Q->Range()))
+							Q->CastOnTarget(t, kHitChanceHigh);
+					}
+				}
+				if (useW)
+				{
+					if (W->IsReady())
+					{
+						auto t = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
+						if (t != nullptr &&  myHero->IsValidTarget(t, W->Range()))
+							W->CastOnTarget(t, kHitChanceHigh);
+					}
+				}
+			}
+		}
+		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && ComboE->Enabled())
+		{
+			if (source == myHero || target != nullptr)
+				if (!myHero->GetBuffDataByName("GravesBasicAttackAmmo2") && E->IsReady())
 				{
 					auto t = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
 					if (t != nullptr &&  myHero->IsValidTarget(t, Q->Range()))
-						Q->CastOnTarget(t, kHitChanceHigh);
+						E->CastOnPosition(GGame->CursorPosition());
 				}
-			}
-			if (useW)
-			{
-				if (W->IsReady())
-				{
-					auto t = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
-					if (t != nullptr &&  myHero->IsValidTarget(t, W->Range()))
-						W->CastOnTarget(t, kHitChanceHigh);
-				}
-			}
 		}
-	}
-	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && ComboE->Enabled())
-	{
-		if (source == myHero || target != nullptr)
-		if (!myHero->GetBuffDataByName("GravesBasicAttackAmmo2") && E->IsReady())
+		if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 		{
-			auto t = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-			if (t != nullptr &&  myHero->IsValidTarget(t, Q->Range()))
-			E->CastOnPosition(GGame->CursorPosition());
-		}
-	}
-	if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
-	{
-		for (auto minions : GEntityList->GetAllMinions(false, true, false))
-		{
-			if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
-				return;
-			if (FarmQ->Enabled() && Q->IsReady())
+			for (auto minions : GEntityList->GetAllMinions(false, true, false))
 			{
-				if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))
+				if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
+					return;
+				if (FarmQ->Enabled() && Q->IsReady())
 				{
-					Q->CastOnUnit(minions);
+					if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))
+					{
+						Q->CastOnUnit(minions);
+					}
+					else Q->LastHitMinion();
 				}
-				else Q->LastHitMinion();
-			}
-			if (FarmW->Enabled() && W->IsReady())
-			{
-				if (minions != nullptr && myHero->IsValidTarget(minions, W->Range()))
+				if (FarmW->Enabled() && W->IsReady())
 				{
-					W->CastOnUnit(minions);
-				}
-				else W->LastHitMinion();
-			}
-		}
-		for (auto jMinion : GEntityList->GetAllMinions(false, false, true))
-		{
-			if (myHero->ManaPercent() < JungleManaPercent->GetInteger())
-				return;
-			if (JungleQ->Enabled() && Q->IsReady())
-			{
-				if (jMinion != nullptr && myHero->IsValidTarget(jMinion, Q->Range()))
-				{
-					Q->CastOnUnit(jMinion);
+					if (minions != nullptr && myHero->IsValidTarget(minions, W->Range()))
+					{
+						W->CastOnUnit(minions);
+					}
+					else W->LastHitMinion();
 				}
 			}
-			if (JungleW->Enabled() && W->IsReady())
+			for (auto jMinion : GEntityList->GetAllMinions(false, false, true))
 			{
-				if (jMinion != nullptr && myHero->IsValidTarget(jMinion, W->Range()))
+				if (myHero->ManaPercent() < JungleManaPercent->GetInteger())
+					return;
+				if (JungleQ->Enabled() && Q->IsReady())
 				{
-					W->CastOnUnit(jMinion);
+					if (jMinion != nullptr && myHero->IsValidTarget(jMinion, Q->Range()))
+					{
+						Q->CastOnUnit(jMinion);
+					}
 				}
-			}
-			if (JungleE->Enabled() && E->IsReady())
-			{
-				if (jMinion != nullptr && myHero->IsValidTarget(jMinion, 500))
+				if (JungleW->Enabled() && W->IsReady())
 				{
-					E->CastOnPosition(GGame->CursorPosition());
+					if (jMinion != nullptr && myHero->IsValidTarget(jMinion, W->Range()))
+					{
+						W->CastOnUnit(jMinion);
+					}
+				}
+				if (JungleE->Enabled() && E->IsReady())
+				{
+					if (jMinion != nullptr && myHero->IsValidTarget(jMinion, 500))
+					{
+						E->CastOnPosition(GGame->CursorPosition());
+					}
 				}
 			}
 		}

@@ -132,6 +132,11 @@ struct SpellParams
 	eSpellType	SpellType_;
 };
 
+struct JungleNotifyData
+{
+	Vec3 Position;
+};
+
 class IUnit
 {
 public:
@@ -246,6 +251,8 @@ public:
 	virtual bool IsDashing() = 0;
 	virtual bool CreatePath(Vec3 const& EndPosition, std::vector<Vec3>& Out) = 0;
 	virtual bool CreatePath2D(Vec2 const& EndPosition, std::vector<Vec2>& Out) = 0;
+	virtual const char* GetBaseSkinName() = 0;
+	virtual float GetBonusMana() = 0;
 };
 
 #endif // PluginData_h__

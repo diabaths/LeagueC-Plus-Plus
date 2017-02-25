@@ -68,6 +68,7 @@ public:
 	virtual void Notification(Vec4 const& Color, DWORD SecondsToShow, const char* Message, ...) = 0;
 	virtual void DrawOutlinedCircle(Vec2 const& Position, Vec4 const& Color, float Radius) = 0;
 	virtual void NotificationEx(Vec4 const& Color, DWORD SecondsToShow, bool PrintInChat, bool ShowInCorner, const char* Fmt, ...) = 0;
+	virtual void DrawCircle(Vec3 const& Position, float Radius, Vec4 const& Color, float Width = 5.f, bool FillCircle = false, bool ZEnable = false) = 0;
 };
 
 class IEntityList
@@ -122,6 +123,7 @@ public:
 	virtual int TickCount() = 0;
 	virtual int CurrentTick() = 0;
 	virtual bool IsChatOpen() = 0;
+	virtual void ScreenToWorld(Vec2 const& ScreenPosition, Vec3* WorldPosition) = 0;
 };
 
 class IDamage
@@ -271,6 +273,7 @@ public:
 	virtual bool CanMove(float Delay = 0.f) = 0;
 	virtual void ResetAA() = 0;
 	virtual float GetAutoAttackRange(IUnit* Target) = 0;
+	virtual void Orbwalk(IUnit* Target, Vec3 const& Position) = 0;
 };
 
 class IInventoryItem
@@ -350,6 +353,7 @@ public:
 	virtual float GetSpellCastTime(int Slot) = 0;
 	virtual int GetToggleState(int Slot) = 0;
 	virtual float GetCastTime() = 0;
+	virtual int GetAmmo(int Slot) = 0;
 };
 
 class IBuffData
@@ -405,6 +409,7 @@ public:
 	virtual void LogConsole(const char* Fmt, ...) = 0;
 	virtual void LogFile(const char* Filename, const char* Fmt, ...) = 0;
 	virtual void ClearLogFile(const char* Filename) = 0;
+	virtual Vec3 To3D(Vec2 const& Other) = 0;
 };
 
 class IPluginSDK
