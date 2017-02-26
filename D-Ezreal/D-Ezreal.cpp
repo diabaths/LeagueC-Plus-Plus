@@ -156,6 +156,7 @@ void LoadSpells()
 	{
 		Ignite = GPluginSDK->CreateSpell(kSummonerSlot2, 600);
 	}
+	else Ignite == nullptr;
 
 	Tear = GPluginSDK->CreateItemForId(3070, 0);
 	Manamune = GPluginSDK->CreateItemForId(3004, 0);
@@ -245,12 +246,15 @@ void UseItems()
 	
 void Combo()
 {
-	if (UseIgnitecombo->Enabled() && Ignite->IsReady() && Ignite != nullptr)
+	if (Ignite != nullptr)
 	{
-		auto Enemy = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
-		if (Enemy != nullptr && Enemy->HealthPercent() <= 30 && myHero->IsValidTarget(Enemy, 600))
+		if (UseIgnitecombo->Enabled() && Ignite->IsReady())
 		{
-			Ignite->CastOnUnit(Enemy);
+			auto Enemy = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
+			if (Enemy != nullptr && Enemy->HealthPercent() <= 30 && myHero->IsValidTarget(Enemy, 600))
+			{
+				Ignite->CastOnUnit(Enemy);
+			}
 		}
 	}
 

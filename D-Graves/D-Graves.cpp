@@ -164,6 +164,7 @@ void LoadSpells()
 	{
 		smite = GPluginSDK->CreateSpell(kSummonerSlot2, 570);
 	}
+	else smite == nullptr;
 
 	blade = GPluginSDK->CreateItemForId(3153, 550);
 	Cutlass = GPluginSDK->CreateItemForId(3144, 550);

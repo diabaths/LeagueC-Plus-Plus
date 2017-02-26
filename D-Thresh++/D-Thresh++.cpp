@@ -167,6 +167,8 @@ void LoadSpells()
 	{
 		Ignite = GPluginSDK->CreateSpell(kSummonerSlot2, 600);
 	}
+	else Ignite == nullptr;
+	 
 	blade = GPluginSDK->CreateItemForId(3153, 550);
 	Cutlass = GPluginSDK->CreateItemForId(3144, 550);
 	HealthPot = GPluginSDK->CreateItemForId(2003, 0);
@@ -277,12 +279,15 @@ void Pull()
 
 void Combo()
 {
-	if (UseIgnitecombo->Enabled() && Ignite->IsReady() && Ignite !=nullptr)
+	if (Ignite != nullptr)
 	{
-		auto Enemy = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
-		if (Enemy !=nullptr && Enemy->HealthPercent() <= 30 && myHero->IsValidTarget(Enemy, 600))
+		if (UseIgnitecombo->Enabled() && Ignite->IsReady())
 		{
-			Ignite->CastOnUnit(Enemy);
+			auto Enemy = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
+			if (Enemy != nullptr && Enemy->HealthPercent() <= 30 && myHero->IsValidTarget(Enemy, 600))
+			{
+				Ignite->CastOnUnit(Enemy);
+			}
 		}
 	}
 	if (ComboQ->Enabled())
@@ -505,12 +510,15 @@ void killsteal()
 						Q->CastOnTarget(Enemy, kHitChanceHigh);
 					}
 				}
-			}			
-			if (UseIgnitekillsteal->Enabled() && Ignite != nullptr && Ignite->IsReady())
+			}
+			if (Ignite != nullptr)
 			{
-				auto dmg = GDamage->GetSpellDamage(myHero, Enemy, kSummonerSpellIgnite);
-				if (Enemy->GetHealth() < dmg && Enemy !=nullptr)
-					Ignite->CastOnUnit(Enemy);
+				if (UseIgnitekillsteal->Enabled() && Ignite->IsReady())
+				{
+					auto dmg = GDamage->GetSpellDamage(myHero, Enemy, kSummonerSpellIgnite);
+					if (Enemy->GetHealth() < dmg && Enemy != nullptr)
+						Ignite->CastOnUnit(Enemy);
+				}
 			}
 		}
 	}

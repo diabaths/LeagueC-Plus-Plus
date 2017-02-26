@@ -208,18 +208,21 @@ void LoadSpells()
 	{
 		smite = GPluginSDK->CreateSpell(kSummonerSlot1, 570);
 	}
-	if (strcmp(slot2, "SummonerSmite") == 0)
+	else if (strcmp(slot2, "SummonerSmite") == 0)
 	{
 		smite = GPluginSDK->CreateSpell(kSummonerSlot2, 570);
 	}
+	else smite == nullptr;
+
 	if (strcmp(slot1, "SummonerDot") == 0)
 	{
 		Ignite = GPluginSDK->CreateSpell(kSummonerSlot1, 600);
 	}
-	if (strcmp(slot2, "SummonerDot") == 0)
+	else if (strcmp(slot2, "SummonerDot") == 0)
 	{
 		Ignite = GPluginSDK->CreateSpell(kSummonerSlot2, 600);
 	}
+	else Ignite == nullptr;
 	
 	blade = GPluginSDK->CreateItemForId(3153, 550);
 	Cutlass = GPluginSDK->CreateItemForId(3144, 550);
@@ -496,12 +499,15 @@ void Heal()
 void Combo()
 {
 	smitetarget();
-	if (useIgnite->Enabled() && Ignite !=nullptr && Ignite->IsReady())
+	if (Ignite != nullptr)
 	{
-		auto Enemy = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
-		if (Enemy->HealthPercent() <= 30 && Enemy->IsValidTarget(myHero, Ignite->GetSpellRange()) && Enemy !=nullptr)
+		if (useIgnite->Enabled() && Ignite->IsReady())
 		{
-			Ignite->CastOnUnit(Enemy);
+			auto Enemy = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
+			if (Enemy->HealthPercent() <= 30 && Enemy->IsValidTarget(myHero, Ignite->GetSpellRange()) && Enemy != nullptr)
+			{
+				Ignite->CastOnUnit(Enemy);
+			}
 		}
 	}
 	if (IsHuman())
