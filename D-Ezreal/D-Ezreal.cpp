@@ -31,6 +31,7 @@ IMenuOption* HarassQ;
 IMenuOption* HarassW;
 IMenuOption* HarassManaPercent;
 IMenuOption* FarmQ;
+IMenuOption* lasthitQ;
 IMenuOption* FarmManaPercent;
 IMenuOption* JungleQ;
 IMenuOption* JungleManaPercent;
@@ -91,7 +92,8 @@ void  Menu()
 	Drawings = MainMenu->AddMenu("Drawings");
 
 	FarmMenu = MainMenu->AddMenu("LaneClear Setting");
-	FarmQ = FarmMenu->CheckBox("Use Q Farm", true);
+	FarmQ = FarmMenu->CheckBox("Use Q Farm", false);
+	lasthitQ = FarmMenu->CheckBox("Use Q Lasthit out of AA range", true);
 	FarmManaPercent = FarmMenu->AddInteger("Mana Percent for Farm", 10, 100, 70);
 
 	JungleMenu = MainMenu->AddMenu("Jungle Setting");
@@ -316,30 +318,41 @@ void Combo()
 PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 {
 	if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
-	{		
-		if (FarmQ->Enabled() && Q->IsReady())
+	{
+		int MinionDie = 0;
+		for (auto minions : GEntityList->GetAllMinions(false, true, false))
 		{
-			int MinionDie = 0;
-			for (auto minions : GEntityList->GetAllMinions(false, true, false))
+			if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))
 			{
-				if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))
-				{
-					auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
-					auto dmg1 = GDamage->GetAutoAttackDamage(myHero, minions, true);
-					if (!myHero->GetRealAutoAttackRange(minions) || minions->GetHealth() <= dmg || minions->GetHealth() <= dmg1 || minions->GetHealth() <= dmg1 + dmg)
-						MinionDie++;
-				}
-				if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
-					return;
-				if (MinionDie >1)
-					Q->CastOnUnit(minions)|| Q->LastHitMinion();
+				auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
 				auto dmg1 = GDamage->GetAutoAttackDamage(myHero, minions, true);
-				if (!myHero->GetRealAutoAttackRange(minions) && minions->GetHealth()<dmg1)
+				if (!myHero->GetRealAutoAttackRange(minions) || minions->GetHealth() <= dmg || minions->GetHealth() <= dmg1 || minions->GetHealth() <= dmg1 + dmg)
+					MinionDie++;
+			}
+			if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
+				return;
+			if (FarmQ->Enabled() && Q->IsReady())
+			{
+				if (MinionDie > 1)
+					Q->CastOnUnit(minions) || Q->LastHitMinion();
+				auto dmg1 = GDamage->GetAutoAttackDamage(myHero, minions, true);
+				if (!myHero->GetRealAutoAttackRange(minions) && minions->GetHealth() < dmg1)
 				{
 					Q->CastOnUnit(minions);
+					return;
 				}
 			}
-		}		
+			if (lasthitQ->Enabled() && Q->IsReady())
+			{
+				auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
+				if (GetDistance(myHero,minions) > myHero->GetRealAutoAttackRange(minions) && minions->GetHealth() <= dmg)
+				{
+					Q->CastOnUnit(minions);
+					return;
+				}
+			}
+		}
+	
 		if (JungleQ->Enabled() && Q->IsReady())
 		{			
 			for (auto jMinion : GEntityList->GetAllMinions(false, false, true))
@@ -349,6 +362,7 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 					if (myHero->ManaPercent() < JungleManaPercent->GetInteger())
 						return;
 					Q->CastOnUnit(jMinion);
+					return;
 				}
 			}
 		}
