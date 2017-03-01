@@ -248,12 +248,15 @@ void Combo()
 {
 	if (Ignite != nullptr)
 	{
+		auto Enemy = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
 		if (UseIgnitecombo->Enabled() && Ignite->IsReady())
 		{
-			auto Enemy = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
-			if (Enemy != nullptr && Enemy->HealthPercent() <= 30 && myHero->IsValidTarget(Enemy, 600))
+			if (Enemy != nullptr && Enemy->IsValidTarget(myHero, 570))
 			{
-				Ignite->CastOnUnit(Enemy);
+				if (Enemy->HealthPercent() <= 30)
+				{
+					Ignite->CastOnUnit(Enemy);
+				}
 			}
 		}
 	}

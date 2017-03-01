@@ -501,12 +501,15 @@ void Combo()
 	smitetarget();
 	if (Ignite != nullptr)
 	{
+		auto Enemy = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
 		if (useIgnite->Enabled() && Ignite->IsReady())
 		{
-			auto Enemy = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
-			if (Enemy->HealthPercent() <= 30 && Enemy->IsValidTarget(myHero, Ignite->GetSpellRange()) && Enemy != nullptr)
+			if (Enemy != nullptr && Enemy->IsValidTarget(myHero, 570))
 			{
-				Ignite->CastOnUnit(Enemy);
+				if (Enemy->HealthPercent() <= 30)
+				{
+					Ignite->CastOnUnit(Enemy);
+				}
 			}
 		}
 	}

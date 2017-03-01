@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D-Nidalee++", "D-Nidalee++\
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D-Thresh++", "D-Thresh++\D-Thresh++.vcxproj", "{FECFD0EF-D3C3-4529-A0EE-043356C82308}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D-Jayce++", "D-Jayce++\D-Jayce++.vcxproj", "{098D74D3-37E1-4D32-BE0D-7898C8F0D4D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -51,6 +53,14 @@ Global
 		{FECFD0EF-D3C3-4529-A0EE-043356C82308}.Release|x64.Build.0 = Release|x64
 		{FECFD0EF-D3C3-4529-A0EE-043356C82308}.Release|x86.ActiveCfg = Release|Win32
 		{FECFD0EF-D3C3-4529-A0EE-043356C82308}.Release|x86.Build.0 = Release|Win32
+		{098D74D3-37E1-4D32-BE0D-7898C8F0D4D4}.Debug|x64.ActiveCfg = Debug|x64
+		{098D74D3-37E1-4D32-BE0D-7898C8F0D4D4}.Debug|x64.Build.0 = Debug|x64
+		{098D74D3-37E1-4D32-BE0D-7898C8F0D4D4}.Debug|x86.ActiveCfg = Debug|Win32
+		{098D74D3-37E1-4D32-BE0D-7898C8F0D4D4}.Debug|x86.Build.0 = Debug|Win32
+		{098D74D3-37E1-4D32-BE0D-7898C8F0D4D4}.Release|x64.ActiveCfg = Release|x64
+		{098D74D3-37E1-4D32-BE0D-7898C8F0D4D4}.Release|x64.Build.0 = Release|x64
+		{098D74D3-37E1-4D32-BE0D-7898C8F0D4D4}.Release|x86.ActiveCfg = Release|Win32
+		{098D74D3-37E1-4D32-BE0D-7898C8F0D4D4}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
