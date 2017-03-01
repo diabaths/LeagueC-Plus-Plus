@@ -95,7 +95,7 @@ IInventoryItem* RefillPot;
 IInventoryItem* hunter;
 
 
-	
+
 void  Menu()
 {
 	MainMenu = GPluginSDK->AddMenu("D-Jayce++");
@@ -150,7 +150,7 @@ void  Menu()
 	Blade_Cutlass = ItemsMenu->CheckBox("Blade-Cutlass", true);
 	MyHpPreBlade = ItemsMenu->AddInteger("Use Blade-Cutlass if my HP <", 10, 100, 35);
 	EnemyHpPreBlade = ItemsMenu->AddInteger("Use Blade-Cutlass if Enemy HP <", 10, 100, 35);
-	
+
 
 	PotionMenu = MainMenu->AddMenu("Potion Setting");
 	usepotion = PotionMenu->CheckBox("Use potions", true);
@@ -164,7 +164,7 @@ void  Menu()
 	DrawQM = Drawings->CheckBox("Draw Q Hummer", true);
 	DrawWM = Drawings->CheckBox("Draw W Hummer", false);
 	DrawEM = Drawings->CheckBox("Draw E Hummer", false);
-	
+
 }
 void LoadSpells()
 {
@@ -175,7 +175,7 @@ void LoadSpells()
 	QExtend->SetSkillshot(0.35f, 98.f, 1900.f, 1650.f);
 
 	W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
-	
+
 	E = GPluginSDK->CreateSpell2(kSlotE, kCircleCast, false, false, static_cast<eCollisionFlags> (kCollidesWithNothing));
 	E->SetSkillshot(0.1f, 120.f, FLT_MAX, 650.f);
 
@@ -246,10 +246,11 @@ float GetDistance(IUnit* Player, IUnit* target)
 }
 
 bool IsMelee()
-{return myHero->HasBuff("JayceStanceHammer");
+{
+	return myHero->HasBuff("JayceStanceHammer");
 	/*if (myHero->GetSpellBook()->GetLevel(kSlotQ) > 0)
-	{		
-		return !strcmp(GEntityList->Player()->GetSpellBook()->GetName(kSlotQ), "jayceshockblast") == 0;
+	{
+	return !strcmp(GEntityList->Player()->GetSpellBook()->GetName(kSlotQ), "jayceshockblast") == 0;
 	}*/
 }
 int CountEnemiesInRange(float range)
@@ -321,33 +322,36 @@ void Laneclear()
 	auto mana = myHero->ManaPercent() > FarmManaPercent->GetInteger();
 	for (auto minions : GEntityList->GetAllMinions(false, true, false))
 	{
-		if (!IsMelee())
+		if (mana)
 		{
-			if (Q->IsReady() && FarmQ->Enabled() && myHero->IsValidTarget(minions, Q->Range()))
+			if (!IsMelee())
 			{
-				auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
-				Vec3 pos;
-				int count;
-				Q->FindBestCastPosition(true, true, pos, count);
+				if (Q->IsReady() && FarmQ->Enabled() && myHero->IsValidTarget(minions, Q->Range()))
+				{
+					auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
+					Vec3 pos;
+					int count;
+					Q->FindBestCastPosition(true, true, pos, count);
 
-				if (count >= 3)
-				{
-					Q->CastOnPosition(pos);
-				}
-				else if (!myHero->GetRealAutoAttackRange(minions) && minions->GetHealth() < dmg)
-				{
-					Q->CastOnUnit(minions);
-				}
+					if (count >= 3)
+					{
+						Q->CastOnPosition(pos);
+					}
+					else if (!myHero->GetRealAutoAttackRange(minions) && minions->GetHealth() < dmg)
+					{
+						Q->CastOnUnit(minions);
+					}
 
-			}
-			if (W->IsReady() && FarmW->Enabled())
-			{
-				Vec3 pos;
-				int count;
-				E->FindBestCastPosition(true, true, pos, count);
-				if (count >= 3)
+				}
+				if (W->IsReady() && FarmW->Enabled())
 				{
-					W->CastOnPlayer();
+					Vec3 pos;
+					int count;
+					E->FindBestCastPosition(true, true, pos, count);
+					if (count >= 3)
+					{
+						W->CastOnPlayer();
+					}
 				}
 			}
 		}
@@ -447,8 +451,8 @@ static Vec3 Extend(const Vec3 &from, const Vec3 &to, float distance)
 void castEQmouse()
 {
 	GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
-	
-	if(IsMelee() && R->IsReady())
+
+	if (IsMelee() && R->IsReady())
 	{
 		R->CastOnPlayer();
 	}
@@ -466,7 +470,7 @@ void CastQextend()
 	auto  castposition = myHero->GetPosition().Extend(target->GetPosition(), 200);
 	AdvPredictionOutput prediction_output;
 	QExtend->RunPrediction(target, true, kCollidesWithYasuoWall | kCollidesWithMinions, &prediction_output);
-	
+
 	if (prediction_output.HitChance >= kHitChanceMedium)
 	{
 		if (Q->IsReady() && myHero->IsValidTarget() && GetDistance(myHero, target)< QExtend->Range())
@@ -474,7 +478,7 @@ void CastQextend()
 			E->CastOnPosition(castposition);
 		}
 		QExtend->CastOnTarget(target, kHitChanceCollision);
-	}	
+	}
 }
 void Combo()
 {
@@ -533,7 +537,7 @@ void Combo()
 	}
 
 	if (!IsMelee())
-	{	
+	{
 		if (ComboE->Enabled() && ComboQ->Enabled())
 		{
 			if (Q->IsReady() && E->IsReady() && myHero->GetMana() > Q->ManaCost() + E->ManaCost())
@@ -569,7 +573,7 @@ void Combo()
 			}
 		}
 	}
-			
+
 	if (ComboR->Enabled() && R->IsReady())
 	{
 		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, QExtend->Range());
@@ -586,11 +590,16 @@ void Combo()
 					R->CastOnPlayer();
 				}
 			}
-			if (!myHero->GetBuffCount("jaycehyperchargevfx") && !myHero->HasBuff("jaycehyperchargevfx") && (!Q->IsReady() || !ComboQ->Enabled()) && (!W->IsReady()  || !ComboW->Enabled())
+			if (!myHero->GetBuffCount("jaycehyperchargevfx") && !myHero->HasBuff("jaycehyperchargevfx") && (!Q->IsReady() || !ComboQ->Enabled()) && (!W->IsReady() || !ComboW->Enabled())
 				&& R->IsReady() && !IsMelee())
 			{
 				R->CastOnPlayer();
-
+			}
+			if (GetDistance(myHero, target) > QM->Range() + 50 && R->IsReady() && !IsMelee() && W->IsReady() && QM->IsReady() && !Q->IsReady())
+			{
+				W->CastOnPlayer();
+				R->CastOnPlayer();
+				QM->CastOnUnit(target);
 			}
 		}
 	}
@@ -733,12 +742,12 @@ PLUGIN_EVENT(void) OnRender()
 		if (!IsMelee())
 		{
 			if (Q->IsReady() && DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q->Range()); }
-			
+
 			if (Q->IsReady() && E->IsReady() && DrawQEx->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), QExtend->Range()); }
 
 			if (W->IsReady() && DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W->Range()); }
 
-			 if(E->IsReady() && DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E->Range()); }
+			if (E->IsReady() && DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E->Range()); }
 		}
 		else
 		{
@@ -758,7 +767,7 @@ PLUGIN_EVENT(void) OnRender()
 			if (DrawQEx->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), QExtend->Range()); }
 
 			if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W->Range()); }
-		
+
 			if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E->Range()); }
 		}
 		else
@@ -795,7 +804,7 @@ PLUGIN_EVENT(void) OnInterruptable(InterruptibleSpell const& Args)
 			R->CastOnPlayer();
 		}
 		else	EM->CastOnTarget(Args.Target);
-		
+
 	}
 }
 PLUGIN_EVENT(void) OnGameUpdate()
@@ -821,7 +830,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	UseItems();
 	Usepotion();
 	//GetBuffName();
-	
+
 	if (smitejungle->Enabled())
 	{
 		Smiteuse();
