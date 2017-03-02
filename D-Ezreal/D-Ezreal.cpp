@@ -315,6 +315,27 @@ void Combo()
 		}
 	}
 }
+void lasthit()
+{
+	if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+	{
+		for (auto minions : GEntityList->GetAllMinions(false, true, false))
+		{
+			if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))
+			{
+				auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
+				if (lasthitQ->Enabled() && Q->IsReady())
+				{
+					if (GetDistance(myHero, minions) > myHero->GetRealAutoAttackRange(minions) && minions->GetHealth() <= dmg)
+					{
+						Q->CastOnUnit(minions);
+					}
+				}
+			}
+		}
+	}
+}
+
 PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 {
 	if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
@@ -328,33 +349,19 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 				auto dmg1 = GDamage->GetAutoAttackDamage(myHero, minions, true);
 				if (!myHero->GetRealAutoAttackRange(minions) || minions->GetHealth() <= dmg || minions->GetHealth() <= dmg1 || minions->GetHealth() <= dmg1 + dmg)
 					MinionDie++;
-			}
-			if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
-				return;
-			if (FarmQ->Enabled() && Q->IsReady())
-			{
-				if (MinionDie > 1)
-					Q->CastOnUnit(minions) || Q->LastHitMinion();
-				auto dmg1 = GDamage->GetAutoAttackDamage(myHero, minions, true);
-				if (!myHero->GetRealAutoAttackRange(minions) && minions->GetHealth() < dmg1)
-				{
-					Q->CastOnUnit(minions);
+
+				if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
 					return;
-				}
-			}
-			if (lasthitQ->Enabled() && Q->IsReady())
-			{
-				auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
-				if (GetDistance(myHero,minions) > myHero->GetRealAutoAttackRange(minions) && minions->GetHealth() <= dmg)
+				if (FarmQ->Enabled() && Q->IsReady())
 				{
-					Q->CastOnUnit(minions);
-					return;
-				}
+					if (MinionDie > 1)
+						Q->CastOnUnit(minions) || Q->LastHitMinion();
+				}				
 			}
 		}
-	
+
 		if (JungleQ->Enabled() && Q->IsReady())
-		{			
+		{
 			for (auto jMinion : GEntityList->GetAllMinions(false, false, true))
 			{
 				if (jMinion != nullptr && !jMinion->IsDead() && myHero->IsValidTarget(jMinion, Q->Range()))
@@ -362,7 +369,6 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 					if (myHero->ManaPercent() < JungleManaPercent->GetInteger())
 						return;
 					Q->CastOnUnit(jMinion);
-					return;
 				}
 			}
 		}
@@ -556,6 +562,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	UseItems();
 	stucktear();
 	Usepotion();
+	lasthit();
 }
 
 PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
