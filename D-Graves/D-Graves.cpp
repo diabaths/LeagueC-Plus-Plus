@@ -136,7 +136,7 @@ void LoadSpells()
 {
 	Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, true, static_cast<eCollisionFlags>(kCollidesWithWalls | kCollidesWithYasuoWall));
 	W = GPluginSDK->CreateSpell2(kSlotW, kCircleCast, true, true, static_cast<eCollisionFlags>(kCollidesWithNothing));
-	E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall | kCollidesWithMinions));
+	E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
 	R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, true, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
 
 	Q->SetOverrideRange(950);
@@ -480,21 +480,17 @@ void killsteal()
 					}
 				}
 			}
-			if (KillstealR->Enabled())
-			{
-
-				if (Enemy != nullptr && !Enemy->IsDead())
+			if (KillstealR->Enabled() && R->IsReady())
+			{			
+				if (myHero->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable())
 				{
 					auto Rlvl = GEntityList->Player()->GetSpellLevel(kSlotR) - 1;
 					auto BaseDamage = std::vector<double>({ 250, 400, 550 }).at(Rlvl);
 					auto ADMultiplier = 1.2 * GEntityList->Player()->TotalPhysicalDamage();
 					auto TotalD = BaseDamage + ADMultiplier;
-					if (myHero->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable())
+					if (Enemy->GetHealth() <= TotalD)
 					{
-						if (Enemy->GetHealth() <= TotalD && R->IsReady())
-						{
-							R->CastOnTarget(Enemy, kHitChanceHigh);
-						}
+						R->CastOnTarget(Enemy, kHitChanceHigh);
 					}
 				}
 			}
