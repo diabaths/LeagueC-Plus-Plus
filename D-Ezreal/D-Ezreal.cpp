@@ -269,7 +269,12 @@ void Combo()
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
 			if (myHero->IsValidTarget(target, Q->Range()))
-			Q->CastOnTarget(target, kHitChanceMedium);
+			{
+				if (GPrediction->GetCollisionFlagsForPoint(target->GetPosition()) == 0)
+				{
+					Q->CastOnTarget(target, kHitChanceHigh);
+				}
+			}
 		}
 	}
 	if (ComboW->Enabled())
@@ -384,7 +389,12 @@ void Harass()
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
 			if (myHero->IsValidTarget(target, Q->Range()))
-			Q->CastOnTarget(target, kHitChanceHigh);
+			{
+				if (GPrediction->GetCollisionFlagsForPoint(target->GetPosition()) == 0)
+				{
+					Q->CastOnTarget(target, kHitChanceHigh);
+				}
+			}
 		}
 	}
 	if (HarassW->Enabled())
@@ -408,8 +418,9 @@ void AutoImmobile()
 		{
 			if (ImmobileQ->Enabled())
 			{
+				if (GPrediction->GetCollisionFlagsForPoint(target->GetPosition()) == 0)
 				{
-					Q->CastOnTarget(target, kHitChanceImmobile);
+					Q->CastOnTarget(target, kHitChanceHigh);
 				}
 			}
 		}
@@ -442,7 +453,11 @@ void killsteal()
 				{
 					if (Enemy->GetHealth() <= dmg && Q->IsReady())
 					{
-						Q->CastOnTarget(Enemy, kHitChanceHigh);
+
+						if (GPrediction->GetCollisionFlagsForPoint(Enemy->GetPosition()) == 0)
+						{
+							Q->CastOnTarget(Enemy, kHitChanceHigh);
+						}
 					}
 				}
 			}
