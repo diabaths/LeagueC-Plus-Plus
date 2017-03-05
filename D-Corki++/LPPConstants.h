@@ -1,3 +1,4 @@
+#pragma once
 #ifndef LPPConstants_h__
 #define LPPConstants_h__
 

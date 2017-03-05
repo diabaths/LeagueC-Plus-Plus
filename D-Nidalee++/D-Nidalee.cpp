@@ -521,6 +521,7 @@ void Combo()
 			{
 				auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
 				if (target != nullptr &&  target->IsValidTarget())
+					if (GPrediction->GetCollisionFlagsForPoint(target->GetPosition()) == 0)
 					Q->CastOnTarget(target, kHitChanceMedium);
 			}
 		}

@@ -1,4 +1,3 @@
-#pragma once
 #ifndef LPPConstants_h__
 #define LPPConstants_h__
 
@@ -190,7 +189,8 @@ enum eLeagueEvents
 	kEventOnUpdateChargedSpell,
 	kEventOnPlayAnimation,
 	kEventOnPauseAnimation,
-	kEventOnJungleNotification
+	kEventOnJungleNotification,
+	kEventOnNewPath
 };
 
 enum eTargetPriority

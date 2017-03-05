@@ -478,4 +478,4 @@ extern IMissileData* 		GMissileData;
 extern INavMesh* 			GNavMesh;
 extern IUtility*			GUtility;
 
-#endif // PluginSDK_h__
+#endif // PluginSDK_h__#pragma once

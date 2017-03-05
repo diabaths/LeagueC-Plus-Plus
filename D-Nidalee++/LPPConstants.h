@@ -189,7 +189,8 @@ enum eLeagueEvents
 	kEventOnUpdateChargedSpell,
 	kEventOnPlayAnimation,
 	kEventOnPauseAnimation,
-	kEventOnJungleNotification
+	kEventOnJungleNotification,
+	kEventOnNewPath
 };
 
 enum eTargetPriority

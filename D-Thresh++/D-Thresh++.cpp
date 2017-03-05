@@ -3,7 +3,7 @@
 
 //#include "stdafx.h"
 #include "PluginSDK.h"
-#include <algorithm>
+
 
 
 PluginSetup("D-Thresh");
@@ -299,6 +299,7 @@ void Combo()
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
 			if (target != nullptr && myHero->IsValidTarget(target, Q->Range()))
+				if (GPrediction->GetCollisionFlagsForPoint(target->GetPosition()) == 0)
 				Q->CastOnTarget(target, kHitChanceMedium);
 			lastq = GGame->CurrentTick();
 			if(myHero->IsValidTarget(target, Q2->Range()) && target->HasBuff("threshQ") && GGame->CurrentTick()-lastq>80)
@@ -390,6 +391,7 @@ void Harass()
 		{
 			if (Q->IsReady())
 			{
+				if (GPrediction->GetCollisionFlagsForPoint(target->GetPosition()) == 0)
 				if (myHero->IsValidTarget(target, Q->Range()))
 					Q->CastOnTarget(target, kHitChanceHigh);
 				lastq = GGame->CurrentTick();

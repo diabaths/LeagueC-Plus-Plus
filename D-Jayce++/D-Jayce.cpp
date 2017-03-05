@@ -556,6 +556,7 @@ void Combo()
 				{
 					if (!E->IsReady() || !ComboE->Enabled() || target->GetHealth() < dmg || myHero->GetMana() < Q->ManaCost() + E->ManaCost())
 					{
+						if(GPrediction->GetCollisionFlagsForPoint(target->GetPosition()) == 0)
 						Q->CastOnTarget(target, kHitChanceMedium);
 					}
 				}
