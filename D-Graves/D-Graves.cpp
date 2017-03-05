@@ -43,6 +43,7 @@ IMenuOption* JungleManaPercent;
 IMenuOption* SemiR;
 IMenuOption* KillstealQ;
 IMenuOption* KillstealW;
+IMenuOption* KillstealR;
 IMenuOption* GapcloseW;
 IMenuOption* Blade_Cutlass;
 IMenuOption* MyHpPreBlade;
@@ -112,6 +113,7 @@ void  Menu()
 	MiscMenu = MainMenu->AddMenu("Misc Setting");
 	KillstealQ = MiscMenu->CheckBox("Use Q to killsteal", true);
 	KillstealW = MiscMenu->CheckBox("Use W to killsteal", true);
+	KillstealR = MiscMenu->CheckBox("Use R to killsteal", true);
 	GapcloseW = MiscMenu->CheckBox("Use W to Gapclose", true);
 	//Gapclose E = MiscMenu->CheckBox("Use E to Gapclose", true);
 
@@ -475,6 +477,24 @@ void killsteal()
 					if (Enemy->GetHealth() <= dmg && W->IsReady())
 					{
 						W->CastOnTarget(Enemy, kHitChanceHigh);
+					}
+				}
+			}
+			if (KillstealR->Enabled())
+			{
+
+				if (Enemy != nullptr && !Enemy->IsDead())
+				{
+					auto Rlvl = GEntityList->Player()->GetSpellLevel(kSlotR) - 1;
+					auto BaseDamage = std::vector<double>({ 250, 400, 550 }).at(Rlvl);
+					auto ADMultiplier = 1.2 * GEntityList->Player()->TotalPhysicalDamage();
+					auto TotalD = BaseDamage + ADMultiplier;
+					if (myHero->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable())
+					{
+						if (Enemy->GetHealth() <= TotalD && R->IsReady())
+						{
+							R->CastOnTarget(Enemy, kHitChanceHigh);
+						}
 					}
 				}
 			}

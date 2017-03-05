@@ -93,7 +93,7 @@ void  Menu()
 	HarassMenu = MainMenu->AddMenu("Harass Setting");
 	HarassQ = HarassMenu->CheckBox("Use Q", true);
 	HarassE = HarassMenu->CheckBox("Use E", true);
-	HarassR = HarassMenu->CheckBox("Use E", true);
+	HarassR = HarassMenu->CheckBox("Use R", true);
 	Harassammo = HarassMenu->AddInteger("R Ammount to use R >", 1, 7, 3);
 	HarassManaPercent = HarassMenu->AddInteger("Mana Percent for harass", 10, 100, 70);
 	
