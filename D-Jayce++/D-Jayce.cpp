@@ -28,7 +28,7 @@ IMenuOption* ComboR;
 IMenuOption* ComboQmelee;
 IMenuOption* ComboWmelee;
 IMenuOption* ComboEmelee;
-
+IMenuOption* usemaleeEtokill;
 IMenuOption* HarassQ;
 IMenuOption* HarassW;
 IMenuOption* HarassE;
@@ -108,6 +108,7 @@ void  Menu()
 	ComboQmelee = ComboMenu->CheckBox("Use Q Melee", true);
 	ComboWmelee = ComboMenu->CheckBox("Use W Melee", true);
 	ComboEmelee = ComboMenu->CheckBox("Use E Melee", true);
+	usemaleeEtokill = ComboMenu->CheckBox("Use E Melee only to kill", true);
 	ComboR = ComboMenu->CheckBox("Use R", true);
 
 
@@ -363,6 +364,7 @@ void Jungle()
 	auto mana = myHero->ManaPercent() > JungleManaPercent->GetInteger();
 	for (auto minions : GEntityList->GetAllMinions(false, false, true))
 	{
+		if (minions == nullptr || myHero->IsValidTarget(minions, Q->Range())) return;
 		if (mana)
 		{
 			if (IsMelee())
@@ -525,12 +527,15 @@ void Combo()
 				if (target != nullptr && myHero->IsValidTarget(target, EM->Range()) && GetDistance(myHero, target) <= EM->Range() + EM->Radius())
 				{
 					auto dmge = GDamage->GetSpellDamage(myHero, target, kSlotE);
+					if (usemaleeEtokill->Enabled() && target->GetHealth() < dmge +30)
 					{
-						if (target->GetHealth() < dmge || (!myHero->GetBuffCount("jaycestaticfield") && !myHero->HasBuff("jaycestaticfield")))
-						{
-							EM->CastOnTarget(target);
+						EM->CastOnTarget(target);
+					}
+					else if (!usemaleeEtokill->Enabled() && (target->GetHealth() < dmge +30 || (!myHero->GetBuffCount("jaycestaticfield") && !myHero->HasBuff("jaycestaticfield"))))
+					{
+						EM->CastOnTarget(target);
 
-						}}
+					}
 				}
 			}
 		}
@@ -582,17 +587,17 @@ void Combo()
 		{
 			if (IsMelee())
 			{
-				if ((Q->IsReady() && W->IsReady() && E->IsReady()) || GetDistance(myHero, target) > 450)
+				if ((Q->IsReady() && W->IsReady() && E->IsReady()) || GetDistance(myHero, target) > QM->Range()+50)
 				{
 					R->CastOnPlayer();
 				}
-				if ((!QM->IsReady() && !WM->IsReady() && !EM->IsReady()))
+				if (!QM->IsReady() && !WM->IsReady() && (!EM->IsReady() || (EM->IsReady() && usemaleeEtokill->Enabled()) && GetDistance(myHero, target)>EM->Radius()))
 				{
 					R->CastOnPlayer();
 				}
 			}
 			if (!myHero->GetBuffCount("jaycehyperchargevfx") && !myHero->HasBuff("jaycehyperchargevfx") && (!Q->IsReady() || !ComboQ->Enabled()) && (!W->IsReady() || !ComboW->Enabled())
-				&& R->IsReady() && !IsMelee())
+				&& R->IsReady() && !IsMelee() && myHero->IsValidTarget(target, QM->Range()))
 			{
 				R->CastOnPlayer();
 			}

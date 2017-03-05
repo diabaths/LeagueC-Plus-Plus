@@ -309,7 +309,7 @@ void Combo()
 			}
 		}
 	}
-	if (ComboE->Enabled() && GGame->CurrentTick()-lastq>100)
+	if (ComboE->Enabled() && GGame->CurrentTick()-lastq>150)
 	{
 		if (E->IsReady())
 		{
