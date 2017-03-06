@@ -52,6 +52,7 @@ IMenuOption* JungleAutoswitch;
 IMenuOption* JungleManaPercent;
 
 IMenuOption* USEQE;
+IMenuOption* Fleemode;
 IMenuOption* KillstealQ;
 IMenuOption* KillstealW;
 IMenuOption* GapcloseE;
@@ -141,6 +142,7 @@ void  Menu()
 	usesmitejungle = SmiteMenu->AddInteger("0=Smite all Monst, 1=Smite only Epic", 0, 1, 0);
 
 	MiscMenu = MainMenu->AddMenu("Misc Setting");
+	Fleemode = MiscMenu->AddKey("Flee Mode", 75);
 	USEQE = MiscMenu->AddKey("Use EQ to Target", 84);
 	KillstealQ = MiscMenu->CheckBox("EQ or Q to killsteal", true);
 	GapcloseE = MiscMenu->CheckBox("Use E to Gapclose", true);
@@ -740,6 +742,68 @@ void Usepotion()
 		}
 	}
 }
+inline Vec2 ToVec2(Vec3 vec)
+{
+	return Vec2(vec.x, vec.z);
+}
+inline Vec3 ToVec3(Vec2 vec)
+{
+	return Vec3(vec.x, 0, vec.y);
+}
+inline float Distance(Vec3 from, Vec3 to)
+{
+	return (from - to).Length2D();
+}
+inline float Distance(IUnit* from, IUnit* to)
+{
+	return (from->GetPosition() - to->GetPosition()).Length2D();
+}
+inline float Distance(IUnit* from, Vec3 to)
+{
+	return (from->GetPosition() - to).Length2D();
+}
+inline float Distance(Vec2 from, Vec2 to)
+{
+	return (from - to).Length();
+}
+
+void FleeMode()
+{
+	GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+	if (!IsMelee())
+	{
+		if (E->IsReady())
+			E->CastOnPosition(myHero->GetPosition().Extend(GGame->CursorPosition(), 150));
+		else if (R->IsReady())
+			R->CastOnPlayer();
+	}
+	else
+	{
+		if (QM->IsReady())
+		{
+			auto minions = GEntityList->GetAllMinions(false, true, true);
+			for (IUnit* minion : minions)
+			{
+				if (minion != nullptr || myHero->IsValidTarget(minion, QM->Range()))
+				{
+					if (Distance(minion, GGame->CursorPosition()) + 200 < Distance(myHero, GGame->CursorPosition()))
+						QM->CastOnTarget(minion);
+				}
+			}
+			for (auto Enemy : GEntityList->GetAllHeros(false, true))
+				if (Enemy != nullptr || myHero->IsValidTarget(Enemy, QM->Range()))
+				{
+					if (Distance(Enemy, GGame->CursorPosition()) + 200 < Distance(myHero, GGame->CursorPosition()))
+						QM->CastOnTarget(Enemy);
+				}
+		}
+		if (R->IsReady())
+			R->CastOnPlayer();
+	}
+	if (R->IsReady())
+		R->CastOnPlayer();
+}
+	
 
 PLUGIN_EVENT(void) OnRender()
 {
@@ -818,6 +882,10 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	if (GetAsyncKeyState(USEQE->GetInteger()))
 	{
 		castEQmouse();
+	}
+	if (GetAsyncKeyState(Fleemode->GetInteger()))
+	{
+		FleeMode();
 	}
 	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 	{
