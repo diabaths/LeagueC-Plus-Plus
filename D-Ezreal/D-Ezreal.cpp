@@ -420,7 +420,7 @@ void AutoImmobile()
 			{
 				if (GPrediction->GetCollisionFlagsForPoint(target->GetPosition()) == 0)
 				{
-					Q->CastOnTarget(target, kHitChanceHigh);
+					Q->CastOnTarget(target, kHitChanceImmobile);
 				}
 			}
 		}
