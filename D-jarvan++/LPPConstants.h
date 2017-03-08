@@ -1,4 +1,3 @@
-#pragma once
 #ifndef LPPConstants_h__
 #define LPPConstants_h__
 
@@ -342,4 +341,4 @@ enum eTaunt
 	kToggle,
 };
 
-#endif // LPPConstants_h__#pragma once
+#endif // LPPConstants_h__

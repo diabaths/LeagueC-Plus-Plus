@@ -48,6 +48,13 @@ struct AdvPredictionOutput
 	std::vector<IUnit*> AoETargetsHit;	// Vector of all targets hit when using AoE prediction
 };
 
+struct PredictionOutput
+{
+	Vec3					CastPosition;
+	std::vector<IUnit*>		EnemiesHit;
+	ePredictionChance		HitChance;
+};
+
 struct NavigationPath
 {
 	int			CurrentWaypoint_;
@@ -104,6 +111,18 @@ struct CastedSpell
 	float	Damage_;
 	float	Range_;
 	Vec3	EndPosition_;
+};
+
+struct LastCastedSpellArgs
+{
+	CastedSpell		Data;
+	int				Tick;
+};
+
+struct SpellInfo
+{
+	char Name[64];
+	char DisplayName[64];
 };
 
 struct ItemData
@@ -253,6 +272,11 @@ public:
 	virtual bool CreatePath2D(Vec2 const& EndPosition, std::vector<Vec2>& Out) = 0;
 	virtual const char* GetBaseSkinName() = 0;
 	virtual float GetBonusMana() = 0;
+	virtual LastCastedSpellArgs* GetLastCastedSpell() = 0;
+	virtual int GetKills() = 0;
+	virtual int GetDeaths() = 0;
+	virtual int GetAssists() = 0;
+	virtual float GetExperience() = 0;
 };
 
 #endif // PluginData_h__

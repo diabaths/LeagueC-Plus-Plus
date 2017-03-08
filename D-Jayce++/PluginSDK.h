@@ -127,6 +127,8 @@ public:
 	virtual bool WithinFogOfWar(Vec3 const& Position) = 0;
 	virtual bool IsShopOpen() = 0;
 	virtual bool IsScoreboardOpen() = 0;
+	virtual bool IssueOrderEx(IUnit* Source, eGameObjectOrder Order, Vec3 const& Position, bool TriggerEvents) = 0;
+	virtual bool IssueOrderEx(IUnit* Source, eGameObjectOrder Order, IUnit* Target, bool TriggerEvents) = 0;
 };
 
 class IDamage
@@ -276,6 +278,8 @@ public:
 	virtual eSpellType GetType() = 0;
 	virtual Vec3 const& GetRangeCheckFrom() = 0;
 	virtual int GetCollisionFlags() = 0;
+	virtual void SetTriggerEvents(bool TriggerEvents) = 0;
+	virtual bool IsTriggeringEvents() = 0;
 };
 
 class IOrbwalking
@@ -430,6 +434,7 @@ public:
 	virtual void LogFile(const char* Filename, const char* Fmt, ...) = 0;
 	virtual void ClearLogFile(const char* Filename) = 0;
 	virtual Vec3 To3D(Vec2 const& Other) = 0;
+	virtual float GetExperienceRequiredForLevel(int Level) = 0;
 };
 
 class IPluginSDK

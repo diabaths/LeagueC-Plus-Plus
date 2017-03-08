@@ -504,5 +504,4 @@ public:
 	}
 };
 
-#endif // Vector3_h__#pragma once
-#pragma once
+#endif // Vector3_h__
