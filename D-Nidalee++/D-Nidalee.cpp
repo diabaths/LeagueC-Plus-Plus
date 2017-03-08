@@ -328,6 +328,7 @@ void Laneclear()
 			if (QC->IsReady() && FarmQCougar->Enabled() && myHero->IsValidTarget(minions, QC->Range()))
 			{
 				QC->CastOnUnit(minions);
+				GOrbwalking->ResetAA();
 			}
 			if (WC->IsReady() && FarmWCougar->Enabled() && myHero->IsValidTarget(minions, WC->Range()))
 			{
@@ -383,6 +384,7 @@ void Jungle()
 			if (QC->IsReady() && JungleQCougar->Enabled() && myHero->IsValidTarget(minions, QC->Range()))
 			{
 				QC->CastOnPlayer();
+				GOrbwalking->ResetAA();
 			}
 			if (WC->IsReady() && JungleWCougar->Enabled() && myHero->IsValidTarget(minions, WC->Range()))
 			{
@@ -575,6 +577,7 @@ void Combo()
 				auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, WC->Range());
 				if (target != nullptr && myHero->IsValidTarget(target, WC->Range()))
 					QC->CastOnPlayer();
+				GOrbwalking->ResetAA();
 			}
 		}
 

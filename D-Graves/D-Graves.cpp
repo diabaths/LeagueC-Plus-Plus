@@ -134,7 +134,7 @@ void  Menu()
 }
 void LoadSpells()
 {
-	Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, true, static_cast<eCollisionFlags>(kCollidesWithWalls | kCollidesWithYasuoWall));
+	Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
 	W = GPluginSDK->CreateSpell2(kSlotW, kCircleCast, true, true, static_cast<eCollisionFlags>(kCollidesWithNothing));
 	E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
 	R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, true, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
@@ -281,6 +281,26 @@ void UseItems()
 void Combo()
 {
 	smitetarget();
+	auto useQ = ComboQ->Enabled();
+	auto useW = ComboW->Enabled();
+	if (useQ)
+	{
+		if (Q->IsReady())
+		{
+			auto t = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+			if (t != nullptr &&  myHero->IsValidTarget(t, Q->Range()))
+				Q->CastOnTarget(t, kHitChanceHigh);
+		}
+	}
+	if (useW)
+	{
+		if (W->IsReady())
+		{
+			auto t = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
+			if (t != nullptr &&  myHero->IsValidTarget(t, W->Range()))
+				W->CastOnTarget(t, kHitChanceHigh);
+		}
+	}
 	if (ComboR->Enabled() && R->IsReady())
 	{
 		for (auto Enemy : GEntityList->GetAllHeros(false, true))
@@ -293,7 +313,7 @@ void Combo()
 				auto TotalD = BaseDamage + ADMultiplier;
 				if (myHero->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable())
 				{
-					if (Enemy->GetHealth() <= TotalD && R->IsReady())
+					if (Enemy->GetHealth() +70 <= TotalD && R->IsReady())
 					{
 						R->CastOnTarget(Enemy, kHitChanceHigh);
 					}
@@ -313,59 +333,7 @@ void Combo()
 }
 
 PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
-{
-	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
-	{
-		if (source == myHero || target != nullptr)
-		{
-			auto useQ = ComboQ->Enabled();
-			auto useW = ComboW->Enabled();
-			if (useQ)
-			{
-				if (Q->IsReady())
-				{
-					auto t = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-					if (t != nullptr &&  myHero->IsValidTarget(t, Q->Range()))
-						Q->CastOnTarget(t, kHitChanceHigh);
-				}
-			}
-			if (useW)
-			{
-				if (W->IsReady())
-				{
-					auto t = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
-					if (t != nullptr &&  myHero->IsValidTarget(t, W->Range()))
-						W->CastOnTarget(t, kHitChanceHigh);
-				}
-			}
-		}
-	}
-	if (GOrbwalking->GetOrbwalkingMode() == kModeMixed && myHero->ManaPercent() > HarassManaPercent->GetInteger())
-	{
-		if (source == myHero || target != nullptr)
-		{
-			auto useQ = HarassQ->Enabled();
-			auto useW = HarassW->Enabled();
-			if (useQ)
-			{
-				if (Q->IsReady())
-				{
-					auto t = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-					if (t != nullptr &&  myHero->IsValidTarget(t, Q->Range()))
-						Q->CastOnTarget(t, kHitChanceHigh);
-				}
-			}
-			if (useW)
-			{
-				if (W->IsReady())
-				{
-					auto t = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
-					if (t != nullptr &&  myHero->IsValidTarget(t, W->Range()))
-						W->CastOnTarget(t, kHitChanceHigh);
-				}
-			}
-		}
-	}
+{	
 	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && ComboE->Enabled())
 	{
 		if (source == myHero || target != nullptr)
@@ -376,58 +344,62 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 					E->CastOnPosition(GGame->CursorPosition());
 			}
 	}
-	if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+}
+void LaneClear()
+{
+	for (auto minions : GEntityList->GetAllMinions(false, true, false))
 	{
-		for (auto minions : GEntityList->GetAllMinions(false, true, false))
+		if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
+			return;
+		if (FarmQ->Enabled() && Q->IsReady())
 		{
-			if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
-				return;
-			if (FarmQ->Enabled() && Q->IsReady())
+			if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))
 			{
-				if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))
-				{
-					Q->CastOnUnit(minions);
-				}
-				else Q->LastHitMinion();
+				Q->CastOnUnit(minions);
 			}
-			if (FarmW->Enabled() && W->IsReady())
+			else Q->LastHitMinion();
+		}
+		if (FarmW->Enabled() && W->IsReady())
+		{
+			if (minions != nullptr && myHero->IsValidTarget(minions, W->Range()))
 			{
-				if (minions != nullptr && myHero->IsValidTarget(minions, W->Range()))
-				{
-					W->CastOnUnit(minions);
-				}
-				else W->LastHitMinion();
+				W->CastOnUnit(minions);
+			}
+			else W->LastHitMinion();
+		}
+	}
+}
+void JungleClear()
+{
+	for (auto jMinion : GEntityList->GetAllMinions(false, false, true))
+	{
+		if (myHero->ManaPercent() < JungleManaPercent->GetInteger())
+			return;
+		if (JungleQ->Enabled() && Q->IsReady())
+		{
+			if (jMinion != nullptr && myHero->IsValidTarget(jMinion, Q->Range()))
+			{
+				Q->CastOnUnit(jMinion);
 			}
 		}
-		for (auto jMinion : GEntityList->GetAllMinions(false, false, true))
+		if (JungleW->Enabled() && W->IsReady())
 		{
-			if (myHero->ManaPercent() < JungleManaPercent->GetInteger())
-				return;
-			if (JungleQ->Enabled() && Q->IsReady())
+			if (jMinion != nullptr && myHero->IsValidTarget(jMinion, W->Range()))
 			{
-				if (jMinion != nullptr && myHero->IsValidTarget(jMinion, Q->Range()))
-				{
-					Q->CastOnUnit(jMinion);
-				}
+				W->CastOnUnit(jMinion);
 			}
-			if (JungleW->Enabled() && W->IsReady())
+		}
+		if (JungleE->Enabled() && E->IsReady())
+		{
+			if (jMinion != nullptr && myHero->IsValidTarget(jMinion, 500))
 			{
-				if (jMinion != nullptr && myHero->IsValidTarget(jMinion, W->Range()))
-				{
-					W->CastOnUnit(jMinion);
-				}
-			}
-			if (JungleE->Enabled() && E->IsReady())
-			{
-				if (jMinion != nullptr && myHero->IsValidTarget(jMinion, 500))
-				{
-					E->CastOnPosition(GGame->CursorPosition());
-				}
+				E->CastOnPosition(GGame->CursorPosition());
 			}
 		}
 	}
 }
-/*void Harass()
+		
+void Harass()
 {
 	if (myHero->ManaPercent() < HarassManaPercent->GetInteger())
 		return;
@@ -449,7 +421,7 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 				W->CastOnTarget(target, kHitChanceHigh);
 		}
 	}
-}*/
+}
 
 void killsteal()
 {
@@ -488,7 +460,7 @@ void killsteal()
 					auto BaseDamage = std::vector<double>({ 250, 400, 550 }).at(Rlvl);
 					auto ADMultiplier = 1.2 * GEntityList->Player()->TotalPhysicalDamage();
 					auto TotalD = BaseDamage + ADMultiplier;
-					if (Enemy->GetHealth() <= TotalD)
+					if (Enemy->GetHealth()+70 <= TotalD)
 					{
 						R->CastOnTarget(Enemy, kHitChanceHigh);
 					}
@@ -594,7 +566,11 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	{
 		Combo();
 	}
-
+	if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
+	{
+		LaneClear();
+		JungleClear();
+	}
 	killsteal();
 	UseItems();
 	Usepotion();

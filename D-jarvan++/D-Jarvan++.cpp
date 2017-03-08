@@ -30,6 +30,7 @@ IMenuOption* ComboQ;
 IMenuOption* ComboW;
 IMenuOption* ComboE;
 IMenuOption* ComboR;
+IMenuOption* ComboRAOEuse;
 IMenuOption* HarassQ;
 IMenuOption* HarassW;
 IMenuOption* HarassE;
@@ -104,6 +105,7 @@ IInventoryItem* Youmuu;
 
 int lastq;
 int lastr;
+int _haveulti;
 void  Menu()
 {
 	MainMenu = GPluginSDK->AddMenu("D-Jarvan");
@@ -114,7 +116,7 @@ void  Menu()
 	ComboW = ComboMenu->CheckBox("Use W", true);
 	ComboE = ComboMenu->CheckBox("Use E", true);
 	ComboR = ComboMenu->CheckBox("Use R", true);
-
+	ComboRAOEuse = ComboMenu->CheckBox("Use R if Hit 3 Enemys", true);
 
 	HarassMenu = MainMenu->AddMenu("Harass Setting");
 	Harassitems = HarassMenu->CheckBox("Use Items Jungle", true);
@@ -224,7 +226,20 @@ void LoadSpells()
 	Biscuit = GPluginSDK->CreateItemForId(2010, 0);
 	hunter = GPluginSDK->CreateItemForId(2032, 0);
 }
-
+void GetBuffName()
+{
+	std::vector<void*> vecBuffs; GEntityList->Player()->GetAllBuffsData(vecBuffs); for (auto i : vecBuffs)
+	{
+		GBuffData->GetBuffName(i); GGame->PrintChat(GBuffData->GetBuffName(i));
+	}
+}
+bool haveulti()
+{
+	if (myHero->GetSpellBook()->GetLevel(kSlotR) > 0)
+	{
+		return myHero->HasBuff("JarvanIVCataclysm");
+	}
+}
 static bool InFountain(IUnit *unit)
 {
 	//TODO: Implement
@@ -453,17 +468,27 @@ void Combo()
 	}
 	if (ComboR->Enabled() && R->IsReady())
 	{
-		auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, R->Range());
+		auto Enemy = GTargetSelector->GetFocusedTarget();
 		if (myHero->IsValidTarget(Enemy, R->Range()) && Enemy != nullptr)
 		{
-			auto dmgr = GDamage->GetSpellDamage(myHero, Enemy, kSlotR);
-			auto dmgq = GDamage->GetSpellDamage(myHero, Enemy, kSlotQ);
-			auto dmga = 2 * GDamage->GetAutoAttackDamage(myHero, Enemy, true);
-			if (!Enemy->IsInvulnerable() && Enemy->GetHealth() < dmgr + dmgq + dmga)
+			auto Rlvl = GEntityList->Player()->GetSpellLevel(kSlotR) - 1;
+			auto BaseDamage = std::vector<double>({ 200, 325, 450 }).at(Rlvl);
+			auto ADMultiplier = 1.5 * GEntityList->Player()->TotalPhysicalDamage();
+			auto dmg = GDamage->GetSpellDamage(myHero, Enemy, kSlotQ);
+			auto TotalD = BaseDamage + ADMultiplier;
+			if (!Enemy->IsInvulnerable() && Enemy->GetHealth() < TotalD + dmg)
 			{
 				R->CastOnTarget(Enemy);
 			}
 		}
+	}
+	if (R->IsReady() && ComboRAOEuse->Enabled())
+	{
+		for (auto target : GEntityList->GetAllHeros(false, true))
+			if (target != nullptr &&  myHero->IsValidTarget(target, R->Range()))
+			{
+				R->CastOnTargetAoE(target, 3, kHitChanceLow);
+			}
 	}
 }
 void Forest()
@@ -516,14 +541,7 @@ void laneclear()
 			if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))
 			{
 				auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
-				Vec3 pos;
-				int hit;
-				GPrediction->FindBestCastPosition(Q->Range(), Q->Radius(), true, false, false, pos, hit);
-				if (hit >= 3)
-				{
-					Q->CastOnPosition(pos);
-					return;
-				}
+				Q->AttackMinions();
 				if (minions->GetHealth() < dmg && GetDistance(myHero, minions) > myHero->GetRealAutoAttackRange(minions))
 				{
 					Q->CastOnUnit(minions);
@@ -582,7 +600,7 @@ void jungleclear()
 		{
 			if (jMinion != nullptr && !jMinion->IsDead() && myHero->IsValidTarget(jMinion, E->Range()))
 			{
-				E->CastOnPlayer();
+				E->CastOnUnit(jMinion);
 				return;
 			}
 		}
@@ -654,8 +672,12 @@ void Harass()
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, E->Range());
 			if (target != nullptr)
 			{
-				if (myHero->IsValidTarget(target, E->Range()))
-					E->CastOnPlayer();
+				if (myHero->IsValidTarget(target, E->Range())) {
+					AdvPredictionOutput prediction_output;
+					E->RunPrediction(target, true, kCollidesWithNothing, &prediction_output);
+					if (prediction_output.HitChance >= kHitChanceHigh)
+						E->CastOnTarget(target);
+				}
 			}
 		}
 	}
@@ -787,7 +809,21 @@ PLUGIN_EVENT(void) OnRender()
 	}
 }
 
-
+PLUGIN_EVENT(void) OnCreateObject(IUnit* obj)
+{
+	if (strcmp(obj->GetObjectName(), "JarvanIVCataclysm") == 0)
+	{
+		_haveulti = true;
+		GGame->PrintChat("ulti");
+	}
+}
+PLUGIN_EVENT(void) OnDestroyObject(IUnit* obj)
+{
+	if (strcmp(obj->GetObjectName(), "JarvanCataclysm_tar") == 0)
+	{
+		_haveulti = false;
+	}
+}
 
 
 PLUGIN_EVENT(void) OnGameUpdate()
@@ -828,6 +864,8 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 
 	GEventManager->AddEventHandler(kEventOnGameUpdate, OnGameUpdate);
 	GEventManager->AddEventHandler(kEventOnRender, OnRender);
+//	GEventManager->AddEventHandler(kEventOnCreateObject, OnCreateObject);
+	//GEventManager->AddEventHandler(kEventOnDestroyObject, OnDestroyObject);
 	if (strcmp(GEntityList->Player()->ChampionName(), "JarvanIV") == 0)
 	{
 		GGame->PrintChat("D-JarvanIV : Loaded");
@@ -845,5 +883,7 @@ PLUGIN_API void OnUnload()
 
 	GEventManager->RemoveEventHandler(kEventOnGameUpdate, OnGameUpdate);
 	GEventManager->RemoveEventHandler(kEventOnRender, OnRender);
+	//GEventManager->RemoveEventHandler(kEventOnCreateObject, OnCreateObject);
+	//GEventManager->RemoveEventHandler(kEventOnDestroyObject, OnDestroyObject);
 
 }

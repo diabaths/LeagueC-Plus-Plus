@@ -223,7 +223,7 @@ void stucktear()
 	{
 		if ((Tear->IsOwned() || Manamune->IsOwned()) && !myHero->IsRecalling())
 		{
-			Q->CastOnPosition(myHero->ServerPosition());
+			Q->CastOnPosition(myHero->GetPosition().Extend(GGame->CursorPosition(), 300));
 		}
 	}
 }
