@@ -134,7 +134,7 @@ void  Menu()
 }
 void LoadSpells()
 {
-	Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
+	Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall | kCollidesWithWalls));
 	W = GPluginSDK->CreateSpell2(kSlotW, kCircleCast, true, true, static_cast<eCollisionFlags>(kCollidesWithNothing));
 	E = GPluginSDK->CreateSpell2(kSlotE, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
 	R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, true, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
@@ -309,7 +309,7 @@ void Combo()
 			{
 				auto Rlvl = GEntityList->Player()->GetSpellLevel(kSlotR) - 1;
 				auto BaseDamage = std::vector<double>({ 250, 400, 550 }).at(Rlvl);
-				auto ADMultiplier = 1.2 * GEntityList->Player()->TotalPhysicalDamage();
+				auto ADMultiplier = 1.1 * GEntityList->Player()->TotalPhysicalDamage();
 				auto TotalD = BaseDamage + ADMultiplier;
 				if (myHero->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable())
 				{
@@ -393,6 +393,7 @@ void JungleClear()
 		{
 			if (jMinion != nullptr && myHero->IsValidTarget(jMinion, 500))
 			{
+			if(!myHero->GetBuffDataByName("GravesBasicAttackAmmo2") && E->IsReady())
 				E->CastOnPosition(GGame->CursorPosition());
 			}
 		}
@@ -453,14 +454,14 @@ void killsteal()
 				}
 			}
 			if (KillstealR->Enabled() && R->IsReady())
-			{			
+			{
 				if (myHero->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable())
 				{
 					auto Rlvl = GEntityList->Player()->GetSpellLevel(kSlotR) - 1;
 					auto BaseDamage = std::vector<double>({ 250, 400, 550 }).at(Rlvl);
-					auto ADMultiplier = 1.2 * GEntityList->Player()->TotalPhysicalDamage();
+					auto ADMultiplier = 1.1 * GEntityList->Player()->TotalPhysicalDamage();
 					auto TotalD = BaseDamage + ADMultiplier;
-					if (Enemy->GetHealth()+70 <= TotalD)
+					if (Enemy->GetHealth() + 70 <= TotalD)
 					{
 						R->CastOnTarget(Enemy, kHitChanceHigh);
 					}
