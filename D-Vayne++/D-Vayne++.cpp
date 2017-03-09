@@ -73,7 +73,7 @@ void  Menu()
 	UseQC = Qmenu->CheckBox("Use Q Combo", true);
 	UseQH = Qmenu->CheckBox("Use Q Harass", true);
 	KillstealQ = Qmenu->CheckBox("Use Q Killsteal", true);
-	restrictq = Qmenu->CheckBox("Restrict Q usage", true);
+	restrictq = Qmenu->CheckBox("Restrict Q usage, false=ToMouse", true);
 	UseQJ = Qmenu->CheckBox("Use Q to Farm", true);
 	FarmManaPercent = Qmenu->AddInteger("Mana Percent for Farm", 10, 100, 70);
 
