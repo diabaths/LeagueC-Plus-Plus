@@ -298,29 +298,36 @@ void Combo()
 		if (Q->IsReady())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-			if (target != nullptr && myHero->IsValidTarget(target, Q->Range()))
-				if (GPrediction->GetCollisionFlagsForPoint(target->GetPosition()) == 0)
-				Q->CastOnTarget(target, kHitChanceMedium);
-			lastq = GGame->CurrentTick();
-			if(myHero->IsValidTarget(target, Q2->Range()) && target->HasBuff("threshQ") && GGame->CurrentTick()-lastq>80)
+			if (myHero->IsValidTarget(target, Q->Range()))
 			{
-				Q2->CastOnTarget(target);
-				lastq = GGame->CurrentTick();
+				AdvPredictionOutput prediction_output;
+				Q->RunPrediction(target, false, kCollidesWithYasuoWall|kCollidesWithMinions, &prediction_output);
+				if (prediction_output.HitChance >= kHitChanceHigh)
+				{
+					Q->CastOnUnit(target);
+					lastq = GGame->CurrentTick();
+				}
+				if (myHero->IsValidTarget(target, Q2->Range()) && target->HasBuff("threshQ") && GGame->CurrentTick() - lastq > 80)
+				{
+					Q2->CastOnTarget(target);
+					lastq = GGame->CurrentTick();
+				}
 			}
 		}
 	}
-	if (ComboE->Enabled() && GGame->CurrentTick()-lastq>150)
+	if (ComboE->Enabled() && GGame->CurrentTick()-lastq>100)
 	{
 		if (E->IsReady())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, E->Range());
 			if (target != nullptr &&myHero->IsValidTarget(target, E->Range()))
+			{
 				if (Epush->Enabled())
 				{
-					E->CastOnTarget(target, kHitChanceHigh);
+					E->CastOnTarget(target, kHitChanceMedium);
 				}
-			else E->CastOnPosition(target->GetPosition().Extend(myHero->GetPosition(), GetDistanceVectors(target->GetPosition(), myHero->GetPosition()) + 400));
-
+				else E->CastOnPosition(target->GetPosition().Extend(myHero->GetPosition(), GetDistanceVectors(target->GetPosition(), myHero->GetPosition()) + 400));
+			}
 		}
 	}
 	if (ComboW->Enabled())

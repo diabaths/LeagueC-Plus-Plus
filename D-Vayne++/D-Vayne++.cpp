@@ -316,7 +316,7 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 						Q->CastOnPosition(GGame->CursorPosition());
 						return;
 					}
-					if (target->GetHealth() < dmg + dmg1 && GetDistance(myHero, target) < Q->Range() + myHero->GetRealAutoAttackRange(target) && GetDistance(myHero, target) > myHero->GetRealAutoAttackRange(target))
+					if (!target->IsInvulnerable() && target->GetHealth() < dmg + dmg1 && GetDistance(myHero, target) < Q->Range() + myHero->GetRealAutoAttackRange(target) && GetDistance(myHero, target) > myHero->GetRealAutoAttackRange(target))
 					{
 						Q->CastOnPosition(target->ServerPosition());
 						return;
@@ -347,7 +347,7 @@ void killsteal()
 				auto dmg = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotQ);
 				if (myHero->IsValidTarget(Enemy, myHero->GetRealAutoAttackRange(Enemy) + Q->Range()) && !Enemy->IsInvulnerable())
 				{
-					if (Enemy->GetHealth() <= dmg && Q->IsReady())
+					if (Enemy->GetHealth() <= dmg && Q->IsReady() && !Enemy->IsInvulnerable())
 					{
 						Q->CastOnPosition(Enemy->ServerPosition());
 					}
