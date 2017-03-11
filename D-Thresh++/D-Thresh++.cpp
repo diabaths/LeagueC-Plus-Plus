@@ -58,6 +58,7 @@ IMenuOption* DrawQ;
 IMenuOption* DrawW;
 IMenuOption* DrawE;
 IMenuOption* DrawR;
+IMenuOption* Combormin;
 
 IUnit* myHero;
 
@@ -91,7 +92,8 @@ void  Menu()
 	ComboW = ComboMenu->CheckBox("Use W", true);
 	ComboE = ComboMenu->CheckBox("Use E", true);
 	ComboR = ComboMenu->CheckBox("Use R", true);
-	ComboRAOEuse = ComboMenu->CheckBox("Use R if hit 3 Enemys", false);
+	ComboRAOEuse = ComboMenu->CheckBox("Use R if hit X Enemys", true);
+	Combormin = ComboMenu->AddInteger("Use R if Hit ", 1, 5, 2);
 	Epush = ComboMenu->CheckBox("E Push/Pull (on / off)", false);
 	
 	HarassMenu = MainMenu->AddMenu("Harass Setting");
@@ -276,7 +278,26 @@ void Pull()
 		E->CastOnPosition(target->GetPosition().Extend(myHero->GetPosition(), GetDistanceVectors(target->GetPosition(), myHero->GetPosition()) + 400));
 	}
 }
-
+void CastQ(IUnit* target)
+{
+	AdvPredictionOutput prediction_output;
+	Q->RunPrediction(target, true, kCollidesWithYasuoWall | kCollidesWithMinions, &prediction_output);
+	if (prediction_output.HitChance >= kHitChanceHigh)
+	{
+		Q->CastOnTarget(target, kHitChanceCollision);
+	}
+}
+static void CheckRComboCast()
+{
+	auto min = Combormin->GetInteger();;
+	int Enemies2;
+	Vec3 pos;
+	R->FindBestCastPosition(false, true, pos, Enemies2);
+	if (Enemies2 >= min)
+	{
+		R->CastOnPlayer();
+	}
+}
 void Combo()
 {
 	if (Ignite != nullptr)
@@ -301,10 +322,10 @@ void Combo()
 			if (myHero->IsValidTarget(target, Q->Range()))
 			{
 				AdvPredictionOutput prediction_output;
-				Q->RunPrediction(target, false, kCollidesWithYasuoWall|kCollidesWithMinions, &prediction_output);
+				Q->RunPrediction(target, false, kCollidesWithYasuoWall | kCollidesWithMinions, &prediction_output);
 				if (prediction_output.HitChance >= kHitChanceHigh)
 				{
-					Q->CastOnUnit(target);
+					Q->CastOnTarget(target, kHitChanceCollision);
 					lastq = GGame->CurrentTick();
 				}
 				if (myHero->IsValidTarget(target, Q2->Range()) && target->HasBuff("threshQ") && GGame->CurrentTick() - lastq > 80)
@@ -315,14 +336,14 @@ void Combo()
 			}
 		}
 	}
-	if (ComboE->Enabled() && GGame->CurrentTick()-lastq>100)
+	if (ComboE->Enabled() && GGame->CurrentTick() - lastq > 100)
 	{
 		if (E->IsReady())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, E->Range());
 			if (target != nullptr &&myHero->IsValidTarget(target, E->Range()))
 			{
-				if (Epush->Enabled())
+				if (Epush->Enabled() || myHero->HealthPercent() < 15)
 				{
 					E->CastOnTarget(target, kHitChanceMedium);
 				}
@@ -339,7 +360,7 @@ void Combo()
 				if (myHero->IsValidTarget(ally, W->Range()) && CountEnemiesInRange(2000) > 0)
 				{
 					if (ally->HealthPercent() <= 30)
-						W->CastOnTarget(ally);
+						W->CastOnPosition(ally->GetPosition());
 					else if (myHero->HealthPercent() <= 30) W->CastOnPlayer();
 				}
 			}
@@ -353,7 +374,7 @@ void Combo()
 			{
 				auto dmg = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotR);
 				if (myHero->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable())
-				
+
 				{
 					if (Enemy->GetHealth() <= dmg)
 					{
@@ -367,12 +388,9 @@ void Combo()
 	{
 		for (auto Enemy : GEntityList->GetAllHeros(false, true))
 		{
-			if (Enemy != nullptr && !Enemy->IsDead())
+			if (Enemy != nullptr && !Enemy->IsDead() && myHero->IsValidTarget(Enemy, R->Range()))
 			{
-				if (Enemy != nullptr &&  myHero->IsValidTarget(Enemy, R->Range()))
-				{
-					R->CastOnTargetAoE(Enemy, 2, kHitChanceLow);
-				}
+				CheckRComboCast();
 			}
 		}
 	}
@@ -384,7 +402,7 @@ void ThrowLantern()
 	{
 		if (myHero->IsValidTarget(ally, W->Range()))
 		{
-			W->CastOnTarget(ally);
+			W->CastOnPosition(ally->GetPosition());
 		}
 	}	
 }
@@ -392,29 +410,33 @@ void Harass()
 {
 	if (myHero->ManaPercent() < HarassManaPercent->GetInteger())
 		return;
-	auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
+	if (HarassQ->Enabled() && Q->IsReady())
 	{
-		if (HarassQ->Enabled())
+		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
+		if (myHero->IsValidTarget(target, Q->Range()))
 		{
-			if (Q->IsReady())
+			AdvPredictionOutput prediction_output;
+			Q->RunPrediction(target, false, kCollidesWithYasuoWall | kCollidesWithMinions, &prediction_output);
+			if (prediction_output.HitChance >= kHitChanceHigh)
 			{
-				if (GPrediction->GetCollisionFlagsForPoint(target->GetPosition()) == 0)
-				if (myHero->IsValidTarget(target, Q->Range()))
-					Q->CastOnTarget(target, kHitChanceHigh);
+				Q->CastOnTarget(target, kHitChanceCollision);
 				lastq = GGame->CurrentTick();
 			}
 		}
-		if (HarassQ2->Enabled() && GGame->CurrentTick() - lastq > 50)
+	}
+	if (HarassQ2->Enabled() && Q2->IsReady() && GGame->CurrentTick() - lastq > 50)
+	{
+		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q2->Range());
+		if (myHero->IsValidTarget(target, Q2->Range()) && target->HasBuff("threshQ"))
 		{
-			if (myHero->IsValidTarget(target, Q2->Range()) && target->HasBuff("threshQ"))
-				Q2->CastOnTarget(target);
+			Q2->CastOnTarget(target);
 			lastq = GGame->CurrentTick();
-
 		}
 	}
 	if (HarassE->Enabled())
 	{
-		if (E->IsReady() && GGame->CurrentTick()-lastq>100)
+		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, E->Range());
+		if (E->IsReady() && GGame->CurrentTick() - lastq > 100)
 		{
 			if (myHero->IsValidTarget(target, E->Range()))
 			{
@@ -519,7 +541,13 @@ void killsteal()
 				{
 					if (Enemy->GetHealth() <= dmg && Q->IsReady())
 					{
-						Q->CastOnTarget(Enemy, kHitChanceHigh);
+						AdvPredictionOutput prediction_output;
+						Q->RunPrediction(Enemy, false, kCollidesWithYasuoWall | kCollidesWithMinions, &prediction_output);
+						if (prediction_output.HitChance >= kHitChanceHigh)
+						{
+							Q->CastOnTarget(Enemy, kHitChanceCollision);
+							lastq = GGame->CurrentTick();
+						}
 					}
 				}
 			}
@@ -653,7 +681,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 }
 
 PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
-{
+{	
 	PluginSDKSetup(PluginSDK);
 	Menu();
 	LoadSpells();
@@ -676,10 +704,10 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 
 
 PLUGIN_API void OnUnload()
-{
+{	
+	
 	MainMenu->Remove();
-
-
+	
 	GEventManager->RemoveEventHandler(kEventOnGameUpdate, OnGameUpdate);
 	GEventManager->RemoveEventHandler(kEventOnRender, OnRender);
 	GEventManager->RemoveEventHandler(kEventOnGapCloser, OnGapcloser);
