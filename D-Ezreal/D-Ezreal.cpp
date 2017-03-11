@@ -245,7 +245,15 @@ void UseItems()
 			}
 	}
 }
-	
+void CastQ(IUnit* target)
+{
+	AdvPredictionOutput prediction_output;
+	Q->RunPrediction(target, true, kCollidesWithYasuoWall | kCollidesWithMinions, &prediction_output);
+	if (prediction_output.HitChance >= kHitChanceHigh)
+	{				
+			Q->CastOnTarget(target, kHitChanceCollision);
+	}
+}
 void Combo()
 {
 	if (Ignite != nullptr)
@@ -270,10 +278,7 @@ void Combo()
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
 			if (myHero->IsValidTarget(target, Q->Range()))
 			{
-				if (GPrediction->GetCollisionFlagsForPoint(target->GetPosition()) == 0)
-				{
-					Q->CastOnTarget(target, kHitChanceHigh);
-				}
+				CastQ(target);
 			}
 		}
 	}
@@ -390,10 +395,7 @@ void Harass()
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
 			if (myHero->IsValidTarget(target, Q->Range()))
 			{
-				if (GPrediction->GetCollisionFlagsForPoint(target->GetPosition()) == 0)
-				{
-					Q->CastOnTarget(target, kHitChanceHigh);
-				}
+				CastQ(target);
 			}
 		}
 	}
@@ -453,11 +455,7 @@ void killsteal()
 				{
 					if (Enemy->GetHealth() <= dmg && Q->IsReady())
 					{
-
-						if (GPrediction->GetCollisionFlagsForPoint(Enemy->GetPosition()) == 0)
-						{
-							Q->CastOnTarget(Enemy, kHitChanceHigh);
-						}
+						CastQ(Enemy);
 					}
 				}
 			}
@@ -544,12 +542,11 @@ PLUGIN_EVENT(void) OnRender()
 
 PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
 {
-	if (args.Sender->IsEnemy(myHero) && args.Sender->IsHero())
+	if (args.Sender != myHero && myHero->IsValidTarget(args.Sender, E->Range())
+		&& E->IsReady() && args.Sender->IsEnemy(myHero) && AutoEGapcloser->Enabled()
+		&& (myHero->GetPosition() - args.EndPosition).Length() < 250)
 	{
-		if (AutoEGapcloser->Enabled() && E->IsReady() && myHero->IsValidTarget(args.Sender, 250) && !args.IsTargeted)
-		{
-			E->CastOnPosition(myHero->ServerPosition().Extend(args.Sender->GetPosition(), -E->Range()));
-		}
+		E->CastOnPosition(myHero->ServerPosition().Extend(args.Sender->GetPosition(), -E->Range()));
 	}
 }
 
