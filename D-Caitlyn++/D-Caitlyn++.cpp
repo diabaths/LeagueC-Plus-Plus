@@ -21,7 +21,6 @@ IMenu* MiscMenu;
 IMenu* Drawings;
 IMenu* ItemsMenu;
 IMenu* PotionMenu;
-IMenuOption* UseIgnitecombo;
 IMenuOption* ComboQ;
 IMenuOption* ComboW;
 IMenuOption* ComboE;
@@ -43,9 +42,6 @@ IMenuOption* ImmobileR;
 IMenuOption* Blade_Cutlass;
 IMenuOption* MyHpPreBlade;
 IMenuOption* EnemyHpPreBlade;
-IMenuOption*hextechuse;
-IMenuOption*MyHpPrehextech;
-IMenuOption*EnemyHpPrehextech;
 IMenuOption* usepotion;
 IMenuOption* AutoEGapcloser;
 IMenuOption* usepotionhpper;
@@ -70,7 +66,7 @@ ISpell2* R;
 
 ISpell* Ignite;
 
-IInventoryItem* hextech;
+
 IInventoryItem* blade;
 IInventoryItem* Cutlass;
 IInventoryItem* HealthPot;
@@ -85,7 +81,6 @@ int LastWTick;
 void  Menu()
 {	
 	MainMenu = GPluginSDK->AddMenu("D-Caitlyn++");
-	UseIgnitecombo = MainMenu->CheckBox("Use Ignite", true);
 	QMenu = MainMenu->AddMenu("Q Settings");
 	ComboQ = QMenu->CheckBox("Use Q in combo", true);
 	HarassQ = QMenu->CheckBox("Use Q harass", true);
@@ -123,9 +118,7 @@ void  Menu()
 	Blade_Cutlass = ItemsMenu->CheckBox("Blade-Cutlass", true);
 	MyHpPreBlade = ItemsMenu->AddInteger("Use Blade-Cutlass if my HP <", 10, 100, 35);
 	EnemyHpPreBlade = ItemsMenu->AddInteger("Use Blade-Cutlass if Enemy HP <", 10, 100, 35);
-	hextechuse = ItemsMenu->CheckBox("hextech", true);
-	MyHpPrehextech = ItemsMenu->AddInteger("Use hextech if my HP <", 10, 100, 35);
-	EnemyHpPrehextech = ItemsMenu->AddInteger("Use hextech if Enemy HP <", 10, 100, 35);
+	
 
 	PotionMenu = MainMenu->AddMenu("Potion Setting");
 	usepotion = PotionMenu->CheckBox("Use potions", true);
@@ -165,7 +158,7 @@ void LoadSpells()
 	}
 	else Ignite == nullptr;
 
-	hextech = GPluginSDK->CreateItemForId(3146, 700);
+	
 	blade = GPluginSDK->CreateItemForId(3153, 550);
 	Cutlass = GPluginSDK->CreateItemForId(3144, 550);
 	HealthPot = GPluginSDK->CreateItemForId(2003, 0);
@@ -256,15 +249,7 @@ void UseItems()
 						Cutlass->CastOnTarget(enemy);
 				}
 			}
-			if (hextechuse->Enabled() && myHero->IsValidTarget(enemy, 700))
-			{
-				if (myHero->HealthPercent() < MyHpPrehextech->GetInteger() || enemy->HealthPercent() < EnemyHpPrehextech->GetInteger())
-				{
-					if (hextech->IsOwned() && hextech->IsReady())
-						hextech->CastOnTarget(enemy);
-
-				}
-			}
+			
 		}
 	}
 }
