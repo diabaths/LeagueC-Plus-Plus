@@ -75,6 +75,7 @@ IInventoryItem* Biscuit;
 IInventoryItem* RefillPot;
 IInventoryItem* hunter;
 
+float RRange;
 int QCastTime;
 int LastWTick;
 
@@ -143,7 +144,7 @@ void LoadSpells()
 	E->SetSkillshot(0.25f, 80.f, 1600.f, 770.f);
 
 	R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, false, false, static_cast<eCollisionFlags>( kCollidesWithYasuoWall |kCollidesWithHeroes));
-	R->SetSkillshot(0.25f, 0.f, 1000.f, 3000.f);
+	R->SetSkillshot(0.25f, 0.f, 1000.f, RRange);
 
 	auto slot1 = GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot1);
 	auto slot2 = GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot2);
@@ -212,7 +213,7 @@ int CountEnemiesInRange(float range)
 }
 void CastQ(IUnit* target)
 {
-	if (Q->IsReady() && target != nullptr)
+	if (Q->IsReady() && target != nullptr && !target->IsWard())
 	{
 		if (myHero->IsValidTarget(target, Q->Range()))
 		{
@@ -280,8 +281,8 @@ void Combo()
 	if (ComboR->Enabled() && R->IsReady() && GGame->CurrentTick() - QCastTime > 1000)
 	{
 		auto Rmin = RMin->GetInteger();
-		auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, R->Range());
-		if (myHero->IsValidTarget(Enemy, R->Range()) && Enemy != nullptr)
+		auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, RRange);
+		if (myHero->IsValidTarget(Enemy, RRange) && Enemy != nullptr)
 		{
 			auto dmg = GDamage->GetSpellDamage(myHero, Enemy, kSlotR);
 			if ( Enemy->GetHealth() < dmg && !Enemy->IsInvulnerable() && GetDistance(myHero, Enemy) > Rmin)
@@ -352,7 +353,7 @@ void Harass()
 		if (Q->IsReady())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-			if (myHero->IsValidTarget(target, Q->Range()) && target != nullptr)
+			if (myHero->IsValidTarget(target, Q->Range()) && target != nullptr && !target->IsWard())
 			{
 				AdvPredictionOutput prediction_output;
 				Q->RunPrediction(target, true, kCollidesWithYasuoWall, &prediction_output);
@@ -379,7 +380,7 @@ void AutoImmobile()
 	if (Q->IsReady())
 	{
 		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-		if (target != nullptr && myHero->IsValidTarget(target, Q->Range()) && !target->IsInvulnerable())
+		if (!target->IsWard() && target != nullptr && myHero->IsValidTarget(target, Q->Range()) && !target->IsInvulnerable())
 		{
 			if (ImmobileQ->Enabled())
 			{
@@ -408,7 +409,7 @@ void killsteal()
 			if (KillstealR->Enabled() && R->IsReady())
 			{
 				auto Rmin = RMin->GetInteger();
-				if (myHero->IsValidTarget(Enemy, R->Range()) && Enemy != nullptr)
+				if (myHero->IsValidTarget(Enemy, RRange) && Enemy != nullptr)
 				{
 					auto dmg = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotR);
 					if (Enemy->GetHealth() <  dmg &&!Enemy->IsInvulnerable() && GetDistance(myHero, Enemy) > Rmin)
@@ -537,7 +538,7 @@ PLUGIN_EVENT(void) OnRender()
 
 		if (E->IsReady() && DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E->Range()); }
 
-		if (R->IsReady() && DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), R->Range()); }
+		if (R->IsReady() && DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), RRange); }
 	}
 	else
 	{
@@ -547,7 +548,7 @@ PLUGIN_EVENT(void) OnRender()
 
 		if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E->Range()); }
 
-		if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), R->Range()); }
+		if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), RRange); }
 	}
 }
 
@@ -557,7 +558,10 @@ PLUGIN_EVENT(void) OnRender()
 PLUGIN_EVENT(void) OnGameUpdate()
 {
 	if (GGame->IsChatOpen()) return;
-	
+	if (myHero->GetSpellBook()->GetLevel(kSlotR) > 0)
+	{
+		RRange = 1500 + 500 * GEntityList->Player()->GetSpellLevel(kSlotR);
+	}
 	if (W->IsReady() && GGame->CurrentTick() - LastWTick > 500)
 	{
 		if ( myHero->GetMana() > Q->ManaCost() + E->ManaCost())
