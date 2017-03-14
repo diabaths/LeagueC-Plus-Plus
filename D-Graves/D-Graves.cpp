@@ -56,6 +56,7 @@ IMenuOption* DrawQ;
 IMenuOption* DrawW;
 IMenuOption* DrawE;
 IMenuOption* DrawR;
+IMenuOption* Burst;
 
 IUnit* myHero;
 
@@ -115,8 +116,9 @@ void  Menu()
 	KillstealW = MiscMenu->CheckBox("Use W to killsteal", true);
 	KillstealR = MiscMenu->CheckBox("Use R to killsteal", true);
 	GapcloseW = MiscMenu->CheckBox("Use W to Gapclose", true);
+	Burst = MiscMenu->AddKey("Burst Combo", 75);
 	//Gapclose E = MiscMenu->CheckBox("Use E to Gapclose", true);
-
+	
 	ItemsMenu = MainMenu->AddMenu("Items Setting");
 	Blade_Cutlass = ItemsMenu->CheckBox("Blade-Cutlass", true);
 	MyHpPreBlade = ItemsMenu->AddInteger("Use Blade-Cutlass if my HP <", 10, 100, 35);
@@ -308,12 +310,12 @@ void Combo()
 			if (Enemy != nullptr && !Enemy->IsDead())
 			{
 				auto Rlvl = GEntityList->Player()->GetSpellLevel(kSlotR) - 1;
-				auto BaseDamage = std::vector<double>({ 250, 400, 550 }).at(Rlvl);
+				auto BaseDamage = std::vector<double>({ 200, 320, 440 }).at(Rlvl);
 				auto ADMultiplier = 1.1 * GEntityList->Player()->TotalPhysicalDamage();
 				auto TotalD = BaseDamage + ADMultiplier;
 				if (myHero->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable())
 				{
-					if (Enemy->GetHealth() +70 <= TotalD && R->IsReady())
+					if (Enemy->GetHealth() + 70 <= TotalD)
 					{
 						R->CastOnTarget(Enemy, kHitChanceHigh);
 					}
@@ -331,6 +333,23 @@ void Combo()
 			}
 	}
 }
+/*auto ta = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range() + 100);
+if (ta != nullptr && myHero->IsValidTarget(ta, Q->Range()))
+{
+	AdvPredictionOutput prediction_output;
+	Q->RunPrediction(ta, true, kCollidesWithYasuoWall, &prediction_output);
+	if (prediction_output.HitChance >= kHitChanceHigh)
+	{
+		if (myHero->IsValidTarget(ta, Q->Range() - 200))
+		{
+			myHero->AnimationTime();
+			E->CastOnPosition(ta->GetPosition());
+			R->CastOnPosition(GGame->CursorPosition());
+			Q->CastOnPosition(GGame->CursorPosition());
+			GOrbwalking->ResetAA();
+		}
+	}
+}*/
 
 PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 {	
@@ -342,6 +361,7 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 				auto t = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
 				if (t != nullptr &&  myHero->IsValidTarget(t, Q->Range()))
 					E->CastOnPosition(GGame->CursorPosition());
+					GOrbwalking->ResetAA();
 			}
 	}
 }
@@ -393,8 +413,9 @@ void JungleClear()
 		{
 			if (jMinion != nullptr && myHero->IsValidTarget(jMinion, 500))
 			{
-			if(!myHero->GetBuffDataByName("GravesBasicAttackAmmo2") && E->IsReady())
-				E->CastOnPosition(GGame->CursorPosition());
+				if (!myHero->GetBuffDataByName("GravesBasicAttackAmmo2") && E->IsReady())
+					E->CastOnPosition(GGame->CursorPosition());
+					GOrbwalking->ResetAA();
 			}
 		}
 	}
@@ -458,10 +479,10 @@ void killsteal()
 				if (myHero->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable())
 				{
 					auto Rlvl = GEntityList->Player()->GetSpellLevel(kSlotR) - 1;
-					auto BaseDamage = std::vector<double>({ 250, 400, 550 }).at(Rlvl);
+					auto BaseDamage = std::vector<double>({ 200, 320, 440 }).at(Rlvl);
 					auto ADMultiplier = 1.1 * GEntityList->Player()->TotalPhysicalDamage();
 					auto TotalD = BaseDamage + ADMultiplier;
-					if (Enemy->GetHealth() + 70 <= TotalD)
+					if (Enemy->GetHealth() +70 <= TotalD)
 					{
 						R->CastOnTarget(Enemy, kHitChanceHigh);
 					}
@@ -555,6 +576,27 @@ PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
 
 PLUGIN_EVENT(void) OnGameUpdate()
 {
+	/*if (GetAsyncKeyState(Burst->GetInteger()))
+	{
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+		auto ta = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range() + 100);
+		if (ta != nullptr && myHero->IsValidTarget(ta, Q->Range()))
+		{
+			AdvPredictionOutput prediction_output;
+			Q->RunPrediction(ta, true, kCollidesWithYasuoWall, &prediction_output);
+			if (prediction_output.HitChance >= kHitChanceHigh)
+			{
+				if (myHero->IsValidTarget(ta, Q->Range() - 100))
+				{
+					R->CastOnTarget(ta);
+					E->CastOnPosition(ta->GetPosition());
+					Q->CastOnTarget(ta);
+					GOrbwalking->ResetAA();
+				}
+				
+			}
+		}
+	}*/
 	if (GetAsyncKeyState(SemiR->GetInteger()) && R->IsReady())
 	{
 		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, R->Range());
