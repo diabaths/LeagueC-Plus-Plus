@@ -299,7 +299,7 @@ void laneclear()
 	{
 		if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
 			return;
-		if (Q->IsReady())
+		if (Q->IsReady() && !minions->IsWard())
 		{
 			auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
 			if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))
@@ -519,7 +519,7 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 				{
 					E->CastOnTarget(target);
 					GOrbwalking->ResetAA();
-					if (AlwaysQAfterE->Enabled())
+					if (AlwaysQAfterE->Enabled() && Q->IsReady())
 					{
 						Q->CastOnTarget(target);
 					}
