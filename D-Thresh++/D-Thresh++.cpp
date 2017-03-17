@@ -21,6 +21,7 @@ IMenu* EMenu;
 IMenuOption* SemiR;
 IMenuOption* UseIgnitecombo;
 IMenuOption* ComboQ;
+IMenuOption* ComboQ2;
 IMenuOption* ComboW;
 IMenuOption* ComboE;
 IMenuOption* ComboR;
@@ -89,6 +90,7 @@ void  Menu()
 	ComboMenu = MainMenu->AddMenu("Combo Settings");
 	UseIgnitecombo = ComboMenu->CheckBox("Use Ignite", true);
 	ComboQ = ComboMenu->CheckBox("Use Q", true);
+	ComboQ2 = ComboMenu->CheckBox("Use Q2", true);
 	ComboW = ComboMenu->CheckBox("Use W", true);
 	ComboE = ComboMenu->CheckBox("Use E", true);
 	ComboR = ComboMenu->CheckBox("Use R", true);
@@ -314,26 +316,28 @@ void Combo()
 			}
 		}
 	}
-	if (ComboQ->Enabled())
+	
+	if (ComboQ->Enabled() && Q->IsReady())
 	{
-		if (Q->IsReady())
+		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+		if (myHero->IsValidTarget(target, Q->Range()))
 		{
-			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-			if (myHero->IsValidTarget(target, Q->Range()))
+			AdvPredictionOutput prediction_output;
+			Q->RunPrediction(target, false, kCollidesWithYasuoWall | kCollidesWithMinions, &prediction_output);
+			if (prediction_output.HitChance >= kHitChanceHigh)
 			{
-				AdvPredictionOutput prediction_output;
-				Q->RunPrediction(target, false, kCollidesWithYasuoWall | kCollidesWithMinions, &prediction_output);
-				if (prediction_output.HitChance >= kHitChanceHigh)
-				{
-					Q->CastOnTarget(target, kHitChanceCollision);
-					lastq = GGame->CurrentTick();
-				}
-				if (myHero->IsValidTarget(target, Q2->Range()) && target->HasBuff("threshQ") && GGame->CurrentTick() - lastq > 80)
-				{
-					Q2->CastOnTarget(target);
-					lastq = GGame->CurrentTick();
-				}
+				Q->CastOnTarget(target, kHitChanceCollision);
+				lastq = GGame->CurrentTick();
 			}
+		}
+	}
+	if (ComboQ2->Enabled())
+	{
+		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q2->Range());
+		if (myHero->IsValidTarget(target, Q2->Range()) && target->HasBuff("threshQ") && GGame->CurrentTick() - lastq > 80)
+		{
+			Q2->CastOnTarget(target);
+			lastq = GGame->CurrentTick();
 		}
 	}
 	if (ComboE->Enabled() && GGame->CurrentTick() - lastq > 100)
