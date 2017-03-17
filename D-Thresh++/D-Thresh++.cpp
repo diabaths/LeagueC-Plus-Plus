@@ -82,7 +82,7 @@ IInventoryItem* RefillPot;
 IInventoryItem* hunter;
 
 int lastq;
-
+int lastq2;
 void  Menu()
 {
 	MainMenu = GPluginSDK->AddMenu("D-Thresh");
@@ -246,6 +246,24 @@ int CountallyInRange(float range)
 	}
 	return allys;
 }
+static bool HaveQ1()
+{
+	if (myHero->GetSpellBook()->GetLevel(kSlotQ) > 0)
+	{
+		return strcmp(GEntityList->Player()->GetSpellBook()->GetName(kSlotQ), "ThreshQ") == 0;
+	}
+
+	return false;
+}
+
+static bool HaveQ2()
+{
+	if (myHero->GetSpellBook()->GetLevel(kSlotQ) > 0)
+	{
+		return strcmp(GEntityList->Player()->GetSpellBook()->GetName(kSlotQ), "threshqleap") == 0;
+	}
+	return false;
+}
 
 void UseItems()
 {
@@ -317,14 +335,14 @@ void Combo()
 		}
 	}
 	
-	if (ComboQ->Enabled() && Q->IsReady())
+	if (ComboQ->Enabled() && Q->IsReady()  && HaveQ1())
 	{
 		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
 		if (myHero->IsValidTarget(target, Q->Range()))
 		{
 			AdvPredictionOutput prediction_output;
 			Q->RunPrediction(target, false, kCollidesWithYasuoWall | kCollidesWithMinions, &prediction_output);
-			if (prediction_output.HitChance >= kHitChanceHigh && !target->HasBuff("threshQ"))
+			if (prediction_output.HitChance >= kHitChanceHigh)
 			{
 				Q->CastOnTarget(target, kHitChanceCollision);
 				lastq = GGame->CurrentTick();
@@ -336,11 +354,12 @@ void Combo()
 		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q2->Range());
 		if (myHero->IsValidTarget(target, Q2->Range()) && target->HasBuff("threshQ") && GGame->CurrentTick() - lastq > 80)
 		{
-			Q2->CastOnTarget(target);
-			lastq = GGame->CurrentTick();
+			GGame->PrintChat("Q`2");
+			Q2->CastOnPlayer();
+			lastq2 = GGame->CurrentTick();
 		}
 	}
-	if (ComboE->Enabled() && GGame->CurrentTick() - lastq > 100)
+	if (ComboE->Enabled() && GGame->CurrentTick() - lastq2 > 100)
 	{
 		if (E->IsReady())
 		{
@@ -516,13 +535,13 @@ void AutoImmobile()
 		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
 		if (target != nullptr && myHero->IsValidTarget(target, Q->Range()) && !target->IsInvulnerable())
 		{
-			if (ImmobileQ->Enabled())
+			if (ImmobileQ->Enabled() && HaveQ1())
 			{
 				{
 					Q->CastOnTarget(target, kHitChanceImmobile);
 				}
 			}
-			if (DushQ->Enabled())
+			if (DushQ->Enabled() && HaveQ1())
 			{
 				{
 					Q->CastOnTarget(target, kHitChanceDashing);
