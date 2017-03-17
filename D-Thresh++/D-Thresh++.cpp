@@ -324,7 +324,7 @@ void Combo()
 		{
 			AdvPredictionOutput prediction_output;
 			Q->RunPrediction(target, false, kCollidesWithYasuoWall | kCollidesWithMinions, &prediction_output);
-			if (prediction_output.HitChance >= kHitChanceHigh)
+			if (prediction_output.HitChance >= kHitChanceHigh && !target->HasBuff("threshQ"))
 			{
 				Q->CastOnTarget(target, kHitChanceCollision);
 				lastq = GGame->CurrentTick();
