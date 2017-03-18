@@ -60,6 +60,7 @@ IMenuOption* DrawW;
 IMenuOption* DrawE;
 IMenuOption* DrawR;
 IMenuOption* Combormin;
+IMenuOption* AutoW;
 
 IUnit* myHero;
 
@@ -119,7 +120,8 @@ void  Menu()
 	JungleManaPercent = JungleMenu->AddInteger("Mana Percent for Farm", 10, 100, 70);
 
 	MiscMenu = MainMenu->AddMenu("Misc Setting");
-	Uselatern = MiscMenu->AddKey("Use Latern to Ally", 84);
+	Uselatern = MiscMenu->AddKey("Use Lantern to Ally", 84);
+	AutoW = MiscMenu->CheckBox("Use W to Ally if Have CC", true);
 	UseIgnitekillsteal = MiscMenu->CheckBox("Use Ignite to killsteal", false);
 	KillstealQ = MiscMenu->CheckBox("Use Q to killsteal", true);
 	ImmobileQ = MiscMenu->CheckBox("Use Q in Immobile", true);
@@ -298,6 +300,12 @@ void Pull()
 		E->CastOnPosition(target->GetPosition().Extend(myHero->GetPosition(), GetDistanceVectors(target->GetPosition(), myHero->GetPosition()) + 400));
 	}
 }
+static bool IsImmune(IUnit* target)
+{
+	return target->HasBuff("BlackShield") || target->HasBuff("SivirE") || target->HasBuff("NocturneShroudofDarkness") ||
+		target->HasBuff("deathdefiedbuff");
+
+}
 void CastQ(IUnit* target)
 {
 	AdvPredictionOutput prediction_output;
@@ -318,6 +326,34 @@ static void CheckRComboCast()
 		R->CastOnPlayer();
 	}
 }
+void CastW()
+{
+	for (auto Ally : GEntityList->GetAllHeros(true, false))
+	{
+		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
+		if (ComboW->Enabled() && GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+		{
+			if (Ally != myHero && !Ally->IsDead() && Ally != nullptr && myHero->IsValidTarget(Ally, W->Range() + W->Radius()))
+			{
+				if (GetDistance(myHero, Ally) >= 250 && target != nullptr && myHero->IsValidTarget(target, Q->Range()) && target->HasBuff("ThreshQ") && GGame->CurrentTick() - lastq > 80)
+				{
+					W->CastOnPosition(Ally->ServerPosition());
+				}
+			}
+			if (myHero->IsValidTarget(Ally, W->Range()) && CountEnemiesInRange(2000) > 0)
+			{
+				if (Ally->HealthPercent() <= 30 && !Ally->IsDead() && Ally != myHero && !Ally->IsRecalling())
+				{
+					W->CastOnPosition(Ally->ServerPosition());
+				}
+				if (myHero->HealthPercent() <= 30)
+				{
+					W->CastOnPlayer();
+				}
+			}
+		}
+	}
+}
 void Combo()
 {
 	if (Ignite != nullptr)
@@ -335,31 +371,25 @@ void Combo()
 		}
 	}
 	
-	if (ComboQ->Enabled() && Q->IsReady()  && HaveQ1())
+	if (ComboQ->Enabled() && Q->IsReady() && HaveQ1())
 	{
 		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-		if (myHero->IsValidTarget(target, Q->Range()))
+		if (myHero->IsValidTarget(target, Q->Range()) && !IsImmune(target))
 		{
-			AdvPredictionOutput prediction_output;
-			Q->RunPrediction(target, false, kCollidesWithYasuoWall | kCollidesWithMinions, &prediction_output);
-			if (prediction_output.HitChance >= kHitChanceHigh)
-			{
-				Q->CastOnTarget(target, kHitChanceCollision);
-				lastq = GGame->CurrentTick();
-			}
+			CastQ(target);
+			lastq = GGame->CurrentTick();
 		}
 	}
 	if (ComboQ2->Enabled())
 	{
 		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q2->Range());
-		if (myHero->IsValidTarget(target, Q2->Range()) && target->HasBuff("threshQ") && GGame->CurrentTick() - lastq > 80)
+		if (myHero->IsValidTarget(target, Q2->Range()) && target->HasBuff("threshQ") && GGame->CurrentTick() - lastq > 100)
 		{
-			GGame->PrintChat("Q`2");
 			Q2->CastOnPlayer();
 			lastq2 = GGame->CurrentTick();
 		}
 	}
-	if (ComboE->Enabled() && GGame->CurrentTick() - lastq2 > 100)
+	if (ComboE->Enabled() && GGame->CurrentTick() - lastq2 > 150)
 	{
 		if (E->IsReady())
 		{
@@ -374,20 +404,10 @@ void Combo()
 			}
 		}
 	}
-	if (ComboW->Enabled())
+	
+	if (W->IsReady())
 	{
-		if (W->IsReady())
-		{
-			for (auto ally : GEntityList->GetAllHeros(true, false))
-			{
-				if (myHero->IsValidTarget(ally, W->Range()) && CountEnemiesInRange(2000) > 0)
-				{
-					if (ally->HealthPercent() <= 30)
-						W->CastOnPosition(ally->GetPosition());
-					else if (myHero->HealthPercent() <= 30) W->CastOnPlayer();
-				}
-			}
-		}
+		CastW();
 	}
 	if (ComboR->Enabled() && R->IsReady())
 	{
@@ -399,7 +419,7 @@ void Combo()
 				if (myHero->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable())
 
 				{
-					if (Enemy->GetHealth() <= dmg)
+					if (Enemy->GetHealth() <= 1.5* dmg && GetDistance(myHero, Enemy) <= R->Range() - 60)
 					{
 						R->CastOnPlayer();
 					}
@@ -411,7 +431,7 @@ void Combo()
 	{
 		for (auto Enemy : GEntityList->GetAllHeros(false, true))
 		{
-			if (Enemy != nullptr && !Enemy->IsDead() && myHero->IsValidTarget(Enemy, R->Range()))
+			if (GetDistance(myHero, Enemy) <= R->Range()- 60 && Enemy != nullptr && !Enemy->IsDead() && myHero->IsValidTarget(Enemy, R->Range()))
 			{
 				CheckRComboCast();
 			}
@@ -419,16 +439,6 @@ void Combo()
 	}
 }
 
-void ThrowLantern()
-{
-	for (auto ally : GEntityList->GetAllHeros(true, false))
-	{
-		if (myHero->IsValidTarget(ally, W->Range()))
-		{
-			W->CastOnPosition(ally->GetPosition());
-		}
-	}	
-}
 void Harass()
 {
 	if (myHero->ManaPercent() < HarassManaPercent->GetInteger())
@@ -436,15 +446,10 @@ void Harass()
 	if (HarassQ->Enabled() && Q->IsReady())
 	{
 		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
-		if (myHero->IsValidTarget(target, Q->Range()))
+		if (myHero->IsValidTarget(target, Q->Range()) && !IsImmune(target))
 		{
-			AdvPredictionOutput prediction_output;
-			Q->RunPrediction(target, false, kCollidesWithYasuoWall | kCollidesWithMinions, &prediction_output);
-			if (prediction_output.HitChance >= kHitChanceHigh)
-			{
-				Q->CastOnTarget(target, kHitChanceCollision);
-				lastq = GGame->CurrentTick();
-			}
+			CastQ(target);
+			lastq = GGame->CurrentTick();
 		}
 	}
 	if (HarassQ2->Enabled() && Q2->IsReady() && GGame->CurrentTick() - lastq > 50)
@@ -624,7 +629,47 @@ void Usepotion()
 		}
 	}
 }
+static bool HaveCC(IUnit* Ally)
+{
+	return Ally->HasBuffOfType(BUFF_Charm) || Ally->HasBuffOfType(BUFF_CombatDehancer) ||
+		Ally->HasBuffOfType(BUFF_Fear) || Ally->HasBuffOfType(BUFF_Knockback) ||
+		Ally->HasBuffOfType(BUFF_Knockup) || Ally->HasBuffOfType(BUFF_Polymorph) ||
+		Ally->HasBuffOfType(BUFF_Snare) || Ally->HasBuffOfType(BUFF_Stun) ||
+		Ally->HasBuffOfType(BUFF_Suppression) || Ally->HasBuffOfType(BUFF_Taunt);
+}
+void Lantern()
+{
+	if (W->IsReady())
+	{
+		for (auto Ally : GEntityList->GetAllHeros(true, false))
+		{
+			if (Ally != nullptr && Ally != myHero && !Ally->IsDead() && myHero->IsValidTarget(Ally, W->Range() + W->Radius()))
+			{
+				if (AutoW->Enabled() && HaveCC(Ally))
+				{
+					{
+						W->CastOnPosition(Ally->ServerPosition());
+					}
+				}
+				if (GetAsyncKeyState(Uselatern->GetInteger()))
+				{
+					W->CastOnPosition(Ally->ServerPosition());
+				}
+			}
+		}
+	}
+}
 
+PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& args)
+{
+	if (args.Caster_ == myHero)
+	{
+		if (std::string(args.Name_) == "ThreshE")
+		{
+			GOrbwalking->ResetAA();
+		}
+	}	
+}
 PLUGIN_EVENT(void) OnRender()
 {
 	if (DrawReady->Enabled())
@@ -649,12 +694,21 @@ PLUGIN_EVENT(void) OnRender()
 	}
 }
 
-/*void SkinChanger()
+/*PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 {
-if (myHero->GetSkinId() != ChangeSkin->GetInteger())
-{
-myHero->SetSkinId(ChangeSkin->GetInteger());
-}
+	if (Source == myHero && Source !=Enemy && Args == "Spell3" && E->IsReady())
+	if (hero != null)
+	{
+		if (hero.Team == Player.Team) return;
+		if (hero.ChampionName == "Rengar" && args.Animation == "Spell5" && Player.Distance(hero) <= 725)
+		{
+			if (
+				Config.SubMenu("Misc").SubMenu("Gapclosers").Item("rengarleap").GetValue<bool>())
+			{
+				_E.Cast(unit.Position);
+			}
+		}
+	}
 }*/
 
 PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
@@ -696,11 +750,8 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	if (GetAsyncKeyState(UseEpull->GetInteger()) && E->IsReady())
 	{
 		Pull();
-	}
-	if (GetAsyncKeyState(Uselatern->GetInteger()) && W->IsReady())
-	{
-		ThrowLantern();
-	}
+	}	
+	Lantern();
 }
 
 PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
@@ -715,6 +766,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	GEventManager->AddEventHandler(kEventOnRender, OnRender);
 	GEventManager->AddEventHandler(kEventOnGapCloser, OnGapcloser);
 	GEventManager->AddEventHandler(kEventOnInterruptible, OnInterruptable);
+	GEventManager->AddEventHandler(kEventOnSpellCast, OnProcessSpellCast);
 	if (strcmp(GEntityList->Player()->ChampionName(), "Thresh") == 0)
 	{
 		GGame->PrintChat("D-Thresh : Loaded");
@@ -736,5 +788,6 @@ PLUGIN_API void OnUnload()
 	GEventManager->RemoveEventHandler(kEventOnGapCloser, OnGapcloser);
 	GEventManager->RemoveEventHandler(kEventOnInterruptible, OnInterruptable);
 	GEventManager->RemoveEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);
+	GEventManager->RemoveEventHandler(kEventOnSpellCast, OnProcessSpellCast);
 	
 }
