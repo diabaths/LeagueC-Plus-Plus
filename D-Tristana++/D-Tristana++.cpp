@@ -89,7 +89,7 @@ void  Menu()
 	HarassE = EMenu->CheckBox("Use E harass", true);
 	for (auto Enemys : GEntityList->GetAllHeros(false, true))
 	{
-		std::string szMenuName = "Use Q on - " + std::string(Enemys->ChampionName());
+		std::string szMenuName = "Use E on - " + std::string(Enemys->ChampionName());
 		ChampionuseE[Enemys->GetNetworkId()] = EMenu->CheckBox(szMenuName.c_str(), false);
 	}
 	FarmE = EMenu->CheckBox("Use E LaneClear", true);
