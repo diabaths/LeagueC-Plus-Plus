@@ -3,6 +3,7 @@
 
 //#include "stdafx.h"
 #include "PluginSDK.h"
+#include <map>
 #define M_PI 3.14159265358979323846
 
 
@@ -22,6 +23,7 @@ IMenu* ItemsMenu;
 IMenu* PotionMenu;
 IMenuOption* ComboQ;
 IMenuOption* ComboE;
+IMenuOption* HarassE;
 IMenuOption* HarassQ;
 IMenuOption* HarassManaPercent;
 IMenuOption* FarmQ;
@@ -37,6 +39,7 @@ IMenuOption* KillstealR;
 IMenuOption* GapglocerR;
 IMenuOption* Int_R;
 
+IMenuOption* useYoumuu;
 IMenuOption* Blade_Cutlass;
 IMenuOption* MyHpPreBlade;
 IMenuOption* EnemyHpPreBlade;
@@ -57,7 +60,7 @@ ISpell2* R;
 
 ISpell* Ignite;
 
-
+IInventoryItem* Youmuu;
 IInventoryItem* blade;
 IInventoryItem* Cutlass;
 IInventoryItem* HealthPot;
@@ -66,6 +69,7 @@ IInventoryItem* Biscuit;
 IInventoryItem* RefillPot;
 IInventoryItem* hunter;
 
+std::map<int, IMenuOption*> ChampionuseE;
 
 float RRange;
 float ERange;
@@ -75,7 +79,6 @@ void  Menu()
 	MainMenu = GPluginSDK->AddMenu("D-Tristana++");
 	QMenu = MainMenu->AddMenu("Q Settings");
 	ComboQ = QMenu->CheckBox("Use Q in combo", true);
-	HarassQ = QMenu->CheckBox("Use Q harass", true);
 	FarmQ = QMenu->CheckBox("Use Q Farm", true);
 	minminions = QMenu->AddInteger("Min Minions to Use Qor E", 1, 6, 4);
 	JungleQ = QMenu->CheckBox("Use Q Jungle", true);
@@ -83,6 +86,12 @@ void  Menu()
 
 	EMenu = MainMenu->AddMenu("E Settings");
 	ComboE = EMenu->CheckBox("Use E Combo", true);
+	HarassE = EMenu->CheckBox("Use E harass", true);
+	for (auto Enemys : GEntityList->GetAllHeros(false, true))
+	{
+		std::string szMenuName = "Use Q on - " + std::string(Enemys->ChampionName());
+		ChampionuseE[Enemys->GetNetworkId()] = EMenu->CheckBox(szMenuName.c_str(), false);
+	}
 	FarmE = EMenu->CheckBox("Use E LaneClear", true);
 	JungleE = EMenu->CheckBox("Use E Jungle", true);
 	TurrentE = EMenu->CheckBox("Use E In Turrents", true);
@@ -98,6 +107,7 @@ void  Menu()
 	JungleManaPercent = ManaMenu->AddInteger("Mana Percent for Jungle", 10, 100, 70);
 
 	ItemsMenu = MainMenu->AddMenu("Items Setting");
+	useYoumuu = ItemsMenu->CheckBox("Use Youmuu's", true);
 	Blade_Cutlass = ItemsMenu->CheckBox("Blade-Cutlass", true);
 	MyHpPreBlade = ItemsMenu->AddInteger("Use Blade-Cutlass if my HP <", 10, 100, 35);
 	EnemyHpPreBlade = ItemsMenu->AddInteger("Use Blade-Cutlass if Enemy HP <", 10, 100, 35);
@@ -136,7 +146,7 @@ void LoadSpells()
 	}
 	else Ignite == nullptr;
 
-
+	Youmuu = GPluginSDK->CreateItemForId(3142, 0);
 	blade = GPluginSDK->CreateItemForId(3153, 550);
 	Cutlass = GPluginSDK->CreateItemForId(3144, 550);
 	HealthPot = GPluginSDK->CreateItemForId(2003, 0);
@@ -226,6 +236,11 @@ void UseItems()
 						Cutlass->CastOnTarget(enemy);
 				}
 			}
+			if (useYoumuu->Enabled() && Youmuu->IsReady() && Youmuu->IsOwned())
+			{
+				if (myHero->IsValidTarget(enemy, 550))
+					Youmuu->CastOnPlayer();
+			}
 
 		}
 	}
@@ -295,12 +310,25 @@ void Harass()
 {
 	if (myHero->ManaPercent() < HarassManaPercent->GetInteger())
 		return;
-	if (HarassQ->Enabled())
-	{		
+	if (E->IsReady() && HarassE->Enabled())
+	{
+		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, ERange);
+		for (auto Enemys : GEntityList->GetAllHeros(false, true))
+		{
+			if (target != nullptr && myHero->IsValidTarget(target, ERange))
+			{
+				if (ChampionuseE[Enemys->GetNetworkId()]->Enabled())
+				{
+					E->CastOnTarget(target);
+				}
+				if (!ChampionuseE[Enemys->GetNetworkId()]->Enabled() && CountEnemiesInRange(1500) == 1)
+				{
+					E->CastOnTarget(target);
+				}
+			}
+		}
 	}
 }
-
-
 void killsteal()
 {
 	for (auto Enemy : GEntityList->GetAllHeros(false, true))
