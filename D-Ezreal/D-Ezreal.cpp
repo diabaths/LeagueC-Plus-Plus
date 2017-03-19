@@ -3,8 +3,7 @@
 
 //#include "stdafx.h"
 #include "PluginSDK.h"
-
-
+#include <map>
 
 
 PluginSetup("D-ezreal");
@@ -72,6 +71,8 @@ IInventoryItem* Biscuit;
 IInventoryItem* RefillPot;
 IInventoryItem* hunter;
 
+std::map<int, IMenuOption*> ChampionuseQ;
+
 void  Menu()
 {
 	MainMenu = GPluginSDK->AddMenu("D-Ezreal");
@@ -87,6 +88,11 @@ void  Menu()
 
 	HarassMenu = MainMenu->AddMenu("Harass Setting");
 	HarassQ = HarassMenu->CheckBox("Use Q", true);
+	for (auto Enemys : GEntityList->GetAllHeros(false, true))
+	{
+		std::string szMenuName = "Use Q on - " + std::string(Enemys->ChampionName());
+		ChampionuseQ[Enemys->GetNetworkId()] = HarassMenu->CheckBox(szMenuName.c_str(), false);
+	}
 	HarassW = HarassMenu->CheckBox("Use W", true);
 	HarassManaPercent = HarassMenu->AddInteger("Mana Percent for harass", 10, 100, 70);
 	Drawings = MainMenu->AddMenu("Drawings");
@@ -251,7 +257,7 @@ void CastQ(IUnit* target)
 	Q->RunPrediction(target, true, kCollidesWithYasuoWall | kCollidesWithMinions, &prediction_output);
 	if (prediction_output.HitChance >= kHitChanceHigh)
 	{				
-			Q->CastOnTarget(target, kHitChanceCollision);
+		Q->CastOnTarget(target, kHitChanceCollision);
 	}
 }
 void Combo()
@@ -288,7 +294,7 @@ void Combo()
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
 			if (myHero->IsValidTarget(target, W->Range()))
-			W->CastOnTarget(target, kHitChanceHigh);
+				W->CastOnTarget(target, kHitChanceHigh);
 		}
 	}
 
@@ -392,10 +398,20 @@ void Harass()
 	{
 		if (Q->IsReady())
 		{
-			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-			if (myHero->IsValidTarget(target, Q->Range()))
+			for (auto Enemys : GEntityList->GetAllHeros(false, true))
 			{
-				CastQ(target);
+				auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+				if (myHero->IsValidTarget(target, Q->Range()))
+				{
+					if (ChampionuseQ[Enemys->GetNetworkId()]->Enabled())
+					{
+						CastQ(target);
+					}
+					if (!ChampionuseQ[Enemys->GetNetworkId()]->Enabled() && CountEnemiesInRange(1500) == 1)
+					{
+						CastQ(target);
+					}
+				}
 			}
 		}
 	}
@@ -405,7 +421,7 @@ void Harass()
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
 			if (myHero->IsValidTarget(target, W->Range()))
-			W->CastOnTarget(target, kHitChanceHigh);
+				W->CastOnTarget(target, kHitChanceHigh);
 		}
 	}
 }

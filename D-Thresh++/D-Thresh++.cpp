@@ -3,7 +3,7 @@
 
 //#include "stdafx.h"
 #include "PluginSDK.h"
-
+#include <map>
 
 
 PluginSetup("D-Thresh");
@@ -21,6 +21,7 @@ IMenu* EMenu;
 IMenuOption* SemiR;
 IMenuOption* UseIgnitecombo;
 IMenuOption* ComboQ;
+
 IMenuOption* ComboQ2;
 IMenuOption* ComboW;
 IMenuOption* ComboE;
@@ -72,6 +73,8 @@ ISpell2* R;
 
 ISpell* Ignite;
 
+std::map<int, IMenuOption*> ChampionuseQ;
+
 IInventoryItem* Tear;
 IInventoryItem* Manamune;
 IInventoryItem* blade;
@@ -101,6 +104,11 @@ void  Menu()
 	
 	HarassMenu = MainMenu->AddMenu("Harass Setting");
 	HarassQ = HarassMenu->CheckBox("Use Q", true);
+	for (auto Enemys : GEntityList->GetAllHeros(false, true))
+	{
+		std::string szMenuName = "Use Q on - " + std::string(Enemys->ChampionName());
+		ChampionuseQ[Enemys->GetNetworkId()] = HarassMenu->CheckBox(szMenuName.c_str(), false);
+	}
 	HarassQ2 = HarassMenu->CheckBox("Use Q2", true);
 	HarassE = HarassMenu->CheckBox("Use E", true);
 	HarassManaPercent = HarassMenu->AddInteger("Mana Percent for harass", 10, 100, 70);
@@ -370,7 +378,6 @@ void Combo()
 			}
 		}
 	}
-	
 	if (ComboQ->Enabled() && Q->IsReady() && HaveQ1())
 	{
 		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
@@ -380,6 +387,7 @@ void Combo()
 			lastq = GGame->CurrentTick();
 		}
 	}
+	
 	if (ComboQ2->Enabled())
 	{
 		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q2->Range());
@@ -445,11 +453,22 @@ void Harass()
 		return;
 	if (HarassQ->Enabled() && Q->IsReady())
 	{
-		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
-		if (myHero->IsValidTarget(target, Q->Range()) && !IsImmune(target))
+		for (auto Enemys : GEntityList->GetAllHeros(false, true))
 		{
-			CastQ(target);
-			lastq = GGame->CurrentTick();
+			auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, Q->Range());
+			if (myHero->IsValidTarget(target, Q->Range()) && !IsImmune(target))
+			{
+				if (ChampionuseQ[Enemys->GetNetworkId()]->Enabled())
+				{
+					CastQ(target);
+					lastq = GGame->CurrentTick();
+				}
+				if (!ChampionuseQ[Enemys->GetNetworkId()]->Enabled() && CountEnemiesInRange(1500) == 1)
+				{
+					CastQ(target);
+					lastq = GGame->CurrentTick();
+				}
+			}
 		}
 	}
 	if (HarassQ2->Enabled() && Q2->IsReady() && GGame->CurrentTick() - lastq > 50)
