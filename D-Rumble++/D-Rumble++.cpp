@@ -710,7 +710,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 
 PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 {
-	if (GetAsyncKeyState(escapterino->GetInteger()) )
+	if (GetAsyncKeyState(escapterino->GetInteger()))
 	{
 		for (auto enemy : GEntityList->GetAllHeros(false, true))
 		{
@@ -718,7 +718,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 			{
 				W->CastOnPlayer();
 			}
-			if (E->IsReady())
+			if (E->IsReady() && myHero->IsValidTarget(enemy, E->Range()))
 			{
 				if (GPrediction->GetCollisionFlagsForPoint(enemy->GetPosition()) == 0)
 				{
