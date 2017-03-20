@@ -397,16 +397,18 @@ void Combo()
 			lastq2 = GGame->CurrentTick();
 		}
 	}
-	if (ComboE->Enabled() && GGame->CurrentTick() - lastq2 > 150)
+	if (ComboE->Enabled()  && GGame->CurrentTick() - lastq2 > 250)
 	{
 		if (E->IsReady())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, E->Range());
-			if (target != nullptr &&myHero->IsValidTarget(target, E->Range()))
+			if (target != nullptr &&myHero->IsValidTarget(target, E->Range()) && !target->HasBuff("threshQ"))
 			{
 				if (Epush->Enabled() || myHero->HealthPercent() < 15)
 				{
-					E->CastOnTarget(target, kHitChanceMedium);
+					{
+						E->CastOnTarget(target, kHitChanceMedium);
+					}
 				}
 				else E->CastOnPosition(target->GetPosition().Extend(myHero->GetPosition(), GetDistanceVectors(target->GetPosition(), myHero->GetPosition()) + 400));
 			}

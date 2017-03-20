@@ -58,6 +58,7 @@ IMenuOption* DrawR;
 IMenuOption* AutoW;
 IMenuOption* FarmoutE;
 IMenuOption* Farmharass;
+IMenuOption* escapterino;
 
 
 IUnit* myHero;
@@ -125,6 +126,7 @@ void  Menu()
 	HeetQ = MiscMenu->CheckBox("Use Q to Heet", true);
 	HeetW = MiscMenu->CheckBox("Use W to Heet", true);
 	AutoW = MiscMenu->CheckBox("Use W autoshield", true);
+	escapterino= MiscMenu->AddKey("Run Forest!!!", 84);
 	
 
 	ItemsMenu = MainMenu->AddMenu("Items Setting");
@@ -708,6 +710,23 @@ PLUGIN_EVENT(void) OnGameUpdate()
 
 PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 {
+	if (GetAsyncKeyState(escapterino->GetInteger()) )
+	{
+		for (auto enemy : GEntityList->GetAllHeros(false, true))
+		{
+			if (W->IsReady())
+			{
+				W->CastOnPlayer();
+			}
+			if (E->IsReady())
+			{
+				if (GPrediction->GetCollisionFlagsForPoint(enemy->GetPosition()) == 0)
+				{
+					E->CastOnTarget(enemy, kHitChanceHigh);
+				}
+			}
+		}
+	}
 	PluginSDKSetup(PluginSDK);
 	Menu();
 	LoadSpells();
