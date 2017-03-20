@@ -682,6 +682,23 @@ PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
 
 PLUGIN_EVENT(void) OnGameUpdate()
 {
+	if (GetAsyncKeyState(escapterino->GetInteger()))
+	{
+		for (auto enemy : GEntityList->GetAllHeros(false, true))
+		{
+			if (W->IsReady())
+			{
+				W->CastOnPlayer();
+			}
+			if (E->IsReady() && myHero->IsValidTarget(enemy, E->Range()))
+			{
+				if (GPrediction->GetCollisionFlagsForPoint(enemy->GetPosition()) == 0)
+				{
+					E->CastOnTarget(enemy, kHitChanceHigh);
+				}
+			}
+		}
+	}
 	if (GetAsyncKeyState(Keep_Heet->GetInteger()))
 	{
 		Heet();
@@ -709,24 +726,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 }
 
 PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
-{
-	if (GetAsyncKeyState(escapterino->GetInteger()))
-	{
-		for (auto enemy : GEntityList->GetAllHeros(false, true))
-		{
-			if (W->IsReady())
-			{
-				W->CastOnPlayer();
-			}
-			if (E->IsReady() && myHero->IsValidTarget(enemy, E->Range()))
-			{
-				if (GPrediction->GetCollisionFlagsForPoint(enemy->GetPosition()) == 0)
-				{
-					E->CastOnTarget(enemy, kHitChanceHigh);
-				}
-			}
-		}
-	}
+{	
 	PluginSDKSetup(PluginSDK);
 	Menu();
 	LoadSpells();
