@@ -492,17 +492,44 @@ PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
 		}
 	}
 }
-/*PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
+inline std::string ToLower(std::string StringToLower)
 {
-	if (Source == myHero && Args == "Spell3" && Q->IsReady())
+	auto Lowered = StringToLower;
+	for (int i = 0; i < Lowered[i]; i++)
 	{
-		GGame->PrintChat("Q_first");
+		Lowered[i] = tolower(Lowered[i]);
+	} return Lowered;
+}
+
+inline bool Contains(std::string Container, std::string Contained)
+{
+	auto LoweredContainer = ToLower(Container); auto LoweredContained = ToLower(Contained);
+	if (LoweredContainer.find(LoweredContained) != std::string::npos)
+		return true;
+	else return false;
+}
+
+PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
+{
+	if (Source == myHero &&  Q->IsReady())
+	{
 		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-		if (target !=nullptr && AlwaysQAfterE->Enabled() && myHero->IsValidTarget(target, Q->Range()))
+		if (Contains(Args, "b4f"))
 		{
-			Q->CastOnPosition(target->GetPosition());
-			GGame->PrintChat("Q Second");
+			if (target != nullptr && AlwaysQAfterE->Enabled() && myHero->IsValidTarget(target, Q->Range()))
+			{
+				Q->CastOnPosition(target->GetPosition());
+			}
 		}
+	}
+}
+
+/*PLUGIN_EVENTD(void) OnPlayAnimation(IUnit* Source, std::string const AnimationId)
+{
+
+	if (Source == GEntityList->Player())
+	{
+		GGame->PrintChat(AnimationId.c_str());
 	}
 }*/
 PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
@@ -519,10 +546,10 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 				{
 					E->CastOnTarget(target);
 					GOrbwalking->ResetAA();
-					if (AlwaysQAfterE->Enabled() && Q->IsReady())
+					/*if (AlwaysQAfterE->Enabled() && Q->IsReady())
 					{
 						Q->CastOnTarget(target);
-					}
+					}*/
 				}
 			}
 		}
@@ -621,7 +648,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 
 	GEventManager->AddEventHandler(kEventOnGameUpdate, OnGameUpdate);
 	GEventManager->AddEventHandler(kEventOnRender, OnRender);
-	//GEventManager->AddEventHandler(kEventOnPlayAnimation, OnPlayAnimation);
+	GEventManager->AddEventHandler(kEventOnPlayAnimation, OnPlayAnimation);
 	GEventManager->AddEventHandler(kEventOnSpellCast, OnProcessSpellCast);
 	GEventManager->AddEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);
 	
@@ -642,7 +669,7 @@ PLUGIN_API void OnUnload()
 
 	GEventManager->RemoveEventHandler(kEventOnGameUpdate, OnGameUpdate);
 	GEventManager->RemoveEventHandler(kEventOnRender, OnRender);
-	//GEventManager->RemoveEventHandler(kEventOnPlayAnimation, OnPlayAnimation);
+	GEventManager->RemoveEventHandler(kEventOnPlayAnimation, OnPlayAnimation);
 	GEventManager->RemoveEventHandler(kEventOnSpellCast, OnProcessSpellCast);
 	GEventManager->RemoveEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);
 }

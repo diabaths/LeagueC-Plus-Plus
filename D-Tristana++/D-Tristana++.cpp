@@ -412,7 +412,7 @@ void Eturrent()
 {
 	for (auto turrent : GEntityList->GetAllTurrets(false, true))
 	{		
-		if (turrent != nullptr && CountEnemiesInRange(1000) == 0 && myHero->IsValidTarget(turrent, ERange))
+		if (turrent->GetHealth() >= 100 && turrent != nullptr && CountEnemiesInRange(1000) == 0 && myHero->IsValidTarget(turrent, ERange))
 		{			
 			E->CastOnUnit(turrent);
 		}
@@ -424,7 +424,7 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 	{
 		if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
 			return;
-		if (E->IsReady() && TurrentE->Enabled())
+		if (E->IsReady() && TurrentE->Enabled() && GetDistance(myHero, target) <= E->Range())
 		{
 		 Eturrent();
 		}
