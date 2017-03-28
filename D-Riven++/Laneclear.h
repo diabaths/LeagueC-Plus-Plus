@@ -38,7 +38,14 @@ inline void laneclear()
 				{
 					Q->CastOnPosition(pos);
 				}
-				else if (minions->GetHealth()<dmg) Q->CastOnUnit(minions);
+				else if (minions->GetHealth() < dmg)
+				{
+					Q->CastOnUnit(minions);
+				}
+				else if (myHero->HasBuff("RivenTriCleave") && end - GGame->Time() <= 0.1 * (end - start))
+				{
+					Q->CastOnUnit(minions);
+				}
 			}
 		}
 		if (W->IsReady() && FarmW->Enabled() && !AutoAttack)
