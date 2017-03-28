@@ -15,7 +15,7 @@ PLUGIN_EVENT(void) OnAttack(IUnit* source, IUnit* target)
 				GOrbwalking->ResetAA();
 			}
 		}
-		if (Q->IsReady() && ComboQ->Enabled())
+		if (Q->IsReady() && ComboQ->Enabled() && !W->IsReady())
 		{
 			if (myHero->IsValidTarget(target, 385))
 				if (_tiamat->Enabled() || RHydra->Enabled())

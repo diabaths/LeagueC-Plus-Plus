@@ -19,15 +19,18 @@ inline void Burst()
 			R->CastOnPlayer();
 		}
 	}
-	if (!AutoAttack && Enemy != nullptr && !Enemy->IsDead())
+	if (Enemy != nullptr && !Enemy->IsDead())
 	{
-		if (UseIgnitecombo->Enabled() && Ignite->IsReady())
+		if (Ignite != nullptr)
 		{
-			if (Enemy != nullptr && Enemy->IsValidTarget(myHero, 570))
+			if (UseIgnitecombo->Enabled() && Ignite->IsReady())
 			{
-				if (Enemy->HealthPercent() <= 50)
+				if (Enemy != nullptr && Enemy->IsValidTarget(myHero, 570))
 				{
-					Ignite->CastOnUnit(Enemy);
+					if (Enemy->HealthPercent() <= 50)
+					{
+						Ignite->CastOnUnit(Enemy);
+					}
 				}
 			}
 		}

@@ -29,7 +29,7 @@ inline void Combo()
 		}
 		ELogic(Enemy);
 	}
-	if (ComboQ->Enabled() && Q->IsReady() && Enemy != nullptr)
+	if (ComboQ->Enabled() && Q->IsReady() && Enemy != nullptr && !W->IsReady())
 	{
 		if (CanMoveMent(myHero) && Qstack == 0 &&
 			GetDistance(myHero, Enemy) <= 310 + IsInAutoAttackRange(Enemy) &&

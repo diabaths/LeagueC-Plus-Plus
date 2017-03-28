@@ -211,16 +211,16 @@ static void WLogic(IUnit* target)
 		return;
 	}
 
-	if (!Q->IsReady() && Qstack == 0)
+	/*if (!Q->IsReady() && Qstack == 0)
 	{
 		W->CastOnPlayer();
 		return;
-	}
+	}*/
 
-	if (!target->IsFacing(myHero))
-	{
+	//if (!target->IsFacing(myHero))
+	//{
 		W->CastOnPlayer();
-	}
+	//}
 }
 static bool DontAttack()
 {
