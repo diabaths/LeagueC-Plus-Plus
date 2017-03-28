@@ -22,7 +22,6 @@
 
 PluginSetup("D-Riven++")
 
-
 PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
 {
 	if (args.Sender->IsEnemy(myHero) && args.Sender->IsHero())
@@ -33,6 +32,7 @@ PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
 		}
 	}
 }
+
 PLUGIN_EVENT(void) OnInterruptable(InterruptibleSpell const& Args)
 {
 	if (InterruptE->Enabled() && W->IsReady() && myHero->IsValidTarget(Args.Target, 250))
@@ -40,11 +40,6 @@ PLUGIN_EVENT(void) OnInterruptable(InterruptibleSpell const& Args)
 		W->CastOnPlayer();
 	}
 }
-
-
-
-
-
 
 PLUGIN_EVENT(void) OnGameUpdate()
 {
@@ -108,7 +103,6 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	GEventManager->AddEventHandler(kEventOnInterruptible, OnInterruptable);
 	GEventManager->AddEventHandler(kEventOnGapCloser, OnGapcloser);
 
-	
 	if (strcmp(GEntityList->Player()->ChampionName(), "Riven") == 0)
 	{
 		GRender->NotificationEx(Color::Crimson().Get(), 2, true, true, "D-Riven++ Loaded!");
@@ -116,7 +110,6 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	else
 	{
 		GRender->NotificationEx(Color::Crimson().Get(), 2, true, true, "You are not playing Riven...");
-		
 	}
 }
 

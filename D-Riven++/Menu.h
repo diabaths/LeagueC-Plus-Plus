@@ -98,7 +98,7 @@ inline void  Menu()
 	HarassQ = QMenu->CheckBox("Use Q in Harass", true);
 	FarmQ = QMenu->CheckBox("Use Q in Laneclear", true);
 	JungleQ = QMenu->CheckBox("Use Q in JungleClear", true);
-	AADelay = QMenu->AddInteger("AA Delay", 100, 1000, 550);
+	AADelay = QMenu->AddInteger("AA Delay(if cancel AA play with this)", 100, 1000, 550);
 	QDelay1 = QMenu->AddInteger("Delay Q1", 100, 1000, 290);
 	QDelay2 = QMenu->AddInteger("Delay Q2", 100, 1000, 290);
 	QDelay3 = QMenu->AddInteger("Delay Q3", 100, 1000, 390);
@@ -149,6 +149,6 @@ inline void  Menu()
 	DrawR = Drawings->CheckBox("Draw R", false);
 	Drawdmg = Drawings->CheckBox("Draw Damage (Percent)", true);
 	Drawhealthbar = Drawings->CheckBox("Draw Damage (Healthbar)", true);
-	healthbarcolor = Drawings->AddColor("Damage.Healthbar.Color", 0, 128, 0, 255);
+	//healthbarcolor = Drawings->AddColor("Damage.Healthbar.Color", 0, 128, 0, 255);
 		
 }
