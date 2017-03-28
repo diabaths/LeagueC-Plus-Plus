@@ -84,16 +84,16 @@ static void ResetQ2()
 	{
 		GGame->Say("/d");
 		GOrbwalking->ResetAA();
-		GGame->IssueOrder(myHero, kMoveTo, myHero->GetPosition().Extend(GGame->CursorPosition(), GetDistanceVectors(myHero->GetPosition(), GGame->CursorPosition()) + 10));
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
 	});
-}
+} //myHero->GetPosition().Extend(GGame->CursorPosition(), GetDistanceVectors(myHero->GetPosition(), GGame->CursorPosition()) + 10)
 static void ResetQ3()
 {
 	GPluginSDK->DelayFunctionCall(QDelay3->GetInteger(), []()
 	{
 		GGame->Say("/d");
 		GOrbwalking->ResetAA();
-		GGame->IssueOrder(myHero, kMoveTo, myHero->GetPosition().Extend(GGame->CursorPosition(), GetDistanceVectors(myHero->GetPosition(), GGame->CursorPosition()) + 10));
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
 	});
 }
 
@@ -103,7 +103,7 @@ static void ResetW()
 	{
 		GGame->Say("/d");
 		GOrbwalking->ResetAA();
-		GGame->IssueOrder(myHero, kMoveTo, myHero->GetPosition().Extend(GGame->CursorPosition(), GetDistanceVectors(myHero->GetPosition(), GGame->CursorPosition()) + 10));
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
 	});
 }
 
@@ -113,10 +113,16 @@ static void ResetR2()
 	{	
 		GGame->Say("/d");
 		GOrbwalking->ResetAA();
-		GGame->IssueOrder(myHero, kMoveTo, myHero->GetPosition().Extend(GGame->CursorPosition(), GetDistanceVectors(myHero->GetPosition(), GGame->CursorPosition()) + 10));
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
 	});
 }
-
+static void AAcancel()
+{
+	GPluginSDK->DelayFunctionCall(150, []()
+	{
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+	});
+}
 inline std::string ToLower(std::string StringToLower)
 {
 	auto Lowered = StringToLower;
