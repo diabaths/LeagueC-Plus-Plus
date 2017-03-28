@@ -299,7 +299,7 @@ void laneclear()
 	{
 		if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
 			return;
-		if (Q->IsReady() && !minions->IsWard())
+		if (Q->IsReady())
 		{
 			auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
 			if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))

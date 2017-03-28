@@ -25,6 +25,14 @@ enum ePredictionChance
 	kHitChanceImmobile
 };
 
+struct OnTeleportArgs
+{
+	IUnit* Source;	// Object that is teleporting
+	int Type;		// The type of teleport (eTeleportType)
+	int Status;		// The status of teleport (eTeleportStatus)
+	int Duration;	// The duration of the teleport in ms
+};
+
 struct AdvPredictionInput
 {
 	Vec3 FromPosition;				// Start position for casting
@@ -277,6 +285,7 @@ public:
 	virtual int GetDeaths() = 0;
 	virtual int GetAssists() = 0;
 	virtual float GetExperience() = 0;
+	virtual float GetBonusArmor() = 0;
 };
 
 #endif // PluginData_h__

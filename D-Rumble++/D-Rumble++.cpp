@@ -591,7 +591,7 @@ void jungleclear()
 }
 PLUGIN_EVENT(void) OnProcessSpell(CastedSpell const& Args)
 {
-	if (Args.Caster_ == myHero)
+	if (Args.Caster_ != myHero && Args.Caster_ !=nullptr && myHero->IsValidTarget(Args.Caster_, 400))
 	{
 		if (W->IsReady() && AutoW->Enabled() && !GGame->IsChatOpen())
 		{

@@ -1,6 +1,22 @@
 #ifndef LPPConstants_h__
 #define LPPConstants_h__
 
+enum eTeleportType
+{
+	Teleport_Teleport,
+	Teleport_Recall,
+	Teleport_Shen,
+	Teleport_TwistedFate,
+	Teleport_Unknown
+};
+
+enum eTeleportStatus
+{
+	Teleport_Start,
+	Teleport_Abort,
+	Teleport_Finish
+};
+
 enum eDamageItems
 {
 	kHexgun,
@@ -190,7 +206,8 @@ enum eLeagueEvents
 	kEventOnPlayAnimation,
 	kEventOnPauseAnimation,
 	kEventOnJungleNotification,
-	kEventOnNewPath
+	kEventOnNewPath,
+	kEventOnTeleport
 };
 
 enum eTargetPriority
@@ -341,4 +358,4 @@ enum eTaunt
 	kToggle,
 };
 
-#endif // LPPConstants_h__#pragma once
+#endif // LPPConstants_h__
