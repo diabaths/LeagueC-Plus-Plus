@@ -13,7 +13,7 @@ PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 			{
 				GGame->PrintChat("AA_cancel");
 			}
-			AAcancel();
+			//AAcancel();
 		}
 		if (Contains(Args, "c29"))
 		{
