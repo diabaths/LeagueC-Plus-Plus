@@ -3,60 +3,61 @@
 
 PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 {
-	if (GOrbwalking->GetOrbwalkingMode() != kModeCombo || !GetAsyncKeyState(Burst_b->GetInteger()) || GOrbwalking->GetOrbwalkingMode() != kModeMixed)
-		return;
-	if (Source == myHero)
+	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo || GetAsyncKeyState(Burst_b->GetInteger()) || GOrbwalking->GetOrbwalkingMode() == kModeMixed)
 	{
-		if (Contains(Args, "56b") || Contains(Args, "58b") || Contains(Args, "59b"))
+		if (Source == myHero)
 		{
-			if (Debug->Enabled())
+			if (Contains(Args, "56b") || Contains(Args, "58b") || Contains(Args, "59b"))
 			{
-				GGame->PrintChat("AA_cancel");
+				if (Debug->Enabled())
+				{
+					GGame->PrintChat("AA_cancel");
+				}
+				//AAcancel();
 			}
-			//AAcancel();
-		}
-		if (Contains(Args, "c29"))
-		{
-			if (Debug->Enabled())
+			if (Contains(Args, "c29"))
 			{
-				GGame->PrintChat("AnimQ-1");
+				if (Debug->Enabled())
+				{
+					GGame->PrintChat("AnimQ-1");
+				}
+				Qstack = 1;
+				ResetQ1();
 			}
-			Qstack = 1;
-			ResetQ1();
-		}
-		if (Contains(Args, "c39"))
-		{
-			if (Debug->Enabled())
+			if (Contains(Args, "c39"))
 			{
-				GGame->PrintChat("AnimQ-2");
+				if (Debug->Enabled())
+				{
+					GGame->PrintChat("AnimQ-2");
+				}
+				Qstack = 2;
+				ResetQ2();
 			}
-			Qstack = 2;
-			ResetQ2();
-		}
-		if (Contains(Args, "c49"))
-		{
-			if (Debug->Enabled())
+			if (Contains(Args, "c49"))
 			{
-				GGame->PrintChat("AnimQ-3");
+				if (Debug->Enabled())
+				{
+					GGame->PrintChat("AnimQ-3");
+				}
+				Qstack = 0;
+				ResetQ3();
 			}
-			Qstack = 0;
-			ResetQ3();
-		}
-		if (Contains(Args, "b5f"))
-		{
-			if (Debug->Enabled())
+			if (Contains(Args, "b5f"))
 			{
-				GGame->PrintChat("Anim_W");
+				if (Debug->Enabled())
+				{
+					GGame->PrintChat("Anim_W");
+				}
+				//ResetW();
 			}
-			//ResetW();
-		}
-		if (Contains(Args, "bda"))
-		{
-			if (Debug->Enabled())
+			if (Contains(Args, "bda"))
 			{
-				GGame->PrintChat("Anim_R2");
+				if (Debug->Enabled())
+				{
+					GGame->PrintChat("Anim_R2");
+				}
+				ResetR2();
 			}
-			ResetR2();
 		}
 	}
 }
