@@ -239,7 +239,9 @@ bool haveulti()
 	{
 		return myHero->HasBuff("JarvanIVCataclysm");
 	}
+	return false;
 }
+
 static bool InFountain(IUnit *unit)
 {
 	//TODO: Implement
@@ -412,16 +414,17 @@ void Combo()
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, E->Range());
 			if (myHero->IsValidTarget(target, E->Range()) && target != nullptr)
 			{
-				AdvPredictionOutput prediction_output;
+				auto Rstartcast = target->ServerPosition() ;
+				 AdvPredictionOutput prediction_output;
 				E->RunPrediction(target, true, kCollidesWithNothing, &prediction_output);
 				if (prediction_output.HitChance >= kHitChanceHigh)
-					E->CastOnPosition(target->ServerPosition());
+					E->CastFrom(Rstartcast, prediction_output.CastPosition);
 				Q->CastOnPosition(target->ServerPosition());
 
 			}
 		}
 	}
-	if (ComboE->Enabled() && (!Q->IsReady() || Qcd > 3))
+	if (ComboE->Enabled() && (!Q->IsReady() || Qcd > 3) || !ComboQ->Enabled())
 	{
 		if (E->IsReady())
 		{

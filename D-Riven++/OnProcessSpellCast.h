@@ -14,25 +14,24 @@ PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& args)
 				R2->CastOnPosition(Enemy->ServerPosition());
 			}
 		}
-		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo || GetAsyncKeyState(Burst_b->GetInteger()) || GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+		if (std::string(args.Name_) == "RivenTriCleave")
 		{
-			if (std::string(args.Name_) == "RivenTriCleave")
+			LastQ = GGame->CurrentTick();
+			if (Debug->Enabled())
 			{
-				LastQ = GGame->CurrentTick();
-				if (Debug->Enabled())
-				{
-					GGame->PrintChat("LastQ");
-				}
+				GGame->PrintChat("LastQ");
 			}
 		}
-		if (Contains(std::string(args.Name_), "RivenBasicAttack"))
+		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo || GetAsyncKeyState(Burst_b->GetInteger()) || GOrbwalking->GetOrbwalkingMode() == kModeMixed)
 		{
-			AutoAttack = true;
-			GPluginSDK->DelayFunctionCall(AADelay->GetInteger(), []()
+			if (Contains(std::string(args.Name_), "RivenBasicAttack"))
 			{
-				AutoAttack = false;
-			});
-
+				AutoAttack = true;
+				GPluginSDK->DelayFunctionCall(AADelay->GetInteger(), []()
+				{
+					AutoAttack = false;
+				});
+			}
 		}
 	}
 	if (args.Caster_->IsHero() && args.Name_ != nullptr && args.Caster_ != myHero && E->IsReady()
