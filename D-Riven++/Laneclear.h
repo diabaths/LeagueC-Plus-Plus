@@ -37,17 +37,17 @@ inline void laneclear()
 				if (Qhit >= 3 && end - GGame->Time() <= 0.2 * (end - start))
 				{
 					Q->CastOnPosition(pos);
-					AutoAttack = true;
+					return;
 				}
-				else if (minions->GetHealth() < dmg)
+				if (minions->GetHealth() < dmg)
 				{
 					Q->CastOnUnit(minions);
-					AutoAttack = true;
+					return;
 				}
-				else if (myHero->HasBuff("RivenTriCleave") && end - GGame->Time() <= 0.1 * (end - start))
+				if (myHero->HasBuff("RivenTriCleave") && end - GGame->Time() <= 0.1 * (end - start))
 				{
 					Q->CastOnUnit(minions);
-					AutoAttack = true;
+					
 				}
 			}
 		}
