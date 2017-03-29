@@ -43,7 +43,7 @@ inline void Combo()
 					GGame->PrintChat("Q_COMBO");
 				}
 				Q->CastOnPosition(Enemy->ServerPosition());
-				AutoAttack = false;
+				AutoAttack = true;
 			}
 		}
 	}

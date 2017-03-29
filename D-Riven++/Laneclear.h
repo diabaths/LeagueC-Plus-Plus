@@ -37,17 +37,17 @@ inline void laneclear()
 				if (Qhit >= 3 && end - GGame->Time() <= 0.2 * (end - start))
 				{
 					Q->CastOnPosition(pos);
-					AutoAttack = false;
+					AutoAttack = true;
 				}
 				else if (minions->GetHealth() < dmg)
 				{
 					Q->CastOnUnit(minions);
-					AutoAttack = false;
+					AutoAttack = true;
 				}
 				else if (myHero->HasBuff("RivenTriCleave") && end - GGame->Time() <= 0.1 * (end - start))
 				{
 					Q->CastOnUnit(minions);
-					AutoAttack = false;
+					AutoAttack = true;
 				}
 			}
 		}
@@ -97,7 +97,7 @@ inline void jungleclear()
 			if (jMinion != nullptr && !jMinion->IsDead() && myHero->IsValidTarget(jMinion, Q->Range()))
 			{
 				Q->CastOnUnit(jMinion);
-				AutoAttack = false;
+				AutoAttack = true;
 			}
 		}
 		if (JungleW->Enabled() && W->IsReady() && !AutoAttack)

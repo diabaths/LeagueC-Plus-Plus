@@ -73,9 +73,10 @@ static void ResetQ1()
 {
 	GPluginSDK->DelayFunctionCall(QDelay1->GetInteger(), []()
 	{
+		
 		GGame->Say("/d");
 		GOrbwalking->ResetAA();
-		GGame->IssueOrder(myHero, kMoveTo, myHero->GetPosition().Extend(GGame->CursorPosition(), GetDistanceVectors(myHero->GetPosition(), GGame->CursorPosition()) + 10));
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
 	});
 }
 static void ResetQ2()
@@ -91,7 +92,7 @@ static void ResetQ3()
 {
 	GPluginSDK->DelayFunctionCall(QDelay3->GetInteger(), []()
 	{
-		GGame->Say("/d");
+		GGame->Taunt(kLaugh);
 		GOrbwalking->ResetAA();
 		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
 	});

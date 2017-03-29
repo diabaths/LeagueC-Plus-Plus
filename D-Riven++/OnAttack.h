@@ -35,7 +35,7 @@ PLUGIN_EVENT(void) OnAttack(IUnit* source, IUnit* target)
 						GGame->PrintChat("ONATTACK_1");
 					}					
 					Q->CastOnPosition(target->ServerPosition());
-					AutoAttack = false;
+					AutoAttack = true;
 				}
 			}
 			if (Qstack == 2 && !AutoAttack)
@@ -47,7 +47,7 @@ PLUGIN_EVENT(void) OnAttack(IUnit* source, IUnit* target)
 						GGame->PrintChat("ONATTACK_2");
 					}
 					Q->CastOnPosition(target->ServerPosition());
-					AutoAttack = false;
+					AutoAttack = true;
 				}
 			}
 			if (Qstack == 0 && !AutoAttack)
@@ -59,7 +59,7 @@ PLUGIN_EVENT(void) OnAttack(IUnit* source, IUnit* target)
 						GGame->PrintChat("ONATTACK_3");
 					}
 					Q->CastOnPosition(target->ServerPosition());
-					AutoAttack = false;
+					AutoAttack = true;
 				}
 			}
 		}
