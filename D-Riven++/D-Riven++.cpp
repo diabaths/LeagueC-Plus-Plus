@@ -55,10 +55,15 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	{
 		auto end = GBuffData->GetEndTime(myHero->GetBuffDataByName("RivenTriCleave"));
 		auto start = GBuffData->GetStartTime(myHero->GetBuffDataByName("RivenTriCleave"));
-		if (end - GGame->Time() <= 0.1 * (end - start) && KeepQ->Enabled() && !myHero->IsRecalling() && myHero->HasBuff("RivenTriCleave"))
+		if (KeepQ->Enabled() && GEntityList->Player()->HasBuff("RivenTriCleave") && 
+			end - GGame->Time() <= 0.1 * (end - start) && !myHero->IsRecalling())
 		{
-			Q->CastOnPosition(GGame->CursorPosition());
-			LastQ = GGame->CurrentTick();
+			auto qPosition = GEntityList->Player()->ServerPosition() + GEntityList->Player()->Direction() * (Q->Range() + 100);
+
+			if (CountEnemiesInPositionRange(qPosition, 200) <= 1 && !GUtility->IsPositionUnderTurret(qPosition))
+			{
+				Q->CastOnPosition(GGame->CursorPosition());
+			}
 		}
 	}
 	if (GetAsyncKeyState(Burst_b->GetInteger()))
@@ -97,7 +102,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	GEventManager->AddEventHandler(kEventOnGameUpdate, OnGameUpdate);
 	GEventManager->AddEventHandler(kEventOnRender, OnRender);
 	GEventManager->AddEventHandler(kEventOnPlayAnimation, OnPlayAnimation);
-	GEventManager->AddEventHandler(kEventOrbwalkOnAttack, OnAttack);
+	//GEventManager->AddEventHandler(kEventOrbwalkOnAttack, OnAttack);
 	GEventManager->AddEventHandler(kEventOnDoCast, OnDoCast);
 	GEventManager->AddEventHandler(kEventOnSpellCast, OnProcessSpellCast);
 	GEventManager->AddEventHandler(kEventOnInterruptible, OnInterruptable);
@@ -120,7 +125,7 @@ PLUGIN_API void OnUnload()
 	GEventManager->RemoveEventHandler(kEventOnGameUpdate, OnGameUpdate);
 	GEventManager->RemoveEventHandler(kEventOnRender, OnRender);
 	GEventManager->RemoveEventHandler(kEventOnPlayAnimation, OnPlayAnimation);
-	GEventManager->RemoveEventHandler(kEventOrbwalkOnAttack, OnAttack);
+	//GEventManager->RemoveEventHandler(kEventOrbwalkOnAttack, OnAttack);
 	GEventManager->RemoveEventHandler(kEventOnDoCast, OnDoCast);
 	GEventManager->RemoveEventHandler(kEventOnSpellCast, OnProcessSpellCast);
 	GEventManager->RemoveEventHandler(kEventOnInterruptible, OnInterruptable);

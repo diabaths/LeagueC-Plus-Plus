@@ -12,19 +12,12 @@ inline void laneclear()
 				if (!AutoAttack)
 				{
 					Titanic(minions);
+					Tiamat_hydra(minions);
 					GOrbwalking->ResetAA();
 				}
-
-				if (myHero->IsValidTarget(minions, 385))
-
-					if (!AutoAttack)
-					{
-						Tiamat_hydra(minions);
-						GOrbwalking->ResetAA();
-					}
 			}
 		}
-		if (Q->IsReady() && FarmQ->Enabled() && !AutoAttack)
+		if (Q->IsReady() && FarmQ->Enabled())
 		{
 			auto end = GBuffData->GetEndTime(myHero->GetBuffDataByName("RivenTriCleave"));
 			auto start = GBuffData->GetStartTime(myHero->GetBuffDataByName("RivenTriCleave"));
@@ -37,12 +30,10 @@ inline void laneclear()
 				if (Qhit >= 3 && end - GGame->Time() <= 0.2 * (end - start))
 				{
 					Q->CastOnPosition(pos);
-					return;
 				}
 				if (minions->GetHealth() < dmg)
 				{
 					Q->CastOnUnit(minions);
-					return;
 				}
 				if (myHero->HasBuff("RivenTriCleave") && end - GGame->Time() <= 0.1 * (end - start))
 				{
@@ -51,7 +42,7 @@ inline void laneclear()
 				}
 			}
 		}
-		if (W->IsReady() && FarmW->Enabled() && !AutoAttack)
+		if (W->IsReady() && FarmW->Enabled())
 		{
 			auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotW);
 			if (minions != nullptr && myHero->IsValidTarget(minions, W->Range()))
@@ -92,7 +83,7 @@ inline void jungleclear()
 					}
 			}
 		}
-		if (JungleQ->Enabled() && Q->IsReady() && !AutoAttack)
+		if (JungleQ->Enabled() && Q->IsReady())
 		{
 			if (jMinion != nullptr && !jMinion->IsDead() && myHero->IsValidTarget(jMinion, Q->Range()))
 			{
@@ -100,14 +91,14 @@ inline void jungleclear()
 				AutoAttack = true;
 			}
 		}
-		if (JungleW->Enabled() && W->IsReady() && !AutoAttack)
+		if (JungleW->Enabled() && W->IsReady())
 		{
 			if (jMinion != nullptr && !jMinion->IsDead() && myHero->IsValidTarget(jMinion, W->Range()))
 			{
 				W->CastOnPlayer();
 			}
 		}
-		if (JungleE->Enabled() && E->IsReady() && !AutoAttack)
+		if (JungleE->Enabled() && E->IsReady())
 		{
 			if (jMinion != nullptr && !jMinion->IsDead() && myHero->IsValidTarget(jMinion, E->Range()))
 			{

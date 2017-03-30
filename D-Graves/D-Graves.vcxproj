@@ -119,6 +119,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;DGRAVES_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>..\L++ SDK</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -147,13 +148,27 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="D-Graves.cpp" />
-    <ClCompile Include="PluginSDK.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="LPPConstants.h" />
-    <ClInclude Include="PluginData.h" />
-    <ClInclude Include="PluginSDK.h" />
-    <ClInclude Include="Vector3.h" />
+    <ClInclude Include="Animation.h" />
+    <ClInclude Include="Burst.h" />
+    <ClInclude Include="Color.h" />
+    <ClInclude Include="Combo.h" />
+    <ClInclude Include="Damage.h" />
+    <ClInclude Include="Extensions.h" />
+    <ClInclude Include="Farm.h" />
+    <ClInclude Include="Harass.h" />
+    <ClInclude Include="Items.h" />
+    <ClInclude Include="KillSteal.h" />
+    <ClInclude Include="Menu.h" />
+    <ClInclude Include="OnProcessSpellCast.h" />
+    <ClInclude Include="Render.h" />
+    <ClInclude Include="Spells.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\L++ SDK\L++ SDK.vcxproj">
+      <Project>{c2a9b46d-96e2-49ec-b2d8-5af521dd0a76}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -1,20 +1,84 @@
 #pragma once
 #include "Extensions.h"
 
-PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& args)
+PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& spell)
 {
-	auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
-
-	if (args.Caster_ == myHero)
+	auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
+	if (spell.Caster_ == myHero && (GOrbwalking->GetOrbwalkingMode() == kModeMixed || GOrbwalking->GetOrbwalkingMode() == kModeCombo || GetAsyncKeyState(Burst_b->GetInteger())))
 	{
-		if (GetAsyncKeyState(Burst_b->GetInteger()) && std::string(args.Name_) == "RivenFengShuiEngine")
+		if (target != nullptr && target->IsHero() && !target->IsDead())
 		{
-			if (Enemy != nullptr && myHero->IsValidTarget(Enemy, Q->Range()) && R2->IsReady())
+			if (Hydra->Enabled())
 			{
-				R2->CastOnPosition(Enemy->ServerPosition());
+				if (!AutoAttack)
+				{
+					Titanic(target);
+					GOrbwalking->ResetAA();
+				}
+			}
+			if (Q->IsReady() && ComboQ->Enabled() && (!W->IsReady() || !ComboW->Enabled()))
+			{
+				if (myHero->IsValidTarget(target, 385))
+					if (_tiamat->Enabled() || RHydra->Enabled())
+					{
+						if (!AutoAttack)
+						{
+							Tiamat_hydra(target);
+							GOrbwalking->ResetAA();
+						}
+					}
+				if (Qstack == 1 && !AutoAttack)
+				{
+					if (target != nullptr && myHero->IsValidTarget(target, Q->Range() + IsInAutoAttackRange(target) + 75))
+					{
+						if (Debug->Enabled())
+						{
+							GGame->PrintChat("ONATTACK_1");
+						}
+						AutoAttack = true;
+						Q->CastOnPosition(target->ServerPosition());
+						
+					}
+				}
+				if (Qstack == 2 && !AutoAttack)
+				{
+					if (myHero->IsValidTarget(target, Q->Range() + IsInAutoAttackRange(target) + 75))
+					{
+						if (Debug->Enabled())
+						{
+							GGame->PrintChat("ONATTACK_2");
+						}
+						AutoAttack = true;
+						Q->CastOnPosition(target->ServerPosition());
+					
+					}
+				}
+				if (Qstack == 0 && !AutoAttack)
+				{
+					if (myHero->IsValidTarget(target, Q->Range() + IsInAutoAttackRange(target) + 75))
+					{
+						if (Debug->Enabled())
+						{
+							GGame->PrintChat("ONATTACK_3");
+						}
+						AutoAttack = true;
+						Q->CastOnPosition(target->ServerPosition());
+						
+					}
+				}
 			}
 		}
-		if (std::string(args.Name_) == "RivenTriCleave")
+	}
+	if (spell.Caster_ == myHero)
+	{
+		if (GetAsyncKeyState(Burst_b->GetInteger()) && std::string(spell.Name_) == "RivenFengShuiEngine")
+		{
+			if (target != nullptr && myHero->IsValidTarget(target, Q->Range()) && R2->IsReady())
+			{
+				R2->CastOnPosition(target->ServerPosition());
+			}
+		}
+		if (std::string(spell.Name_) == "RivenTriCleave")
 		{
 			LastQ = GGame->CurrentTick();
 			if (Debug->Enabled())
@@ -24,7 +88,7 @@ PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& args)
 		}
 		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo || GetAsyncKeyState(Burst_b->GetInteger()) || GOrbwalking->GetOrbwalkingMode() == kModeMixed)
 		{
-			if (Contains(std::string(args.Name_), "RivenBasicAttack"))
+			if (Contains(std::string(spell.Name_), "RivenBasicAttack"))
 			{
 				AutoAttack = true;
 				GPluginSDK->DelayFunctionCall(AADelay->GetInteger(), []()
@@ -34,108 +98,108 @@ PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& args)
 			}
 		}
 	}
-	if (args.Caster_->IsHero() && args.Name_ != nullptr && args.Caster_ != myHero && E->IsReady()
-		&& args.Target_ == myHero && AutoE->Enabled() && CanMoveMent(myHero) && !GSpellData->IsAutoAttack(args.Data_))
+	if (spell.Caster_->IsHero() && spell.Name_ != nullptr && spell.Caster_ != myHero && E->IsReady()
+		&& spell.Target_ == myHero && AutoE->Enabled() && CanMoveMent(myHero) && !GSpellData->IsAutoAttack(spell.Data_))
 	{
-		auto epos = myHero->GetPosition() + (myHero->GetPosition() - Enemy->GetPosition()).VectorNormalize() * 300;
-		if (myHero->IsValidTarget(Enemy, 900))
+		auto epos = myHero->GetPosition() + (myHero->GetPosition() - target->GetPosition()).VectorNormalize() * 300;
+		if (myHero->IsValidTarget(target, 900))
 		{
-			if (Contains(args.Name_, "FizzPiercingStrike"))
+			if (Contains(spell.Name_, "FizzPiercingStrike"))
 			{
 				E->CastOnPosition(epos);
 			}
-			if (Contains(args.Name_, "HungeringStrike"))
+			if (Contains(spell.Name_, "HungeringStrike"))
 			{
 				E->CastOnPosition(epos);
 			}
-			if (Contains(args.Name_, "YasuoDash"))
+			if (Contains(spell.Name_, "YasuoDash"))
 			{
 				E->CastOnPosition(epos);
 			}
-			if (Contains(args.Name_, "KatarinaRTrigger"))
+			if (Contains(spell.Name_, "KatarinaRTrigger"))
 			{
 				E->CastOnPosition(epos);
 			}
-			if (Contains(args.Name_, "KatarinaE"))
+			if (Contains(spell.Name_, "KatarinaE"))
 			{
 				E->CastOnPosition(epos);
 			}
-			if (Contains(args.Name_, "DariusR"))
-			{
-				E->CastOnPosition(epos);
-			}
-
-			if (Contains(args.Name_, "GarenQ"))
+			if (Contains(spell.Name_, "DariusR"))
 			{
 				E->CastOnPosition(epos);
 			}
 
-			if (Contains(args.Name_, "GarenR"))
+			if (Contains(spell.Name_, "GarenQ"))
 			{
 				E->CastOnPosition(epos);
 			}
 
-			if (Contains(args.Name_, "IreliaE"))
+			if (Contains(spell.Name_, "GarenR"))
 			{
 				E->CastOnPosition(epos);
 			}
 
-			if (Contains(args.Name_, "LeeSinR"))
+			if (Contains(spell.Name_, "IreliaE"))
 			{
 				E->CastOnPosition(epos);
 			}
 
-			if (Contains(args.Name_, "OlafE"))
+			if (Contains(spell.Name_, "LeeSinR"))
 			{
 				E->CastOnPosition(epos);
 			}
 
-			if (Contains(args.Name_, "RenektonW"))
+			if (Contains(spell.Name_, "OlafE"))
 			{
 				E->CastOnPosition(epos);
 			}
 
-			if (Contains(args.Name_, "RenektonPreExecute"))
+			if (Contains(spell.Name_, "RenektonW"))
 			{
 				E->CastOnPosition(epos);
 			}
 
-			if (Contains(args.Name_, "RengarQ"))
+			if (Contains(spell.Name_, "RenektonPreExecute"))
 			{
 				E->CastOnPosition(epos);
 			}
 
-			if (Contains(args.Name_, "VeigarR"))
+			if (Contains(spell.Name_, "RengarQ"))
 			{
 				E->CastOnPosition(epos);
 			}
 
-			if (Contains(args.Name_, "VolibearW"))
+			if (Contains(spell.Name_, "VeigarR"))
 			{
 				E->CastOnPosition(epos);
 			}
 
-			if (Contains(args.Name_, "XenZhaoThrust3"))
+			if (Contains(spell.Name_, "VolibearW"))
 			{
 				E->CastOnPosition(epos);
 			}
-			if (Contains(args.Name_, "TwitchEParticle"))
+
+			if (Contains(spell.Name_, "XenZhaoThrust3"))
 			{
 				E->CastOnPosition(epos);
 			}
-			if (Contains(args.Name_, "MonkeyKingSpinToWin"))
+			if (Contains(spell.Name_, "TwitchEParticle"))
 			{
 				E->CastOnPosition(epos);
 			}
-			if (Contains(args.Name_, "RengarPassiveBuffDash"))
+			if (Contains(spell.Name_, "MonkeyKingSpinToWin"))
 			{
 				E->CastOnPosition(epos);
 			}
-			if (Contains(args.Name_, "TalonCutthroat"))
+			if (Contains(spell.Name_, "RengarPassiveBuffDash"))
 			{
 				E->CastOnPosition(epos);
 			}
-			if (Contains(args.Name_, "attack") && (args.Caster_->HasBuff("BlueCardAttack") || args.Caster_->HasBuff("GoldCardAttack") || args.Caster_->HasBuff("RedCardAttack")))
+			if (Contains(spell.Name_, "TalonCutthroat"))
+			{
+				E->CastOnPosition(epos);
+			}
+			if (Contains(spell.Name_, "attack") && (spell.Caster_->HasBuff("BlueCardAttack") || spell.Caster_->HasBuff("GoldCardAttack") || spell.Caster_->HasBuff("RedCardAttack")))
 			{
 				E->CastOnPosition(epos);
 			}

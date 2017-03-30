@@ -119,6 +119,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;DRIVEN_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>..\L++ SDK</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -157,20 +158,20 @@
     <ClInclude Include="Extensions.h" />
     <ClInclude Include="Flee.h" />
     <ClInclude Include="Items.h" />
-    <ClInclude Include="LPPConstants.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="OnAnimation.h" />
     <ClInclude Include="OnAttack.h" />
     <ClInclude Include="OnCast.h" />
     <ClInclude Include="OnProcessSpellCast.h" />
-    <ClInclude Include="PluginData.h" />
-    <ClInclude Include="PluginSDK.h" />
     <ClInclude Include="Spells.h" />
-    <ClInclude Include="Vector3.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D-Riven++.cpp" />
-    <ClCompile Include="PluginSDK.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\L++ SDK\L++ SDK.vcxproj">
+      <Project>{c2a9b46d-96e2-49ec-b2d8-5af521dd0a76}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -24,7 +24,7 @@ inline void Titanic(IUnit* target)
 	{
 		if (Titanic_Hydra->IsOwned() && Titanic_Hydra->IsReady())
 		{
-			Titanic_Hydra->CastOnPlayer();
+			Titanic_Hydra->CastOnTarget(target);
 			GOrbwalking->ResetAA();
 		}
 	}
@@ -36,7 +36,7 @@ inline void Tiamat_hydra(IUnit* target)
 	{
 		if (Tiamat->IsOwned() && Tiamat->IsReady())
 		{
-			Tiamat->CastOnPlayer();
+			Tiamat->CastOnTarget(target);
 			GOrbwalking->ResetAA();
 		}
 	}	
@@ -44,50 +44,40 @@ inline void Tiamat_hydra(IUnit* target)
 	{
 		if (Ravenous_Hydra->IsOwned() && Ravenous_Hydra->IsReady())
 		{
-			Ravenous_Hydra->CastOnPlayer();
+			Ravenous_Hydra->CastOnTarget(target);
 			GOrbwalking->ResetAA();
 		}
 	}
 }
 
-inline void UseItems()
+inline void UseItems(IUnit* target)
 {
-	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+	if (Blade_Cutlass->Enabled() && myHero->IsValidTarget(target, 550))
 	{
-		for (auto enemy : GEntityList->GetAllHeros(false, true))
+		if (myHero->HealthPercent() < MyHpPreBlade->GetInteger() || target->HealthPercent() < EnemyHpPreBlade->GetInteger())
 		{
-			if (Blade_Cutlass->Enabled() && myHero->IsValidTarget(enemy, 550))
-			{
-				if (myHero->HealthPercent() < MyHpPreBlade->GetInteger() || enemy->HealthPercent() < EnemyHpPreBlade->GetInteger())
-				{
-					if (blade->IsOwned() && blade->IsReady())
-						blade->CastOnTarget(enemy);
-					if (Cutlass->IsOwned() && Cutlass->IsReady())
-						Cutlass->CastOnTarget(enemy);
-				}
-			}
-			if (_tiamat->Enabled() && myHero->IsValidTarget(enemy, 385))
-			{
-				if (Tiamat->IsOwned() && Tiamat->IsReady())
-					Tiamat->CastOnPlayer();
-			}
-			if (Hydra->Enabled() && myHero->IsValidTarget(enemy, 385))
-			{
-				if (Titanic_Hydra->IsOwned() && Titanic_Hydra->IsReady())
-					Titanic_Hydra->CastOnPlayer();
-			}
-			if (RHydra->Enabled() && myHero->IsValidTarget(enemy, 385))
-			{
-				if (Ravenous_Hydra->IsOwned() && Ravenous_Hydra->IsReady())
-					Ravenous_Hydra->CastOnPlayer();
-			}
-			if (useYoumuu->Enabled() && Youmuu->IsReady() && Youmuu->IsOwned())
-			{
-				if (myHero->IsValidTarget(enemy, 550))
-					Youmuu->CastOnPlayer();
-			}
-
+			if (blade->IsOwned() && blade->IsReady())
+				blade->CastOnTarget(target);
+			if (Cutlass->IsOwned() && Cutlass->IsReady())
+				Cutlass->CastOnTarget(target);
 		}
+	}
+	if (Tiamat->IsOwned() && Tiamat->IsReady() && _tiamat->Enabled() && myHero->IsValidTarget(target, 385))
+	{
+		Tiamat->CastOnPlayer();
+	}
+	if (Titanic_Hydra->IsOwned() && Titanic_Hydra->IsReady() && Hydra->Enabled() && myHero->IsValidTarget(target, 385))
+	{
+		Titanic_Hydra->CastOnPlayer();
+	}
+	if (Ravenous_Hydra->IsOwned() && Ravenous_Hydra->IsReady() && RHydra->Enabled() && myHero->IsValidTarget(target, 385))
+	{
+		Ravenous_Hydra->CastOnPlayer();
+	}
+	if (useYoumuu->Enabled() && Youmuu->IsReady() && Youmuu->IsOwned())
+	{
+		if (myHero->IsValidTarget(target, 550))
+			Youmuu->CastOnPlayer();
 	}
 }
 

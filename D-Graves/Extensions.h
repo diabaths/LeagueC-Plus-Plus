@@ -69,14 +69,14 @@ inline int CountEnemiesInRange(float range)
 	return enemies;
 }
 
-static void ResetQ1()
+/*static void ResetQ1()
 {
 	GPluginSDK->DelayFunctionCall(QDelay1->GetInteger(), []()
 	{
-		
+
 		GGame->Say("/d");
 		GOrbwalking->ResetAA();
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
 	});
 }
 static void ResetQ2()
@@ -94,29 +94,46 @@ static void ResetQ3()
 	{
 		GGame->Taunt(kLaugh);
 		GOrbwalking->ResetAA();
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
 	});
 }
-
-static void ResetW()
+*/
+static void ResetQ()
 {
-	GPluginSDK->DelayFunctionCall(170, []()
+	GPluginSDK->DelayFunctionCall(75, []()
 	{
 		GGame->Say("/d");
-		GOrbwalking->ResetAA();
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
 	});
 }
 
+static void ResetE()
+{
+	GPluginSDK->DelayFunctionCall(75, []()
+	{
+		GGame->Taunt(kDance);
+		GOrbwalking->ResetAA();
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+	});	
+}
+static void ResetR()
+{
+	GPluginSDK->DelayFunctionCall(75, []()
+	{
+		GGame->Taunt(kLaugh);
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+	});
+}
+/*
 static void ResetR2()
 {
 	GPluginSDK->DelayFunctionCall(150, []()
-	{	
+	{
 		GGame->Say("/d");
 		GOrbwalking->ResetAA();
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
 	});
-}
+}*/
 static void AAcancel()
 {
 	GPluginSDK->DelayFunctionCall(150, []()
@@ -159,7 +176,7 @@ inline bool IsInAutoAttackRange(IUnit* target)
 
 static bool CanMoveMent(IUnit* Source)
 {
-	if(!Source->HasBuffOfType(BUFF_Stun) &&	!Source->HasBuffOfType(BUFF_Fear) && !Source->HasBuffOfType(BUFF_Snare) 
+	if (!Source->HasBuffOfType(BUFF_Stun) && !Source->HasBuffOfType(BUFF_Fear) && !Source->HasBuffOfType(BUFF_Snare)
 		&& !Source->HasBuffOfType(BUFF_Knockup) && !Source->IsRecalling() && !Source->HasBuffOfType(BUFF_Knockback)
 		&& !Source->HasBuffOfType(BUFF_Charm) && !Source->HasBuffOfType(BUFF_Taunt) &&
 		!Source->HasBuffOfType(BUFF_Suppression) || Source->IsMoving())
@@ -167,78 +184,6 @@ static bool CanMoveMent(IUnit* Source)
 		return true;
 	}
 	else return false;
-}
-
-static void ELogic(IUnit* target)
-{
-	if (target == nullptr || target->IsDead() || !E->IsReady())
-	{
-		return;
-	}
-
-	if (ComboQ->Enabled() && Q->IsReady() && Qstack == 0 &&
-		GetDistance(myHero, target) < myHero->GetRealAutoAttackRange(target) + 260)
-	{
-		return;
-	}
-	if (GetDistance(myHero, target) <= 650 && Qstack == 1 && Q->IsReady() && GetDistance(myHero, target) > IsInAutoAttackRange(target) + 100 && CanMoveMent(myHero))
-	{
-		if (Debug->Enabled())
-		{
-			GGame->PrintChat("E-stage_1");
-		}
-		E->CastOnPosition(target->GetPosition());
-		return;
-	}
-
-	if (GetDistance(myHero, target) <= 325 + Wrange && W->IsReady() && GetDistance(myHero, target) > IsInAutoAttackRange(target) + 100 && CanMoveMent(myHero))
-	{
-		if (Debug->Enabled())
-		{
-			GGame->PrintChat("E-stage_2");
-		}
-		E->CastOnPosition(target->ServerPosition());
-		return;
-	}
-
-	if (!Q->IsReady() && !W->IsReady() && GetDistance(myHero, target) < 325 + IsInAutoAttackRange(target) && GetDistance(myHero, target) > IsInAutoAttackRange(target) + 100 && CanMoveMent(myHero))
-	{
-		if (Debug->Enabled())
-		{
-			GGame->PrintChat("E-stage_3");
-		}
-		E->CastOnPosition(target->ServerPosition());
-	}
-}
-
-static void WLogic(IUnit* target)
-{
-	if (target == nullptr || target->IsDead() || !W->IsReady())
-	{
-		return;
-	}
-
-	/*if (!Q->IsReady() && Qstack == 0)
-	{
-		W->CastOnPlayer();
-		return;
-	}*/
-
-	//if (!target->IsFacing(myHero))
-	//{
-		W->CastOnPlayer();
-	//}
-}
-static bool DontAttack()
-{
-	if (AutoAttack)
-	{
-		GPluginSDK->DelayFunctionCall(50, []()
-		{
-			AutoAttack = false;
-		});
-	}
-	return false;
 }
 
 inline int CountEnemiesInPositionRange(Vec3 position, float range)
@@ -259,29 +204,57 @@ inline int CountEnemiesInPositionRange(Vec3 position, float range)
 	return enemies;
 }
 
-/*static void ForceItem()
+inline void smitetarget()
 {
-	if (Items.CanUseItem(Item) && Items.HasItem(Item) && Item != 0) forceItem = true;
-	Utility.DelayAction.Add(500, () = > forceItem = false);
-}
-static void ForceR()
-{
-	forceR = (R.IsReady() && R.Instance.Name == IsFirstR);
-	Utility.DelayAction.Add(500, () = > forceR = false);
-}
-static void ForceR2()
-{
-	forceR2 = R.IsReady() && R.Instance.Name == IsSecondR;
-	Utility.DelayAction.Add(500, () = > forceR2 = false);
-}
-static void ForceW()
-{
-	forceW = W.IsReady();
-	Utility.DelayAction.Add(500, () = > forceW = false);
+	if (smite == nullptr) return;
+	if (!usesmitetarget->Enabled() || !smite->IsReady()) return;
+	for (auto enemy : GEntityList->GetAllHeros(false, true))
+	{
+		if (enemy != nullptr && myHero->IsValidTarget(enemy, 570))
+		{
+			auto Dmg = GDamage->GetSummonerSpellDamage(myHero, enemy, kSummonerSpellSmite);
+
+			smite->CastOnUnit(enemy);
+		}
+	}
 }
 
-static void ForceCastQ(IUnit* target)
+inline void Smiteuse()
 {
-	forceQ = true;
-	QTarget = target;
-}*/
+	if (smite != nullptr && smite->IsReady())
+	{
+		auto minions = GEntityList->GetAllMinions(false, false, true);
+		for (IUnit* minion : minions)
+		{
+			auto smitestage = usesmitejungle->GetInteger();
+			if (smitestage == 0)
+			{
+				if (strstr(minion->GetObjectName(), "Blue") || strstr(minion->GetObjectName(), "Gromp")
+					|| strstr(minion->GetObjectName(), "Murkwolf") || strstr(minion->GetObjectName(), "Razorbeak")
+					|| strstr(minion->GetObjectName(), "RiftHerald") || strstr(minion->GetObjectName(), "Red")
+					|| strstr(minion->GetObjectName(), "Krug") || strstr(minion->GetObjectName(), "Dragon")
+					|| strstr(minion->GetObjectName(), "Baron"))
+				{
+					auto Dmg = GDamage->GetSummonerSpellDamage(myHero, minion, kSummonerSpellSmite);
+					if (minion != nullptr && !minion->IsDead() && minion->GetHealth() <= Dmg && myHero->IsValidTarget(minion, 570))
+					{
+						smite->CastOnUnit(minion);
+					}
+				}
+			}
+			if (smitestage == 1)
+			{
+				if (strstr(minion->GetObjectName(), "RiftHerald") || strstr(minion->GetObjectName(), "Dragon")
+					|| strstr(minion->GetObjectName(), "Baron"))
+				{
+					auto Dmg = GDamage->GetSummonerSpellDamage(myHero, minion, kSummonerSpellSmite);
+					if (minion != nullptr && !minion->IsDead() && minion->GetHealth() <= Dmg && myHero->IsValidTarget(minion, 570))
+					{
+						smite->CastOnUnit(minion);
+					}
+				}
+			}
+		}
+	}
+}
+

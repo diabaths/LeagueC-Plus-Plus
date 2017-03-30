@@ -119,7 +119,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;DVAYNE_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>C:\Users\konstandin\Source\Repos\LeagueC-Plus-Plus\Release;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\L++ SDK</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -148,13 +148,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="D-Vayne++.cpp" />
-    <ClCompile Include="PluginSDK.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="LPPConstants.h" />
-    <ClInclude Include="PluginData.h" />
-    <ClInclude Include="PluginSDK.h" />
-    <ClInclude Include="Vector3.h" />
+    <ProjectReference Include="..\L++ SDK\L++ SDK.vcxproj">
+      <Project>{c2a9b46d-96e2-49ec-b2d8-5af521dd0a76}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

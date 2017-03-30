@@ -13,14 +13,15 @@ PLUGIN_EVENT(void) OnDoCast(CastedSpell const& spell)
 	{
 		auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
 
-		if (Q->IsReady() && ComboQ->Enabled() && myHero->IsValidTarget(Enemy, Q->Range()) && !AutoAttack)
+		/*if (Q->IsReady() && ComboQ->Enabled() && myHero->IsValidTarget(Enemy, Q->Range()) && !AutoAttack)
 		{
 			if (Debug->Enabled())
 			{
 				GGame->PrintChat("q_OnDoCast");
 			}
+			AutoAttack = true;
 			Q->CastOnPosition(Enemy->ServerPosition());	
-		}
+		}*/
 		if (!AutoAttack && W->IsReady() && myHero->IsValidTarget(Enemy, Wrange) && (Qstack != 0 || Enemy->IsMelee() || Enemy->IsFacing(myHero) || !Q->IsReady() ||
 			myHero->HasBuff("RivenFeint")))
 		{

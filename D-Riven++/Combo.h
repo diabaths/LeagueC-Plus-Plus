@@ -29,7 +29,7 @@ inline void Combo()
 		}
 		ELogic(Enemy);
 	}
-	if (ComboQ->Enabled() && Q->IsReady() && Enemy != nullptr && !W->IsReady())
+	if (ComboQ->Enabled() && Q->IsReady() && Enemy != nullptr && (!W->IsReady() || !ComboW->Enabled()))
 	{
 		if (CanMoveMent(myHero) && Qstack == 0 &&
 			GetDistance(myHero, Enemy) <= 310 + IsInAutoAttackRange(Enemy) &&
@@ -42,8 +42,9 @@ inline void Combo()
 				{
 					GGame->PrintChat("Q_COMBO");
 				}
-				Q->CastOnPosition(Enemy->ServerPosition());
 				AutoAttack = true;
+				Q->CastOnPosition(Enemy->ServerPosition());
+				
 			}
 		}
 	}

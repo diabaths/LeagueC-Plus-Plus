@@ -119,6 +119,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;_USRDLL;DTRISTANA_EXPORTS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <AdditionalIncludeDirectories>..\L++ SDK</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -146,14 +147,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="LPPConstants.h" />
-    <ClInclude Include="PluginData.h" />
-    <ClInclude Include="PluginSDK.h" />
-    <ClInclude Include="Vector3.h" />
+    <ClCompile Include="D-Tristana++.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="D-Tristana++.cpp" />
-    <ClCompile Include="PluginSDK.cpp" />
+    <ProjectReference Include="..\L++ SDK\L++ SDK.vcxproj">
+      <Project>{c2a9b46d-96e2-49ec-b2d8-5af521dd0a76}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

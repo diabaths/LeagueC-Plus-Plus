@@ -15,8 +15,22 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="D-Corki++.cpp">
+    <ClCompile Include="PluginSDK.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="LPPConstants.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PluginData.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PluginSDK.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

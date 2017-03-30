@@ -18,21 +18,48 @@
     <ClCompile Include="D-Graves.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="PluginSDK.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="LPPConstants.h">
+    <ClInclude Include="Animation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PluginData.h">
+    <ClInclude Include="Extensions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="PluginSDK.h">
+    <ClInclude Include="Spells.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Vector3.h">
+    <ClInclude Include="Menu.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Farm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Items.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Burst.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Harass.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Color.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OnProcessSpellCast.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Render.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Damage.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Combo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="KillSteal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
