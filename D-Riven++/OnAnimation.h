@@ -3,7 +3,7 @@
 
 PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 {
-	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo || GetAsyncKeyState(Burst_b->GetInteger()) || GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+	if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear || GOrbwalking->GetOrbwalkingMode() == kModeCombo || GetAsyncKeyState(Burst_b->GetInteger()) || GOrbwalking->GetOrbwalkingMode() == kModeMixed)
 	{
 		if (Source == myHero)
 		{

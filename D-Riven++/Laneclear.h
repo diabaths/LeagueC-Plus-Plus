@@ -81,7 +81,6 @@ inline void jungleclear()
 				{
 					Titanic(jMinion);
 					GOrbwalking->ResetAA();
-					return;
 				}
 
 				if (myHero->IsValidTarget(jMinion, 385))
@@ -90,7 +89,6 @@ inline void jungleclear()
 					{
 						Tiamat_hydra(jMinion);
 						GOrbwalking->ResetAA();
-						return;
 					}
 			}
 		}
@@ -99,7 +97,6 @@ inline void jungleclear()
 			if (jMinion != nullptr && !jMinion->IsDead() && myHero->IsValidTarget(jMinion, Q->Range()))
 			{
 				Q->CastOnUnit(jMinion);
-				AutoAttack = true;
 			}
 		}
 		if (JungleW->Enabled() && W->IsReady())
@@ -107,7 +104,6 @@ inline void jungleclear()
 			if (jMinion != nullptr && !jMinion->IsDead() && myHero->IsValidTarget(jMinion, W->Range()))
 			{
 				W->CastOnPlayer();
-				return;
 			}
 		}
 		if (JungleE->Enabled() && E->IsReady())
@@ -115,7 +111,6 @@ inline void jungleclear()
 			if (jMinion != nullptr && !jMinion->IsDead() && myHero->IsValidTarget(jMinion, E->Range()))
 			{
 				E->CastOnPosition(jMinion->GetPosition());
-				return;
 			}
 		}
 	}
