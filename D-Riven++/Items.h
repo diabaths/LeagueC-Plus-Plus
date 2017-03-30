@@ -40,7 +40,7 @@ inline void Tiamat_hydra(IUnit* target)
 			GOrbwalking->ResetAA();
 		}
 	}	
-	else if (RHydra->Enabled() && myHero->IsValidTarget(target, 385))
+	if (RHydra->Enabled() && myHero->IsValidTarget(target, 385))
 	{
 		if (Ravenous_Hydra->IsOwned() && Ravenous_Hydra->IsReady())
 		{

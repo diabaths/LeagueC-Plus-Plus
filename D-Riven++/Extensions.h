@@ -73,8 +73,8 @@ static void ResetQ1()
 {
 	GPluginSDK->DelayFunctionCall(QDelay1->GetInteger(), []()
 	{
+		GGame->Taunt(kLaugh);
 		
-		GGame->Say("/d");
 		GOrbwalking->ResetAA();
 		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
 	});
@@ -83,6 +83,7 @@ static void ResetQ2()
 {
 	GPluginSDK->DelayFunctionCall(QDelay2->GetInteger(), []()
 	{
+		
 		GGame->Say("/d");
 		GOrbwalking->ResetAA();
 		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
@@ -102,9 +103,9 @@ static void ResetW()
 {
 	GPluginSDK->DelayFunctionCall(170, []()
 	{
-		GGame->Say("/d");
+		GGame->Taunt(kDance);
 		GOrbwalking->ResetAA();
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
+	//	GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
 	});
 }
 
@@ -114,7 +115,7 @@ static void ResetR2()
 	{	
 		GGame->Say("/d");
 		GOrbwalking->ResetAA();
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
+	//	GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
 	});
 }
 static void AAcancel()

@@ -8,7 +8,7 @@ inline double GetPassive()
 		return 0.5;
 	}
 
-	else if (myHero->GetLevel() >= 15)
+	if (myHero->GetLevel() >= 15)
 	{
 		return 0.45;
 	}

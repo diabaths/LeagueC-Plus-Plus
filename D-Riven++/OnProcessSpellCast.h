@@ -4,71 +4,7 @@
 PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& spell)
 {
 	auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
-	if (spell.Caster_ == myHero && (GOrbwalking->GetOrbwalkingMode() == kModeMixed || GOrbwalking->GetOrbwalkingMode() == kModeCombo || GetAsyncKeyState(Burst_b->GetInteger())))
-	{
-		if (target != nullptr && target->IsHero() && !target->IsDead())
-		{
-			if (Hydra->Enabled())
-			{
-				if (!AutoAttack)
-				{
-					Titanic(target);
-					GOrbwalking->ResetAA();
-				}
-			}
-			if (Q->IsReady() && ComboQ->Enabled() && (!W->IsReady() || !ComboW->Enabled()))
-			{
-				if (myHero->IsValidTarget(target, 385))
-					if (_tiamat->Enabled() || RHydra->Enabled())
-					{
-						if (!AutoAttack)
-						{
-							Tiamat_hydra(target);
-							GOrbwalking->ResetAA();
-						}
-					}
-				if (Qstack == 1 && !AutoAttack)
-				{
-					if (target != nullptr && myHero->IsValidTarget(target, Q->Range() + IsInAutoAttackRange(target) + 75))
-					{
-						if (Debug->Enabled())
-						{
-							GGame->PrintChat("ONATTACK_1");
-						}
-						AutoAttack = true;
-						Q->CastOnPosition(target->ServerPosition());
-						
-					}
-				}
-				if (Qstack == 2 && !AutoAttack)
-				{
-					if (myHero->IsValidTarget(target, Q->Range() + IsInAutoAttackRange(target) + 75))
-					{
-						if (Debug->Enabled())
-						{
-							GGame->PrintChat("ONATTACK_2");
-						}
-						AutoAttack = true;
-						Q->CastOnPosition(target->ServerPosition());
-					
-					}
-				}
-				if (Qstack == 0 && !AutoAttack)
-				{
-					if (myHero->IsValidTarget(target, Q->Range() + IsInAutoAttackRange(target) + 75))
-					{
-						if (Debug->Enabled())
-						{
-							GGame->PrintChat("ONATTACK_3");
-						}
-						AutoAttack = true;
-						Q->CastOnPosition(target->ServerPosition());
-						
-					}
-				}
-			}
-		}
-	}
+	
 	if (spell.Caster_ == myHero)
 	{
 		if (GetAsyncKeyState(Burst_b->GetInteger()) && std::string(spell.Name_) == "RivenFengShuiEngine")
@@ -207,7 +143,6 @@ PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& spell)
 	}
 	/*if (std::string(args.Name_) == "RivenMartyr")
 	{
-
 	ResetW();
 	if (Debug->Enabled())
 	{

@@ -5,7 +5,7 @@ PLUGIN_EVENT(void) OnAttack(IUnit* source, IUnit* target)
 {
 	if (target == nullptr || target == myHero || target->IsDead() && !target->IsHero()) return;
 	
-	if (target->IsHero() && (GOrbwalking->GetOrbwalkingMode() == kModeMixed || GOrbwalking->GetOrbwalkingMode() == kModeCombo || GetAsyncKeyState(Burst_b->GetInteger())))
+	if (target->IsHero()  && !myHero->IsWindingUp() && (GOrbwalking->GetOrbwalkingMode() == kModeMixed || GOrbwalking->GetOrbwalkingMode() == kModeCombo || GetAsyncKeyState(Burst_b->GetInteger())))
 	{
 		if (Hydra->Enabled())
 		{

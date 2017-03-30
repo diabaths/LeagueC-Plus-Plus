@@ -31,12 +31,9 @@ inline void Combo()
 	}
 	if (ComboQ->Enabled() && Q->IsReady() && Enemy != nullptr && (!W->IsReady() || !ComboW->Enabled()))
 	{
-		if (CanMoveMent(myHero) && Qstack == 0 &&
-			GetDistance(myHero, Enemy) <= 310 + IsInAutoAttackRange(Enemy) &&
-			GetDistance(myHero, Enemy) > IsInAutoAttackRange(Enemy) + 50 &&
-			GGame->CurrentTick() - LastQ > 900)
+		if (CanMoveMent(myHero) && myHero->IsValidTarget(Enemy, Q->Range() + IsInAutoAttackRange(Enemy) + 75))
 		{
-			if (!myHero->IsDashing() && !AutoAttack)
+			if (!myHero->IsDashing() && !AutoAttack && myHero->IsWindingUp())
 			{
 				if (Debug->Enabled())
 				{

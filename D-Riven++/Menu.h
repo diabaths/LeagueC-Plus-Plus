@@ -86,7 +86,7 @@ IInventoryItem* hunter;
 int Qstack;
 float LastQ;
 float LastE;
-bool AutoAttack = false;
+bool AutoAttack;
 inline void  Menu()
 {
 	MainMenu = GPluginSDK->AddMenu("D-Riven++");
@@ -98,7 +98,7 @@ inline void  Menu()
 	HarassQ = QMenu->CheckBox("Use Q in Harass", true);
 	FarmQ = QMenu->CheckBox("Use Q in Laneclear", true);
 	JungleQ = QMenu->CheckBox("Use Q in JungleClear", true);
-	AADelay = QMenu->AddInteger("AA Delay(if cancel AA play with this)", 100, 1000, 550);
+	AADelay = QMenu->AddInteger("AA Delay(if cancel AA play with this)", 100, 1000, 200);
 	QDelay1 = QMenu->AddInteger("Delay Q1", 100, 1000, 290);
 	QDelay2 = QMenu->AddInteger("Delay Q2", 100, 1000, 290);
 	QDelay3 = QMenu->AddInteger("Delay Q3", 100, 1000, 390);

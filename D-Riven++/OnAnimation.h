@@ -22,6 +22,7 @@ PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 					GGame->PrintChat("AnimQ-1");
 				}
 				Qstack = 1;
+				GOrbwalking->ResetAA();
 				ResetQ1();
 			}
 			if (Contains(Args, "c39"))
@@ -31,6 +32,7 @@ PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 					GGame->PrintChat("AnimQ-2");
 				}
 				Qstack = 2;
+				GOrbwalking->ResetAA();
 				ResetQ2();
 			}
 			if (Contains(Args, "c49"))
@@ -40,6 +42,7 @@ PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 					GGame->PrintChat("AnimQ-3");
 				}
 				Qstack = 0;
+				GOrbwalking->ResetAA();
 				ResetQ3();
 			}
 			if (Contains(Args, "b5f"))
@@ -48,7 +51,8 @@ PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 				{
 					GGame->PrintChat("Anim_W");
 				}
-				//ResetW();
+				GOrbwalking->ResetAA();
+				ResetW();
 			}
 			if (Contains(Args, "bda"))
 			{
@@ -56,6 +60,7 @@ PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 				{
 					GGame->PrintChat("Anim_R2");
 				}
+				GOrbwalking->ResetAA();
 				ResetR2();
 			}
 		}

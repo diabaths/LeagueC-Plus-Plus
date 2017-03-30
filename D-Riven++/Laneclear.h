@@ -30,14 +30,17 @@ inline void laneclear()
 				if (Qhit >= 3 && end - GGame->Time() <= 0.2 * (end - start))
 				{
 					Q->CastOnPosition(pos);
+					return;
 				}
 				if (minions->GetHealth() < dmg)
 				{
 					Q->CastOnUnit(minions);
+					return;
 				}
 				if (myHero->HasBuff("RivenTriCleave") && end - GGame->Time() <= 0.1 * (end - start))
 				{
 					Q->CastOnUnit(minions);
+					return;
 					
 				}
 			}
@@ -53,7 +56,13 @@ inline void laneclear()
 				if (Qhit >= 4)
 				{
 					W->CastOnPlayer();
-				} else if (minions->GetHealth()<dmg) W->CastOnPlayer();
+					return;
+				}
+				if (minions->GetHealth() < dmg)
+				{
+					W->CastOnPlayer();
+					return;
+				}
 
 			}
 		}
@@ -72,6 +81,7 @@ inline void jungleclear()
 				{
 					Titanic(jMinion);
 					GOrbwalking->ResetAA();
+					return;
 				}
 
 				if (myHero->IsValidTarget(jMinion, 385))
@@ -80,6 +90,7 @@ inline void jungleclear()
 					{
 						Tiamat_hydra(jMinion);
 						GOrbwalking->ResetAA();
+						return;
 					}
 			}
 		}
@@ -96,6 +107,7 @@ inline void jungleclear()
 			if (jMinion != nullptr && !jMinion->IsDead() && myHero->IsValidTarget(jMinion, W->Range()))
 			{
 				W->CastOnPlayer();
+				return;
 			}
 		}
 		if (JungleE->Enabled() && E->IsReady())
@@ -103,6 +115,7 @@ inline void jungleclear()
 			if (jMinion != nullptr && !jMinion->IsDead() && myHero->IsValidTarget(jMinion, E->Range()))
 			{
 				E->CastOnPosition(jMinion->GetPosition());
+				return;
 			}
 		}
 	}
