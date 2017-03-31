@@ -16,6 +16,7 @@ IMenu* Rmenu;
 IMenu* Drawings;
 IMenu* ItemsMenu;
 IMenu* PotionMenu;
+IMenu* ManaMenu;
 IMenuOption* QStealth;
 IMenuOption* UseQC;
 IMenuOption* UseQH;
@@ -32,6 +33,7 @@ IMenuOption* Int_E;
 IMenuOption* Gap_E;
 IMenuOption* PushDistance;
 IMenuOption* UseEaa;
+IMenuOption* UseAAreset;
 
 IMenuOption* useYoumuu;
 IMenuOption* Blade_Cutlass;
@@ -42,6 +44,7 @@ IMenuOption* usepotionhpper;
 IMenuOption* DrawReady;
 IMenuOption* DrawQ;
 IMenuOption* DrawE;
+IMenuOption* AAreset;
 
 IMenuOption* UseRC;
 IMenuOption* EnemyArround;
@@ -67,7 +70,9 @@ IInventoryItem* hunter;
 void  Menu()
 {
 	MainMenu = GPluginSDK->AddMenu("D-Vayne");
-	harassManaPercent = MainMenu->AddInteger("Mana Percent for Harass", 10, 100, 70);
+	ManaMenu = MainMenu->AddMenu("Mana Settings");
+	harassManaPercent = ManaMenu->AddInteger("Mana Percent for Harass", 10, 100, 70);
+	FarmManaPercent = ManaMenu->AddInteger("Mana Percent for Farm", 10, 100, 70);
 	Qmenu = MainMenu->AddMenu("Q Settings");
 	QStealth = Qmenu->AddInteger("Q Stealh Duration (0 to disable)", 0, 1000, 300);
 	UseQC = Qmenu->CheckBox("Use Q Combo", true);
@@ -75,7 +80,9 @@ void  Menu()
 	KillstealQ = Qmenu->CheckBox("Use Q Killsteal", true);
 	restrictq = Qmenu->CheckBox("Restrict Q usage, false=ToMouse", true);
 	UseQJ = Qmenu->CheckBox("Use Q to Farm", true);
-	FarmManaPercent = Qmenu->AddInteger("Mana Percent for Farm", 10, 100, 70);
+	AAreset = Qmenu->AddKey("AA->Q->AA", 84);
+	UseAAreset = Qmenu->CheckBox("Use AA->Q->AA if Enemy Has Silver Bolt", true);
+	
 
 	Emenu = MainMenu->AddMenu("E Settings");
 	UseEC = Emenu->CheckBox("Use E Combo", true);
@@ -255,6 +262,23 @@ PLUGIN_EVENT(void) OnBeforeAttack(IUnit* target)
 }
 PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 {
+	if (GetAsyncKeyState(AAreset->GetInteger()) && Q->IsReady())
+	{
+		if (target != nullptr && myHero->IsValidTarget(target, myHero->AttackRange() + Q->Range()))
+		{		
+			if (target->HasBuff("vaynesilvereddebuff") &&
+				(target->GetBuffCount("vaynesilvereddebuff") == 1 || target->GetBuffCount("vaynesilvereddebuff") == 2) && UseAAreset->Enabled())
+			{
+				Q->CastOnPosition(target->GetPosition());
+				GOrbwalking->ResetAA();
+			}
+			else if (!UseAAreset->Enabled())
+			{
+				Q->CastOnPosition(target->GetPosition());
+				GOrbwalking->ResetAA();
+			}
+		}
+	}
 	if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 	{
 
@@ -274,6 +298,7 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 					if (MinionDie >= 1)
 					{
 						Q->CastOnPosition(GGame->CursorPosition());
+						GOrbwalking->ResetAA();
 					}
 				}
 			}
@@ -285,6 +310,7 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 			{
 
 				Q->CastOnUnit(jMinion);
+				GOrbwalking->ResetAA();
 			}
 		}
 	}
@@ -308,28 +334,33 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 					if (disafter > 630 && disafter > 150)
 					{
 						Q->CastOnPosition(GGame->CursorPosition());
+						GOrbwalking->ResetAA();
 						return;
 					}
 					if (Distance(target->GetPosition(), myHero->GetPosition()) > 630
 						&& disafter < 630)
 					{
 						Q->CastOnPosition(GGame->CursorPosition());
+						GOrbwalking->ResetAA();
 						return;
 					}
 					if (!target->IsInvulnerable() && target->GetHealth() < dmg + dmg1 && GetDistance(myHero, target) < Q->Range() + myHero->GetRealAutoAttackRange(target) && GetDistance(myHero, target) > myHero->GetRealAutoAttackRange(target))
 					{
 						Q->CastOnPosition(target->ServerPosition());
+						GOrbwalking->ResetAA();
 						return;
 					}
 					if (target->IsMelee() && GetDistance(myHero, target) < target->GetRealAutoAttackRange(myHero))
 					{
 						Q->CastOnPosition(myHero->ServerPosition().Extend(target->GetPosition(), -Q->Range()));
+						GOrbwalking->ResetAA();
 					}
 				}
 			}
 			else
 			{
 				Q->CastOnPosition(GGame->CursorPosition());
+				GOrbwalking->ResetAA();
 			}
 		}
 	}
@@ -487,7 +518,9 @@ PLUGIN_EVENT(void) OnGameUpdate()
 			for (auto i = 0; i < 40; ++i)
 			{
 				auto finalPosition = prediction_output.TargetPosition + (pushDirection * checkDistance * i);
-				if (GNavMesh->IsPointWall(finalPosition))
+				auto wall = GNavMesh->GetCollisionFlagsForPoint(finalPosition);
+
+				if (wall ==kWallMesh  || wall == kBuildingMesh)
 				{
 					E->CastOnUnit(target);
 				}
