@@ -306,12 +306,12 @@ void laneclear()
 			{
 				Vec3 pos;
 				int Qhit;
-				GPrediction->FindBestCastPosition(Q->Range(), Q->Radius(), true, true, false, pos, Qhit);
+				GPrediction->FindBestCastPosition(Q->Range(), Q->Radius(), false, true, false, pos, Qhit);
 				if (FarmQ->Enabled() && Qhit >= minminions->GetInteger())
 				{
 					Q->CastOnPosition(pos);
 				}
-				 if (LastHitQ->Enabled() && minions->GetHealth() < dmg && GetDistance(myHero, minions) > myHero->GetRealAutoAttackRange(minions))
+				 if (!minions->IsWard() && LastHitQ->Enabled() && minions->GetHealth() < dmg && GetDistance(myHero, minions) > myHero->AttackRange())
 				{
 					Q->CastOnUnit(minions);
 				}
