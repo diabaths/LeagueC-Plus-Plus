@@ -17,29 +17,33 @@ inline void laneclear()
 				}
 			}
 		}
-		if (Q->IsReady() && FarmQ->Enabled())
+		if (Q->IsReady() && FarmQ->Enabled() && GOrbwalking->CanMove(true))
 		{
 			auto end = GBuffData->GetEndTime(myHero->GetBuffDataByName("RivenTriCleave"));
 			auto start = GBuffData->GetStartTime(myHero->GetBuffDataByName("RivenTriCleave"));
 			auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
 			if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))
 			{
-				Vec3 pos;
-				int Qhit;
-				GPrediction->FindBestCastPosition(Q->Range(), Q->Radius(), true, true, false, pos, Qhit);
-				if (Qhit >= 3 && end - GGame->Time() <= 0.2 * (end - start))
+				int MinionQ = 0;
+				if (minions->IsValidTarget(myHero, Q->Range()))
+					MinionQ++;
+
+				if (MinionQ >= 3 && GGame->CurrentTick() -LastQ > 100)
 				{
-					Q->CastOnPosition(pos);
+					Q->CastOnPosition(GGame->CursorPosition());
+					LastQ = GGame->CurrentTick();
 					return;
 				}
-				if (minions->GetHealth() < dmg)
+				if (minions->GetHealth() < dmg && GGame->CurrentTick() - LastQ > 100)
 				{
-					Q->CastOnUnit(minions);
+					Q->CastOnPosition(GGame->CursorPosition());
+					LastQ = GGame->CurrentTick();
 					return;
 				}
 				if (myHero->HasBuff("RivenTriCleave") && end - GGame->Time() <= 0.1 * (end - start))
 				{
-					Q->CastOnUnit(minions);
+					Q->CastOnPosition(GGame->CursorPosition());
+					LastQ = GGame->CurrentTick();
 					return;
 					
 				}
@@ -50,10 +54,10 @@ inline void laneclear()
 			auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotW);
 			if (minions != nullptr && myHero->IsValidTarget(minions, W->Range()))
 			{
-				Vec3 pos;
-				int Qhit;
-				GPrediction->FindBestCastPosition(W->Range(), W->Radius(), true, true, false, pos, Qhit);
-				if (Qhit >= 4)
+				int MinionW = 0;
+				if (minions->IsValidTarget(myHero, W->Range()))
+					MinionW++;
+				if (MinionW >= 4)
 				{
 					W->CastOnPlayer();
 					return;

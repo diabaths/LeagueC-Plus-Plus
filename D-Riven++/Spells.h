@@ -14,7 +14,7 @@ float Wrange;
 inline void LoadSpells()
 {
 	Q = GPluginSDK->CreateSpell2(kSlotQ, kTargetCast, false, true, static_cast<eCollisionFlags>(kCollidesWithNothing));
-	Q->SetOverrideRange(260);
+	W->SetOverrideRange(260);
 
 	W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, true, true, static_cast<eCollisionFlags>(kCollidesWithNothing));
 	W->SetOverrideRange(Wrange);
