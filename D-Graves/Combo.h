@@ -10,7 +10,7 @@ inline void Combo()
 	{
 		if (Q->IsReady())
 		{
-			auto t = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+			auto t = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, QRange->GetInteger());
 			if (t != nullptr &&  myHero->IsValidTarget(t, Q->Range()))
 				Q->CastOnTarget(t, kHitChanceHigh);
 		}

@@ -10,10 +10,16 @@ inline  void burst()
 	if (Enemy != nullptr && myHero->IsValidTarget(Enemy, Q->Range() - 100) && myHero->GetMana() >= mana)
 	{
 		UseItems();
-		E->CastOnPosition(Enemy->ServerPosition());
-		R->CastOnPosition(Enemy->ServerPosition());
+		//if (!myHero->GetBuffDataByName("GravesBasicAttackAmmo2"))
+		//{
+			E->CastOnPosition(Enemy->ServerPosition());
+		//}
 		GOrbwalking->ResetAA();
-		if (!R->IsReady())
+		if (!E->IsReady() && GGame->CurrentTick() - lastE > 0.01f)
+		{
+			R->CastOnPosition(Enemy->ServerPosition());
+		}
+		if (!R->IsReady() && GGame->CurrentTick() - lastR > 0.01f)
 		{
 			Q->CastOnPosition(Enemy->GetPosition());
 		}

@@ -109,18 +109,18 @@ static void ResetQ()
 
 static void ResetE()
 {
-	GPluginSDK->DelayFunctionCall(75, []()
+	GPluginSDK->DelayFunctionCall(1, []()
 	{
-		GGame->Taunt(kDance);
+		GGame->Say("/d");
 		GOrbwalking->ResetAA();
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
-	});	
+			GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+	});
 }
 static void ResetR()
 {
-	GPluginSDK->DelayFunctionCall(75, []()
+	GPluginSDK->DelayFunctionCall(1, []()
 	{
-		GGame->Taunt(kLaugh);
+		GGame->Say("/d");
 		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
 	});
 }

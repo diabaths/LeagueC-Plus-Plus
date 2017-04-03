@@ -161,6 +161,7 @@
     <ClInclude Include="Items.h" />
     <ClInclude Include="KillSteal.h" />
     <ClInclude Include="Menu.h" />
+    <ClInclude Include="OnCast.h" />
     <ClInclude Include="OnProcessSpellCast.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="Spells.h" />

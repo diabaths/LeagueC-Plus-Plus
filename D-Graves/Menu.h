@@ -53,6 +53,7 @@ IMenuOption* Qcolor;
 IMenuOption* DrawBurst;
 IMenuOption* Drawhealthbar;
 IMenuOption* Drawdmg;
+IMenuOption* QRange;
 
 IUnit* myHero;
 
@@ -72,13 +73,15 @@ IInventoryItem* CorruptPot;
 IInventoryItem* Biscuit;
 IInventoryItem* RefillPot;
 IInventoryItem* hunter;
-
+float lastE;
+float lastR;
 inline void  Menu()
 {
 	MainMenu = GPluginSDK->AddMenu("D-Graves");
 
 	ComboMenu = MainMenu->AddMenu("Combo Settings");
 	ComboQ = ComboMenu->CheckBox("Use Q", true);
+	QRange = ComboMenu->AddInteger("Q->Range", 750, 950, 800);
 	ComboW = ComboMenu->CheckBox("Use W", true);
 	ComboE = ComboMenu->CheckBox("Use E", true);
 	ComboR = ComboMenu->CheckBox("Use R if Is killable", true);

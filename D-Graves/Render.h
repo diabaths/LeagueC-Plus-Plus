@@ -20,7 +20,7 @@ PLUGIN_EVENT(void) OnRender()
 		}
 		if (Q->IsReady() && DrawQ->Enabled())
 		{
-			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q->Range());
+			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), QRange->GetInteger());
 		}
 
 		if (W->IsReady() && DrawW->Enabled())
@@ -41,7 +41,7 @@ PLUGIN_EVENT(void) OnRender()
 		}
 		if (DrawQ->Enabled())
 		{
-			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q->Range());
+			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), QRange->GetInteger());
 		}
 
 		if (DrawW->Enabled())

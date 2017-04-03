@@ -62,5 +62,8 @@
     <ClInclude Include="KillSteal.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="OnCast.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

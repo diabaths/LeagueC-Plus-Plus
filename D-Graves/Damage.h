@@ -24,7 +24,7 @@ inline float TotalDamage(IUnit* target)
 	{
 		auto Rlvl = GEntityList->Player()->GetSpellLevel(kSlotR) - 1;
 		auto BaseDamage = std::vector<double>({ 200, 320, 440 }).at(Rlvl);
-		auto ADMultiplier = 1.1 * GEntityList->Player()->TotalPhysicalDamage();
+		auto ADMultiplier = 1.07 * GEntityList->Player()->TotalPhysicalDamage();
 		auto TotalD = BaseDamage + ADMultiplier;
 		damage += TotalD;
 		//damage +=Rdamage(target);

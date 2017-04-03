@@ -14,6 +14,8 @@
 #include "killsteal.h"
 #include "Combo.h"
 #include "Render.h"
+#include "OnCast.h"
+
 PluginSetup("D-Graves");
 
 
@@ -95,8 +97,8 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	GEventManager->AddEventHandler(kEventOnGapCloser, OnGapcloser);
 	GEventManager->AddEventHandler(kEventOnPlayAnimation, OnPlayAnimation);
 	GEventManager->AddEventHandler(kEventOnSpellCast, OnProcessSpellCast);
-
-
+	GEventManager->AddEventHandler(kEventOnDoCast, OnDoCast);
+	
 	if (strcmp(GEntityList->Player()->ChampionName(), "Graves") == 0)
 	{
 		GRender->NotificationEx(Color::Crimson().Get(), 2, true, true, "D-Graves : Loaded!");
@@ -118,5 +120,6 @@ PLUGIN_API void OnUnload()
 	GEventManager->RemoveEventHandler(kEventOnGapCloser, OnGapcloser);
 	GEventManager->RemoveEventHandler(kEventOnPlayAnimation, OnPlayAnimation);
 	GEventManager->RemoveEventHandler(kEventOnSpellCast, OnProcessSpellCast);
-
+	GEventManager->RemoveEventHandler(kEventOnDoCast, OnDoCast);
+	
 }
