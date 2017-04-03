@@ -22,16 +22,20 @@ PluginSetup("D-Graves");
 
 PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 {	
-	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && ComboE->Enabled())
+	auto useE = ComboE->Enabled();
+	if (source == myHero && target != nullptr && GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+	{		
+		if (useE && !myHero->GetBuffDataByName("GravesBasicAttackAmmo2") && E->IsReady())
+		{
+			auto t = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
+			if (t != nullptr &&  myHero->IsValidTarget(t, Q->Range()))
+				E->CastOnPosition(GGame->CursorPosition());
+			GOrbwalking->ResetAA();
+		}
+	}
+	if (GetAsyncKeyState(Burst_b->GetInteger()))
 	{
-		if (source == myHero || target != nullptr)
-			if (!myHero->GetBuffDataByName("GravesBasicAttackAmmo2") && E->IsReady())
-			{
-				auto t = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
-				if (t != nullptr &&  myHero->IsValidTarget(t, Q->Range()))
-					E->CastOnPosition(GGame->CursorPosition());
-				GOrbwalking->ResetAA();
-			}
+		burstAfter(source, target);
 	}
 }
 
@@ -96,7 +100,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	GEventManager->AddEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);
 	GEventManager->AddEventHandler(kEventOnGapCloser, OnGapcloser);
 	GEventManager->AddEventHandler(kEventOnPlayAnimation, OnPlayAnimation);
-	GEventManager->AddEventHandler(kEventOnSpellCast, OnProcessSpellCast);
+	//GEventManager->AddEventHandler(kEventOnSpellCast, OnProcessSpellCast);
 	GEventManager->AddEventHandler(kEventOnDoCast, OnDoCast);
 	
 	if (strcmp(GEntityList->Player()->ChampionName(), "Graves") == 0)
@@ -119,7 +123,7 @@ PLUGIN_API void OnUnload()
 	GEventManager->RemoveEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);	
 	GEventManager->RemoveEventHandler(kEventOnGapCloser, OnGapcloser);
 	GEventManager->RemoveEventHandler(kEventOnPlayAnimation, OnPlayAnimation);
-	GEventManager->RemoveEventHandler(kEventOnSpellCast, OnProcessSpellCast);
+	//GEventManager->RemoveEventHandler(kEventOnSpellCast, OnProcessSpellCast);
 	GEventManager->RemoveEventHandler(kEventOnDoCast, OnDoCast);
 	
 }

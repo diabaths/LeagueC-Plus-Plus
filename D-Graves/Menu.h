@@ -49,10 +49,15 @@ IMenuOption* DrawW;
 IMenuOption* DrawE;
 IMenuOption* DrawR;
 IMenuOption* Burst_b;
-IMenuOption* Qcolor;
+IMenuOption* BurstColor;
 IMenuOption* DrawBurst;
 IMenuOption* Drawhealthbar;
 IMenuOption* Drawdmg;
+IMenuOption* qRangeColor;
+IMenuOption* wRangeColor;
+IMenuOption* eRangeColor;
+IMenuOption* rRangeColor;
+IMenuOption* dmgRangeColor;
 IMenuOption* QRange;
 
 IUnit* myHero;
@@ -131,10 +136,14 @@ inline void  Menu()
 
 	DrawReady = Drawings->CheckBox("Draw Only Ready Spells", true);
 	DrawQ = Drawings->CheckBox("Draw Q", true);
-	Qcolor =Drawings->AddColor("Q Color", 125, 0, 255, 0);
+	qRangeColor = Drawings->AddColor("Q Range Color", 3.f, 252.f, 19.f, 255.f);
 	DrawW = Drawings->CheckBox("Draw W", false);
+	wRangeColor = Drawings->AddColor("W Range Color", 3.f, 252.f, 19.f, 255.f);
 	DrawR = Drawings->CheckBox("Draw R", true);
+	rRangeColor = Drawings->AddColor("R Range Color", 3.f, 252.f, 19.f, 255.f);
 	DrawBurst = Drawings->CheckBox("Draw Burst Range", true);
+	BurstColor = Drawings->AddColor("Burst Range Color", 3.f, 252.f, 19.f, 255.f);
 	Drawdmg = Drawings->CheckBox("Draw Damage (Percent)", true);
 	Drawhealthbar = Drawings->CheckBox("Draw Damage (Healthbar)", true);
+	dmgRangeColor = Drawings->AddColor("Damage (Healthbar) Color", 3.f, 252.f, 19.f, 255.f);
 }

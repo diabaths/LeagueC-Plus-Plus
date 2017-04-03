@@ -27,6 +27,31 @@ inline  void burst()
 		{
 			W->CastOnPosition(Enemy->GetPosition());
 		}
+	}	
+}
+
+static void burstAfter(IUnit* source, IUnit* target)
+{
+
+	if (target != nullptr && myHero->IsValidTarget(target, Q->Range() - 100))
+	{
+		auto mana = Q->ManaCost() + E->ManaCost() + R->ManaCost();
+		UseItems();
+		//if (!myHero->GetBuffDataByName("GravesBasicAttackAmmo2"))
+		//{
+		E->CastOnPosition(target->ServerPosition());
+		GOrbwalking->ResetAA();
+		if (R->IsReady())
+		{
+			R->CastOnPosition(target->ServerPosition());
+		}
+		if (Q->IsReady())
+		{
+			Q->CastOnPosition(target->GetPosition());
+		}
+		if (W->IsReady())
+		{
+			W->CastOnPosition(target->GetPosition());
+		}
 	}
-	
 }

@@ -100,27 +100,24 @@ static void ResetQ3()
 */
 static void ResetQ()
 {
-	GPluginSDK->DelayFunctionCall(75, []()
+	GPluginSDK->DelayFunctionCall(250, []()
 	{
-		GGame->Say("/d");
 		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
 	});
 }
 
 static void ResetE()
 {
-	GPluginSDK->DelayFunctionCall(1, []()
+	GPluginSDK->DelayFunctionCall(250, []()
 	{
-		GGame->Say("/d");
 		GOrbwalking->ResetAA();
-			GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
 	});
 }
 static void ResetR()
 {
-	GPluginSDK->DelayFunctionCall(1, []()
+	GPluginSDK->DelayFunctionCall(250, []()
 	{
-		GGame->Say("/d");
 		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
 	});
 }

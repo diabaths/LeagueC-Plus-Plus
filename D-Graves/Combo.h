@@ -3,9 +3,9 @@
 
 inline void Combo()
 {
-	smitetarget();
 	auto useQ = ComboQ->Enabled();
 	auto useW = ComboW->Enabled();
+	smitetarget();
 	if (useQ)
 	{
 		if (Q->IsReady())
@@ -15,7 +15,7 @@ inline void Combo()
 				Q->CastOnTarget(t, kHitChanceHigh);
 		}
 	}
-	if (useW)
+	if (useW && !E->IsReady())
 	{
 		if (W->IsReady())
 		{

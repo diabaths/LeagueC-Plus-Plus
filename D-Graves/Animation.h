@@ -14,29 +14,23 @@ PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 	auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range() - 100);
 	if (Source == myHero)
 	{
-		if (GetAsyncKeyState(Burst_b->GetInteger()) || GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+		if (GetAsyncKeyState(Burst_b->GetInteger()))
 		{
 			if (Contains(Args, "b4f63b8e"))
 			{
 				lastE = GGame->CurrentTick();
-			ResetE();
-				if(GetAsyncKeyState(Burst_b->GetInteger()))
-				{
-					R->CastOnPosition(Enemy->ServerPosition());
-				}
+			//	ResetE();
+				R->CastOnPosition(Enemy->ServerPosition());
 			}
 			if (Contains(Args, "b7f"))
 			{
 				lastR = GGame->CurrentTick();
-				ResetR();
-				if (GetAsyncKeyState(Burst_b->GetInteger()))
-				{
-					Q->CastOnPosition(Enemy->ServerPosition());
-				}
+				//ResetR();
+				Q->CastOnPosition(Enemy->ServerPosition());
 			}
 			if (Contains(Args, "bf2"))
 			{
-				ResetQ();
+			//	ResetQ();
 			}
 		}
 	}

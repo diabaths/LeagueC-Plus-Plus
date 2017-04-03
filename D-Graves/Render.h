@@ -1,7 +1,5 @@
 #pragma once
-#include "Extensions.h"
-#include "Color.h"
-#include "Damage.h"
+#include "Damage.h""
 
 int xOffset = 10;
 int yOffset = 15;
@@ -10,48 +8,57 @@ int Height = 8;
 
 PLUGIN_EVENT(void) OnRender()
 {
+	Vec4 color;
+	Vec4 colorw;
+	Vec4 colore;
+	Vec4 colorr;
+	Vec4 colordmg;
+	Vec4 colorburst;
+	BurstColor->GetColor(&colorburst);
+	qRangeColor->GetColor(&color);
+	wRangeColor->GetColor(&colorw);
+	rRangeColor->GetColor(&colorr);
+	dmgRangeColor->GetColor(&colordmg);
 	if (DrawReady->Enabled())
-	{
-		Vec4 color;
-		Drawings->GetOption("Q Color")->GetColor(&color);
+	{	
 		if (Q->IsReady() && R->IsReady() && E->IsReady() && DrawBurst->Enabled())
 		{
-			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(60, 60, 0, 255), Q->Range() - 100);
+			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorburst, Q->Range() - 100);
 		}
 		if (Q->IsReady() && DrawQ->Enabled())
 		{
-			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), QRange->GetInteger());
+			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), color, QRange->GetInteger());
 		}
 
 		if (W->IsReady() && DrawW->Enabled())
 		{
-			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W->Range());
+		GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorw, W->Range());
 		}
 
 		if (R->IsReady() && DrawR->Enabled())
 		{
-			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), R->Range());
+			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorr, R->Range());
 		}
 	}
 	else
 	{
 		if (DrawBurst->Enabled())
 		{
-			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(60, 60, 0, 255), Q->Range() - 100);
+		    GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorburst, Q->Range() - 100);
 		}
 		if (DrawQ->Enabled())
 		{
-			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), QRange->GetInteger());
+			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), color, QRange->GetInteger());
 		}
 
 		if (DrawW->Enabled())
 		{
-			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), W->Range());
+			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorw, W->Range());
 		}
 
 		if (DrawR->Enabled())
 		{
-			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), R->Range());
+			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorr, R->Range());
 		}
 	}
 	for (auto enemy : GEntityList->GetAllHeros(false, true))
@@ -88,7 +95,7 @@ PLUGIN_EVENT(void) OnRender()
 
 					for (int i = 0; i < differenceInHP; i++)
 					{
-						GRender->DrawLine(Vec2(pos1 + i, yPos), Vec2(pos1 + i, yPos + Height), Color::LightGrey().Get());
+						GRender->DrawLine(Vec2(pos1 + i, yPos), Vec2(pos1 + i, yPos + Height), colordmg);
 					}
 					if (!enemy->IsVisible())
 					{
