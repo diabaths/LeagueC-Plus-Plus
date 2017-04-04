@@ -12,7 +12,7 @@ inline void Combo()
 		{
 			if (Enemy != nullptr && Enemy->IsValidTarget(myHero, 570))
 			{
-				if (Enemy->HealthPercent() <= TotalDamage(Enemy))
+				if (Enemy->GetHealth() <= TotalDamage(Enemy))
 				{
 					Ignite->CastOnUnit(Enemy);
 				}
