@@ -71,17 +71,16 @@ inline int CountEnemiesInRange(float range)
 
 static void ResetQ1()
 {
-	GPluginSDK->DelayFunctionCall(QDelay1->GetInteger(), []()
+	GPluginSDK->DelayFunctionCall(Q1Delay, []()
 	{
-		GGame->Taunt(kLaugh);
-		
+		GGame->Taunt(kLaugh);		
 		GOrbwalking->ResetAA();
 		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
 	});
 }
 static void ResetQ2()
 {
-	GPluginSDK->DelayFunctionCall(QDelay2->GetInteger(), []()
+	GPluginSDK->DelayFunctionCall(Q2Delay, []()
 	{
 		
 		GGame->Say("/d");
@@ -91,7 +90,7 @@ static void ResetQ2()
 } //myHero->GetPosition().Extend(GGame->CursorPosition(), GetDistanceVectors(myHero->GetPosition(), GGame->CursorPosition()) + 10)
 static void ResetQ3()
 {
-	GPluginSDK->DelayFunctionCall(QDelay3->GetInteger(), []()
+	GPluginSDK->DelayFunctionCall(Q3Delay, []()
 	{
 		GGame->Taunt(kLaugh);
 		GOrbwalking->ResetAA();
@@ -120,9 +119,10 @@ static void ResetR2()
 }
 static void AAcancel()
 {
-	GPluginSDK->DelayFunctionCall(150, []()
+	GPluginSDK->DelayFunctionCall(AADelay->GetInteger(), []()
 	{
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+		GGame->Taunt(kDance);
+		GOrbwalking->ResetAA();
 	});
 }
 inline std::string ToLower(std::string StringToLower)
@@ -167,7 +167,7 @@ static bool CanMoveMent(IUnit* Source)
 	{
 		return true;
 	}
-	else return false;
+	 return false;
 }
 
 static void ELogic(IUnit* target)
@@ -211,6 +211,34 @@ static void ELogic(IUnit* target)
 		E->CastOnPosition(target->ServerPosition());
 	}
 }
+static void EDash(IUnit* target)
+{
+	if (target == nullptr || target->IsDead() || !E->IsReady())
+	{
+		return;
+	}
+
+	if (ComboQ->Enabled() && Q->IsReady() && Qstack == 0 &&
+		GetDistance(myHero, target) <= 260 + myHero->AttackRange())
+	{
+		return;
+	}
+
+	if (GetDistance(myHero, target) <= 325 + (Q->IsReady() && Qstack == 0 ? 260 : 0))
+	{
+		E->CastOnPosition(target->GetPosition());
+	}
+
+	if (GetDistance(myHero, target) <= 325 + (W->IsReady() ? Wrange : 0))
+	{
+		E->CastOnPosition(target->GetPosition());
+	}
+
+	if (!Q->IsReady() && !W->IsReady() && GetDistance(myHero, target) <= 325 + myHero->AttackRange())
+	{
+		E->CastOnPosition(target->GetPosition());
+	}
+}
 
 static void WLogic(IUnit* target)
 {
@@ -219,17 +247,27 @@ static void WLogic(IUnit* target)
 		return;
 	}
 
-	/*if (!Q->IsReady() && Qstack == 0)
+	if (ComboQW->Enabled() && Qstack != 0)
 	{
 		W->CastOnPlayer();
-		return;
-	}*/
+	}
 
-	//if (!target->IsFacing(myHero))
-	//{
+	if (!Q->IsReady() && Qstack == 0)
+	{
 		W->CastOnPlayer();
-	//}
+	}
+
+	if (ComboWE->Enabled() && myHero->HasBuff("RivenFeint"))
+	{
+		W->CastOnPlayer();
+	}
+
+	if (!target->IsFacing(myHero))
+	{
+		W->CastOnPlayer();
+	}
 }
+
 static bool DontAttack()
 {
 	if (AutoAttack)
@@ -286,3 +324,22 @@ static void ForceCastQ(IUnit* target)
 	forceQ = true;
 	QTarget = target;
 }*/
+static bool HaveUlti1()
+{
+	if (myHero->GetSpellBook()->GetLevel(kSlotR) > 0 && R->IsReady())
+	{
+		return strcmp(GEntityList->Player()->GetSpellBook()->GetName(kSlotR), "rivenwindslashready") == 0;
+	}
+
+	return false;
+}
+
+static bool HaveUlti2()
+{
+	if (myHero->GetSpellBook()->GetLevel(kSlotR) > 0 && R2->IsReady())
+	{
+		return strcmp(GEntityList->Player()->GetSpellBook()->GetName(kSlotR), "RivenFengShuiEngine") == 0;
+	}
+
+	return false;
+}

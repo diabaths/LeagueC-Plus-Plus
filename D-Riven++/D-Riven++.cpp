@@ -10,7 +10,6 @@
 #include "Combo.h"
 #include "OnCast.h"
 #include "OnAnimation.h"
-#include "OnAttack.h"
 #include "OnProcessSpellCast.h"
 #include "Burst.h"
 #include "Flee.h"
@@ -19,14 +18,17 @@
 #include "Laneclear.h"
 #include "killsteal.h"
 #include "Color.h"
+#include "AfterAttack.h"
+#include "JungleClear.h"
+
 
 PluginSetup("D-Riven++")
 
 PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
 {
-	if (args.Sender->IsEnemy(myHero) && args.Sender->IsHero())
+	if (args.Source->IsEnemy(myHero) && args.Source->IsHero())
 	{
-		if (WGapcloser->Enabled() && W->IsReady() && !args.IsTargeted && myHero->IsValidTarget(args.Sender, 250))
+		if (WGapcloser->Enabled() && W->IsReady() && !args.IsTargeted && myHero->IsValidTarget(args.Source, 250))
 		{
 			W->CastOnPlayer();
 		}
@@ -35,7 +37,7 @@ PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
 
 PLUGIN_EVENT(void) OnInterruptable(InterruptibleSpell const& Args)
 {
-	if (InterruptE->Enabled() && W->IsReady() && myHero->IsValidTarget(Args.Target, 250))
+	if (InterruptE->Enabled() && W->IsReady() && myHero->IsValidTarget(Args.Source, 250))
 	{
 		W->CastOnPlayer();
 	}
@@ -43,13 +45,55 @@ PLUGIN_EVENT(void) OnInterruptable(InterruptibleSpell const& Args)
 
 PLUGIN_EVENT(void) OnGameUpdate()
 {
-	if (GGame->IsChatOpen()) return;
-	
+	if (myHero->IsDead())
+	{
+		Qstack = 0;
+		return;
+	}
+	if (Qstack != 0 && GGame->CurrentTick() - LastQ > 3800)
+	{
+		Qstack = 0;
+	}
+
+	if (AutoSetDelay->Enabled())
+	{
+		auto delay = 0;
+
+		if (GGame->Latency() <= 20)
+		{
+			delay = GGame->Latency();
+		}
+		else if (GGame->Latency() <= 50)
+		{
+			delay = GGame->Latency() / 2 + 5;
+		}
+		else
+		{
+			delay = GGame->Latency() / 2 - 5;
+		}
+
+		if (delay >= 70)
+		{
+			delay = 70;
+		}
+		Q1Delay = QDelay1->GetInteger() + delay;
+		Q2Delay = QDelay2->GetInteger() + delay;
+		Q3Delay = QDelay3->GetInteger() + delay;
+		//DelayAA = AADelay->GetInteger() + delay;
+	}
+	if (!AutoSetDelay->Enabled())
+	{
+		Q1Delay = QDelay1->GetInteger();
+		Q2Delay = QDelay2->GetInteger();
+		Q3Delay = QDelay3->GetInteger();
+		//DelayAA = AADelay->GetInteger();
+	}
+
 	if (myHero->HasBuff("RivenFengShuiEngine"))
 	{
-		Wrange = 350;
+		Wrange = 265;
 	} 
-	else Wrange = 300;
+	else Wrange = 330;
 
 	if (GOrbwalking->GetOrbwalkingMode() != kModeCombo && GOrbwalking->GetOrbwalkingMode() != kModeMixed && GOrbwalking->GetOrbwalkingMode() != kModeLaneClear)
 	{
@@ -102,11 +146,14 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	GEventManager->AddEventHandler(kEventOnGameUpdate, OnGameUpdate);
 	GEventManager->AddEventHandler(kEventOnRender, OnRender);
 	GEventManager->AddEventHandler(kEventOnPlayAnimation, OnPlayAnimation);
-	//GEventManager->AddEventHandler(kEventOrbwalkOnAttack, OnAttack);
+	GEventManager->AddEventHandler(kEventOrbwalkAfterAttack, Afterattack);
 	GEventManager->AddEventHandler(kEventOnDoCast, OnDoCast);
 	GEventManager->AddEventHandler(kEventOnSpellCast, OnProcessSpellCast);
 	GEventManager->AddEventHandler(kEventOnInterruptible, OnInterruptable);
 	GEventManager->AddEventHandler(kEventOnGapCloser, OnGapcloser);
+	//GEventManager->AddEventHandler(kEventOrbwalkOnAttack, OnAttack);
+	
+
 
 	if (strcmp(GEntityList->Player()->ChampionName(), "Riven") == 0)
 	{
@@ -125,9 +172,10 @@ PLUGIN_API void OnUnload()
 	GEventManager->RemoveEventHandler(kEventOnGameUpdate, OnGameUpdate);
 	GEventManager->RemoveEventHandler(kEventOnRender, OnRender);
 	GEventManager->RemoveEventHandler(kEventOnPlayAnimation, OnPlayAnimation);
-	//GEventManager->RemoveEventHandler(kEventOrbwalkOnAttack, OnAttack);
+	GEventManager->RemoveEventHandler(kEventOrbwalkAfterAttack, Afterattack);
 	GEventManager->RemoveEventHandler(kEventOnDoCast, OnDoCast);
 	GEventManager->RemoveEventHandler(kEventOnSpellCast, OnProcessSpellCast);
 	GEventManager->RemoveEventHandler(kEventOnInterruptible, OnInterruptable);
 	GEventManager->RemoveEventHandler(kEventOnGapCloser, OnGapcloser);
+	//GEventManager->RemoveEventHandler(kEventOrbwalkOnAttack, OnAttack);
 }

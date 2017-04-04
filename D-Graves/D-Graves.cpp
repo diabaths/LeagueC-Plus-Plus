@@ -41,15 +41,15 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 
 PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
 {
-	if (args.Sender->IsEnemy(myHero) && args.Sender->IsHero())
+	if (args.Source->IsEnemy(myHero) && args.Source->IsHero())
 	{
 		if (GapcloseW->Enabled() && W->IsReady() && !args.IsTargeted)
 		{
-			auto t = args.Sender;
+			auto t = args.Source;
 			if (myHero->IsValidTarget(t, W->Range()))
 				if (!t->IsMelee())
 				{
-					W->CastOnTarget(args.Sender);
+					W->CastOnTarget(args.Source);
 				}
 				else W->CastOnPlayer();
 		}

@@ -8,6 +8,7 @@ ISpell2* E;
 ISpell2* R;
 ISpell2* R2;
 ISpell* Ignite;
+ISpell* Flash;
 
 float Wrange;
 
@@ -39,6 +40,16 @@ inline void LoadSpells()
 		Ignite = GPluginSDK->CreateSpell(kSummonerSlot2, 600);
 	}
 	else Ignite == nullptr;
+
+	if (strcmp(slot1, "SummonerFlash") == 0)
+	{
+		Flash = GPluginSDK->CreateSpell(kSummonerSlot1, 425);
+		}
+	if (strcmp(slot2, "SummonerFlash") == 0)
+	{
+		Flash = GPluginSDK->CreateSpell(kSummonerSlot2, 425);
+	}
+	else Flash == nullptr;
 
 	Titanic_Hydra = GPluginSDK->CreateItemForId(3748, 385);
 	Ravenous_Hydra = GPluginSDK->CreateItemForId(3074, 385);

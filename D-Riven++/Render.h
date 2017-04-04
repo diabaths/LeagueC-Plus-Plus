@@ -8,33 +8,76 @@ int Width = 103;
 int Height = 8;
 
 PLUGIN_EVENT(void) OnRender()
-{
+{	
+	Vec4 color;
+	Vec4 colorw;
+	Vec4 colore;
+	Vec4 colorr;
+	Vec4 colordmg;
+	Vec4 colorheal;
+	qRangeColor->GetColor(&color);
+	wRangeColor->GetColor(&colorw);
+	eRangeColor->GetColor(&colore);
+	rRangeColor->GetColor(&colorr);
+	dmgRangeColor->GetColor(&colordmg);
+	healRangeColor->GetColor(&colorheal);
+
 	if (DrawReady->Enabled())
 	{
-		if (Q->IsReady() && DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q->Range()); }
+		
+		if (Q->IsReady() && DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), color, Q->Range()); }
 
-		if (W->IsReady() && DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Wrange); }
+		if (W->IsReady() && DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorw, Wrange); }
 
-		if (E->IsReady() && DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E->Range()); }
+		if (E->IsReady() && DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colore, E->Range()); }
 
-		if (R->IsReady() && DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), R->Range()); }
+		if (R->IsReady() && DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorr, R->Range()); }
 	}
 	else
 	{
-		if (DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Q->Range()); }
+		if (DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), color, Q->Range()); }
 
-		if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), Wrange); }
+		if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorw, Wrange); }
 
-		if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), E->Range()); }
+		if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colore, E->Range()); }
 
-		if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), R->Range()); }
+		if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorr, R->Range()); }
 	}
 	//100%  SoNiice code
 	for (auto enemy : GEntityList->GetAllHeros(false, true))
 	{
 		if (enemy->IsDead() || !enemy->IsVisible())
 			continue;
+		
+		static IFont* pFont = nullptr;
 
+		if (pFont == nullptr)
+		{
+			pFont = GRender->CreateFont("Rockwell", 16.f, kFontWeightNormal);
+			pFont->SetOutline(true);
+			pFont->SetLocationFlags(kFontLocationNormal);
+		}
+		/*Vec2 pos;
+		if (GGame->Projection(GEntityList->Player()->GetPosition(), &pos))
+		{
+			if (R->IsReady() && myHero->IsValidTarget(enemy, 1200))
+			{
+				if (enemy->HealthPercent() <= DmgPercentmin->GetInteger())
+				{
+					std::string text = std::string("Ulti Will Disable");
+					Vec4 clr = Vec4(250, 20, 3, 255);
+					pFont->SetColor(clr);
+					pFont->Render(pos.x, pos.y, text.c_str());
+				}
+				if (enemy->HealthPercent() >= DmgPercentmin->GetInteger() && enemy->GetHealth() < TotalDamage(enemy)*(DmgPercent->GetInteger() / 100))
+				{
+					std::string text = std::string("Ulti Will Enable");
+					Vec4 clr = Vec4(3, 252, 19, 255);
+					pFont->SetColor(clr);
+					pFont->Render(pos.x, pos.y, text.c_str());
+				}
+			}
+		}*/
 		Vec3 worldToScreen;
 		GGame->Projection(enemy->GetPosition(), &worldToScreen);
 
@@ -44,7 +87,7 @@ PLUGIN_EVENT(void) OnRender()
 			auto Damage =TotalDamage(enemy);
 			auto currentPercentage = ceil(Damage / enemy->GetHealth() * 100);
 
-			GRender->DrawTextW(Vec2(worldToScreen.x, worldToScreen.y), currentPercentage >= 100 ? Vec4(255, 255, 0, 255) : Vec4(255, 255, 255, 255), currentPercentage >= 100 ? "Killable" : "%d (%.1f%%)", Damage, currentPercentage);
+			GRender->DrawTextW(Vec2(worldToScreen.x, worldToScreen.y), currentPercentage >= 100 ? Vec4(255, 255, 0, 255) : colordmg, currentPercentage >= 100 ? "Killable" : "%d (%.1f%%)", Damage, currentPercentage);
 		}
 
 		if (Drawhealthbar->Enabled()) //Damage.Healthbar"))
@@ -64,7 +107,7 @@ PLUGIN_EVENT(void) OnRender()
 
 					for (int i = 0; i < differenceInHP; i++)
 					{
-						GRender->DrawLine(Vec2(pos1 + i, yPos), Vec2(pos1 + i, yPos + Height), Color::Magenta().Get());
+						GRender->DrawLine(Vec2(pos1 + i, yPos), Vec2(pos1 + i, yPos + Height), colorheal);
 					}
 					if (!enemy->IsVisible())
 					{

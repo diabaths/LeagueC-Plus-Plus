@@ -152,6 +152,7 @@
     <ClInclude Include="Combo.h" />
     <ClInclude Include="Damage.h" />
     <ClInclude Include="Harass.h" />
+    <ClInclude Include="JungleClear.h" />
     <ClInclude Include="killsteal.h" />
     <ClInclude Include="Laneclear.h" />
     <ClInclude Include="Render.h" />
@@ -160,10 +161,11 @@
     <ClInclude Include="Items.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="OnAnimation.h" />
-    <ClInclude Include="OnAttack.h" />
+    <ClInclude Include="AfterAttack.h" />
     <ClInclude Include="OnCast.h" />
     <ClInclude Include="OnProcessSpellCast.h" />
     <ClInclude Include="Spells.h" />
+    <ClInclude Include="Ultilogic.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D-Riven++.cpp" />

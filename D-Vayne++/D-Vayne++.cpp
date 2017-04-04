@@ -463,20 +463,20 @@ myHero->SetSkinId(ChangeSkin->GetInteger());
 }*/
 PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
 {
-	if (args.Sender != myHero && myHero->IsValidTarget(args.Sender, E->Range())
-		&& E->IsReady() && args.Sender->IsEnemy(myHero) && Gap_E->Enabled()
+	if (args.Source != myHero && myHero->IsValidTarget(args.Source, E->Range())
+		&& E->IsReady() && args.Source->IsEnemy(myHero) && Gap_E->Enabled()
 		&& (myHero->GetPosition() - args.EndPosition).Length() < 250)
 	{
-		E->CastOnUnit(args.Sender);
+		E->CastOnUnit(args.Source);
 	}
 }
 
 PLUGIN_EVENT(void) OnInterruptable(InterruptibleSpell const& Args)
 {
 	if (Int_E->Enabled() && E->IsReady() && Args.DangerLevel >= kMediumDanger
-		&& myHero->IsValidTarget(Args.Target, E->Range()) && (myHero->GetPosition() - Args.Target->GetPosition()).Length() < E->Range())
+		&& myHero->IsValidTarget(Args.Source, E->Range()) && (myHero->GetPosition() - Args.Source->GetPosition()).Length() < E->Range())
 	{
-		E->CastOnUnit(Args.Target);
+		E->CastOnUnit(Args.Source);
 	}
 }
 void GetBuffName()

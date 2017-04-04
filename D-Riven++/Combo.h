@@ -1,7 +1,7 @@
 #pragma once
 #include "Spells.h"
 #include "Extensions.h"
-#include "Damage.h"
+#include "Ultilogic.h"
 
 inline void Combo()
 {
@@ -12,39 +12,38 @@ inline void Combo()
 		{
 			if (Enemy != nullptr && Enemy->IsValidTarget(myHero, 570))
 			{
-				if (Enemy->HealthPercent() <= 30)
+				if (Enemy->HealthPercent() <= TotalDamage(Enemy))
 				{
 					Ignite->CastOnUnit(Enemy);
 				}
 			}
 		}
 	}
-	_Youmuu(Enemy);
-	if (!AutoAttack && Enemy != nullptr && myHero->IsValidTarget(Enemy, 650) && ComboE->Enabled() && E->IsReady() && GetDistance(myHero, Enemy) <= 650 &&
-		GetDistance(myHero, Enemy) > IsInAutoAttackRange(Enemy) + 100 && CanMoveMent(myHero))
+	if (Enemy !=nullptr && myHero->IsValidTarget(Enemy, 600) && ComboE->Enabled() && E->IsReady() && CanMoveMent(myHero) && GetDistance(myHero, Enemy) <= 650 &&
+		GetDistance(myHero, Enemy) > myHero->AttackRange() + 100) //GetDistance(myHero, Enemy) > IsInAutoAttackRange(Enemy) + 100 )
 	{
 		if (Debug->Enabled())
 		{
 			GGame->PrintChat("E_COMBO");
 		}
-		ELogic(Enemy);
+		EDash(Enemy);
 	}
-	if (ComboQ->Enabled() && Q->IsReady() && Enemy != nullptr && (!W->IsReady() || !ComboW->Enabled()))
+	_Youmuu(Enemy);
+	if (Enemy != nullptr && ComboQ->Enabled() && Q->IsReady() && CanMoveMent(myHero) && Qstack == 0 &&
+		GetDistance(myHero, Enemy) <= myHero->AttackRange() + Q->Range() &&
+		GetDistance(myHero, Enemy) > myHero->AttackRange() + 50 && GGame->CurrentTick() - LastQ > 900)
 	{
-		if (CanMoveMent(myHero) && myHero->IsValidTarget(Enemy, Q->Range() + IsInAutoAttackRange(Enemy) + 75))
+		if (!myHero->IsDashing())
 		{
-			if (!myHero->IsDashing() && !AutoAttack && myHero->IsWindingUp())
+			if (Debug->Enabled())
 			{
-				if (Debug->Enabled())
-				{
-					GGame->PrintChat("Q_COMBO");
-				}
-				AutoAttack = true;
-				Q->CastOnPosition(Enemy->ServerPosition());
-				
+				GGame->PrintChat("Q_COMBO");
 			}
+			AutoAttack = true;
+			Q->CastOnUnit(Enemy);
 		}
 	}
+
 	if (!AutoAttack && ComboW->Enabled() && W->IsReady() &&
 		myHero->IsValidTarget(Enemy, Wrange))
 	{
@@ -53,32 +52,138 @@ inline void Combo()
 	}
 	if (Enemy != nullptr  && R->IsReady())
 	{
+		if (Enemy->GetHealth() <TotalDamage(Enemy)*(DmgPercent->GetInteger()/100) && ComboR->Enabled()  && myHero->IsValidTarget(Enemy,500))
 		{
-			if (ComboR->Enabled() && myHero->IsValidTarget(Enemy, R2->Range()) && !myHero->HasBuff("RivenFengShuiEngine") && CountEnemiesInRange(500) >= 1)
-			{
-				R->CastOnPlayer();
-			}
+			R1Logic(Enemy);
+			return;
+		}
+	}
+	if (Enemy != nullptr  && R2->IsReady())
+	{
+		if (ComboR2->Enabled() && myHero->HasBuff("RivenFengShuiEngine") && myHero->IsValidTarget(Enemy, R2->Range()) && R2->IsReady() && R2Logic(Enemy))
+		{
+		}
+	}
+}
 
-			if (ComboR2->Enabled() && myHero->HasBuff("RivenFengShuiEngine") && myHero->IsValidTarget(Enemy, R2->Range()) && R2->IsReady())
+/*static void processCombo(CastedSpell const& spell)
+{
+	auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 600);
+
+	if (spell.Data_ == nullptr) return;
+	if (spell.Caster_ == myHero && spell.Target_ != nullptr && myHero->IsValidTarget(Enemy, 600) && spell.Target_ ->IsHero())
+	{
+		if (std::string(spell.Name_) == "ItemTiamatCleave")
+		{
+			if (ComboW->Enabled() && W->IsReady() && myHero->IsValidTarget(Enemy, Wrange))
 			{
-				auto end = GBuffData->GetEndTime(myHero->GetBuffDataByName("RivenFengShuiEngine"));
-				auto start = GBuffData->GetStartTime(myHero->GetBuffDataByName("RivenFengShuiEngine"));
-				auto Rlvl = GEntityList->Player()->GetSpellLevel(kSlotR) - 1;
-				auto BaseDamage = std::vector<double>({ 80, 120, 160 }).at(Rlvl);
-				auto ADMultiplier = 0.6 * GEntityList->Player()->TotalPhysicalDamage() *
-					(1 + (Enemy->GetMaxHealth() - Enemy->GetHealth()) / Enemy->GetMaxHealth() > 0.75 ?
-						0.75 : ((Enemy->GetMaxHealth() - Enemy->GetHealth()) / Enemy->GetMaxHealth()) * 8 / 3);
-				auto damage = BaseDamage + ADMultiplier;
-				auto dmg = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotR);
-				if (!Enemy->IsInvulnerable() && Enemy->GetHealth() *1.2< dmg)
-				{
-					R2->CastOnUnit(Enemy);
-				}
-				else if (end - GGame->Time() <= 0.1 * (end - start))
-				{
-					R2->CastOnUnit(Enemy);
-				}
+				W->CastOnPlayer();
+			}
+			else if (!AutoAttack && Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
+			{
+				Q->CastOnUnit(Enemy);
+				AutoAttack = true;
 			}
 		}
+		if (std::string(spell.Name_) == "RivenMartyr")
+		{
+			if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
+			{
+				Q->CastOnUnit(Enemy);
+				AutoAttack = true;
+			}
+			else if (ComboR2->Enabled() && R->IsReady() && myHero->HasBuff("RivenFengShuiEngine") && R2Logic(Enemy))
+			{
+				return;
+			}
+		}
+	}
+}*/
+static void processCombo(CastedSpell const& spell)
+{
+	auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 600);
+	if (spell.Data_ == nullptr) return;
+	if (spell.Caster_ == myHero && spell.Target_ != nullptr && myHero->IsValidTarget(Enemy, 600) && spell.Target_->IsHero())
+	{
+		if (std::string(spell.Name_) == "ItemTiamatCleave")
+		{
+			if (ComboW->Enabled() && W->IsReady() && myHero->IsValidTarget(Enemy, Wrange))
+			{
+				W->CastOnPlayer();
+			}
+			else if (!AutoAttack && Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
+			{
+				Q->CastOnUnit(Enemy);
+				AutoAttack = true;
+			}
+		}
+		if (std::string(spell.Name_) == "RivenMartyr")
+		{
+			if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
+			{
+				Q->CastOnUnit(Enemy);
+				AutoAttack = true;
+			}
+			else if (ComboR2->Enabled() && R->IsReady() && myHero->HasBuff("RivenFengShuiEngine") && R2Logic(Enemy))
+			{
+				return;
+			}
+		}
+		if (std::string(spell.Name_) == "RivenFeint")
+		{
+			if (ComboR2->Enabled() && R->IsReady() && myHero->HasBuff("RivenFengShuiEngine") && R2Logic(Enemy))
+			{
+				return;
+			}
+		}
+		if (std::string(spell.Name_) == "RivenFengShuiEngine")
+		{
+			if (ComboW->Enabled() && W->IsReady() && myHero->IsValidTarget(Enemy, Wrange))
+			{
+				W->CastOnPlayer();
+			}
+		}
+		if (std::string(spell.Name_) == "RivenIzunaBlade")
+		{
+			if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
+			{
+				Q->CastOnPosition(Enemy->GetPosition());
+				AutoAttack = true;
+			}
+		}
+	}
+}
+
+static void afterattackCombo(IUnit* source, IUnit* target)
+{
+	
+	if (target != nullptr && myHero->IsValidTarget(target, 400))
+	{
+		
+		UseItems(target);
+		
+		if (Q->IsReady() && myHero->IsValidTarget(target, 400))
+		{
+			Q->CastOnUnit(target);
+			AutoAttack = true;
+			return;
+		}
+
+		if (ComboR2->Enabled() && R2->IsReady() && myHero->HasBuff("RivenFengShuiEngine") && Qstack == 2 && Q->IsReady() && R2Logic(target))
+		{
+			return;
+		}
+
+		if (ComboW && W->IsReady() && myHero->IsValidTarget(target,Wrange))
+		{
+			WLogic(target);
+			return;
+		}
+
+		if (ComboE->Enabled() && !Q->IsReady() && !W->IsReady() && E->IsReady() && myHero->IsValidTarget(target, 400))
+		{
+			EDash(target);
+			
+		}		
 	}
 }

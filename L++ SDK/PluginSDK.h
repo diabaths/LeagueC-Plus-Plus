@@ -302,7 +302,7 @@ public:
 	virtual std::vector<IUnit*> GetAllHeros(bool Friendly, bool Enemy) = 0;
 
 	/// <summary>
-	/// Gets all minions (normal, super, jungle, etc.) and wards.
+	/// Gets all minions (normal, super, jungle, etc.).
 	/// </summary>
 	/// <param name="Friendly">if set to <c>true</c> [search friendly].</param>
 	/// <param name="Enemy">if set to <c>true</c> [search enemy].</param>
@@ -383,6 +383,28 @@ public:
 	/// <param name="Neutral">if set to <c>true</c> [search neutral].</param>
 	/// <returns>Vector of all units found.</returns>
 	virtual std::vector<IUnit*> GetAllMinionsAndWards(bool Friendly, bool Enemy, bool Neutral) = 0;
+
+	/// <summary>
+	/// Gets all units of a particular type.
+	/// </summary>
+	/// <param name="ClassId">The class identifier.</param>
+	/// <returns>Vector of all units found.</returns>
+	virtual std::vector<IUnit*> GetAllUnitsOfType(eGameObjectClassId ClassId) = 0;
+
+	/// <summary>
+	/// Gets all units of multiple specific types.
+	/// </summary>
+	/// <param name="ClassId">The class identifier.</param>
+	/// <returns>Vector of all units found.</returns>
+	virtual std::vector<IUnit*> GetAllUnitsOfTypes(std::vector<eGameObjectClassId> ClassIdList) = 0;
+
+	/// <summary>
+	/// Gets all units of multiple specific types that match the IsValid callback.
+	/// </summary>
+	/// <param name="ClassIdList">The class identifier list.</param>
+	/// <param name="IsValidCallback">The function callback to check for validity.</param>
+	/// <returns>Vector of all units found.</returns>
+	virtual std::vector<IUnit*> GetAllUnitsOfTypesEx(std::vector<eGameObjectClassId> ClassIdList, std::function<bool(IUnit*)> IsValidCallback) = 0;
 };
 
 /// <summary>

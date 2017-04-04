@@ -391,20 +391,20 @@ void Usepotion()
 
 PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
 {
-	if (args.Sender->IsEnemy(myHero) && args.Sender->IsHero())
+	if (args.Source->IsEnemy(myHero) && args.Source->IsHero())
 	{
-		if (GapglocerR->Enabled() && R->IsReady() && !args.IsTargeted && myHero->IsValidTarget(args.Sender, 200))
+		if (GapglocerR->Enabled() && R->IsReady() && !args.IsTargeted && myHero->IsValidTarget(args.Source, 200))
 		{
-			R->CastOnTarget(args.Sender);
+			R->CastOnTarget(args.Source);
 		}
 	}
 }
 PLUGIN_EVENT(void) OnInterruptable(InterruptibleSpell const& Args)
 {
 	if (Int_R->Enabled() && R->IsReady() && Args.DangerLevel >= kHighDanger
-		&& myHero->IsValidTarget(Args.Target, R->Range()) && (myHero->GetPosition() - Args.Target->GetPosition()).Length() < RRange)
+		&& myHero->IsValidTarget(Args.Source, R->Range()) && (myHero->GetPosition() - Args.Source->GetPosition()).Length() < RRange)
 	{
-		R->CastOnTarget(Args.Target);
+		R->CastOnTarget(Args.Source);
 	}
 }
 

@@ -12,19 +12,26 @@
 class IUnit;
 class ISpellBook;
 
+/// <summary>
+/// Used in AdvPredictionOutput to show what chance you have of hitting target.
+/// Note that the comments beside each name is for core prediction and does not apply to plugin prediction overrides.
+/// </summary>
 enum ePredictionChance
 {
-	kHitChanceCollision,
-	kHitChanceOutOfRange,
-	kHitChanceImpossible,
-	kHitChanceLow,
-	kHitChanceMedium,
-	kHitChanceHigh,
-	kHitChanceVeryHigh,
-	kHitChanceDashing,
-	kHitChanceImmobile
+	kHitChanceCollision,	// A collision will prevent you from hitting your target
+	kHitChanceOutOfRange,	// The target is out of range and will not be hit
+	kHitChanceImpossible,	// This won't be used in most cases but there is no possibility to hit your target
+	kHitChanceLow,			// This won't be used in most cases but there is a very low chance to hit your target
+	kHitChanceMedium,		// You will not reach your target until he reaches the end of his current path (e.g the cast position will always be the end of target path)
+	kHitChanceHigh,			// You will hit your target somewhere on his current path before he reaches the end
+	kHitChanceVeryHigh,		// Same as kHitChanceHigh except that your target has clicked to a new position within the last 100 ms
+	kHitChanceDashing,		// You will hit your target somewhere along his current dash
+	kHitChanceImmobile		// Target is immobile, extremely high chance of landing your shot
 };
 
+/// <summary>
+/// Structure containing teleport information used for OnTeleport event.
+/// </summary>
 struct OnTeleportArgs
 {
 	IUnit* Source;	// Object that is teleporting
@@ -56,89 +63,102 @@ struct AdvPredictionOutput
 	std::vector<IUnit*> AoETargetsHit;	// Vector of all targets hit when using AoE prediction
 };
 
-struct PredictionOutput
-{
-	Vec3					CastPosition;
-	std::vector<IUnit*>		EnemiesHit;
-	ePredictionChance		HitChance;
-};
-
+/// <summary>
+/// Game structure holding pathing information, as used by IUnit::GetNavigationPath.
+/// A simpler way to get this information is IUnit::GetWaypointList.
+/// </summary>
 struct NavigationPath
 {
-	int			CurrentWaypoint_;
-	void*		VMT;
-	Vec3		StartPosition_;
-	Vec3		EndPosition;
-	Vec3*		WaypointStart_;
-	Vec3*		WaypointEnd_;
+	int			CurrentWaypoint_;		// The current index between WaypointStart_ and WaypointEnd_ being moved along
+	void*		VirtualMethodTable_;	// Virtual function table pointer (can be ignored)
+	Vec3		StartPosition_;			// Beginning of navigation path
+	Vec3		EndPosition;			// End of navigation path
+	Vec3*		WaypointStart_;			// Pointer to an array of Vec3 holding all waypoints
+	Vec3*		WaypointEnd_;			// Pointer to the end of the array of waypoints
 };
 
+/// <summary>
+/// Structure containing interruptible information used for OnInterruptible event.
+/// </summary>
 struct InterruptibleSpell
 {
-	IUnit*					Target;
-	eInterruptibleDanger	DangerLevel;
-	float					EndTime;
-	bool					MovementInterupts;
-	void*					Data;
+	IUnit*					Source;				// Unit that casted an interruptible spell
+	eInterruptibleDanger	DangerLevel;		// Danger level of this spell as defined by the core
+	float					EndTime;			// Time at which this spell will end
+	bool					MovementInterupts;	// True if moving will interrupt the spell (e.g Katarina R)
+	void*					Data;				// Data to be passed to GPluginSpellData for extended information
 };
 
+/// <summary>
+/// Structure containing dash information used for OnDash event.
+/// </summary>
 struct UnitDash
 {
-	IUnit*				Source;
-	Vec3				StartPosition;
-	Vec3				EndPosition;
-	int					StartTick;
-	int					EndTick;
-	int					Duration;
-	float				Speed;
+	IUnit*				Source;			// Unit that started dashing
+	Vec3				StartPosition;	// Position at which the dash starts
+	Vec3				EndPosition;	// Position at which the dash ends
+	int					StartTick;		// Tick at which the dash started (IGame::TickCount)
+	int					EndTick;		// Tick at which the dash will end (IGame::TickCount)
+	int					Duration;		// Duration in ms the dash will last
+	float				Speed;			// Speed at which the unit will dash from StartPosition to EndPosition
 };
 
+/// <summary>
+/// Structure containing gap closer spell information used for OnGapCloser event.
+/// </summary>
 struct GapCloserSpell
 {
-	IUnit* Sender;
-	Vec3 StartPosition;
-	Vec3 EndPosition;
-	bool IsTargeted;
-	int StartTick;
-	int Slot;
-	void* Data;
+	IUnit*	Source;			// Unit that casted this gap closing spell
+	Vec3	StartPosition;	// Start position of the spell
+	Vec3	EndPosition;	// End position of the spell
+	bool	IsTargeted;		// True if the spell is targeted
+	int		StartTick;		// Tick at which the spell was cast (IGame::TickCount)
+	int		Slot;			// Slot of the spell
+	void*	Data;			// Data to be passed to GPluginSpellData for extended information
 };
 
+/// <summary>
+/// Structure containing various spell information used for events such as OnProcessSpell.
+/// </summary>
 struct CastedSpell
 {
-	IUnit*	Caster_;
-	IUnit*	Target_;
-	bool	AutoAttack_;
-	char	Name_[64];
-	float	Windup_;
-	float	Animation_;
-	Vec3	Position_;
-	void*	Data_;
-	float	Radius_;
-	float	Speed_;
-	float	Damage_;
-	float	Range_;
-	Vec3	EndPosition_;
+	IUnit*	Caster_;		// Unit that casted this spell
+	IUnit*	Target_;		// Target unit or nullptr if it's not a targeted spell
+	bool	AutoAttack_;	// True for AA spells
+	char	Name_[64];		// Name of the spell
+	float	Windup_;		// Windup time (e.g delay before the missile is actually sent, movement can possibly interrupt the cast during this time)
+	float	Animation_;		// Animation time
+	Vec3	Position_;		// Position this cast was sent from
+	void*	Data_;			// Data to be passed to GPluginSpellData for extended information
+	float	Radius_;		// Radius of the spell
+	float	Speed_;			// Speed of the spell
+	float	Damage_;		// Damage of the spell
+	float	Range_;			// Range of the spell
+	Vec3	EndPosition_;	// Position this cast was sent towards
 };
 
+/// <summary>
+/// Structure containing information about a units last casted spell as taken from IUnit::GetLastCastedSpell
+/// </summary>
 struct LastCastedSpellArgs
 {
-	CastedSpell		Data;
-	int				Tick;
+	CastedSpell		Data; // Spell data
+	int				Tick; // Tick this spell was cast (IGame::TickCount)
 };
 
-struct SpellInfo
-{
-	char Name[64];
-	char DisplayName[64];
-};
-
+/// <summary>
+/// Structure containing basic item information as taken from IUnit::AllItems
+/// </summary>
 struct ItemData
 {
-	char Name_[64];
-	int Id_;
+	char Name_[64];		// Name of the item
+	int Id_;			// Id of the item
 };
 
+#pragma region Deprecated
+/// <summary>
+/// Structure passed to ISpell (deprecated) to initialize multiple skill shot variables.
+/// </summary>
 struct SpellParams
 {
 	SpellParams() { ZeroMemory(this, sizeof(*this)); }
@@ -158,21 +178,75 @@ struct SpellParams
 	bool		Collision_;
 	eSpellType	SpellType_;
 };
+#pragma endregion
 
+/// <summary>
+/// Structure passed for OnJungleNotify event.
+/// </summary>
 struct JungleNotifyData
 {
+	/// <summary>
+	/// The position of the jungle notification.
+	/// </summary>
 	Vec3 Position;
 };
 
+/// <summary>
+/// Data structure used when finding hero masteries (IUnit::GetAllMasteries, etc.)
+/// </summary>
+struct HeroMastery
+{
+	/// <summary>
+	/// The mastery page (Ferocity, Cunning, etc.)
+	/// </summary>
+	int PageId;
+
+	/// <summary>
+	/// The mastery identifier (Sorcery, Wanderer, etc.)
+	/// </summary>
+	int MasteryId;
+
+	/// <summary>
+	/// The number of points this mastery has leveled.
+	/// </summary>
+	int Points;
+};
+
+/// <summary>
+/// Universal unit class for every type (hero, minion, turret, missile, etc.)
+/// Not every function here will work for every unit type.
+/// Most functions in this list will require GetType() returns nonzero.
+/// Use GPluginMissileData to get extended information for missile units.
+/// </summary>
 class IUnit
 {
 public:
 	virtual ~IUnit() { }
 
+	/// <summary>
+	/// Gets the attack speed.
+	/// </summary>
+	/// <returns>Attack speed.</returns>
 	virtual float AttackSpeed() = 0;
+
+	/// <summary>
+	/// Gets the movement speed.
+	/// </summary>
+	/// <returns></returns>
 	virtual float MovementSpeed() = 0;
+
+	/// <summary>
+	/// Gets the flat armor reduction.
+	/// </summary>
+	/// <returns></returns>
 	virtual float ArmorReductionFlat() = 0;
+
+	/// <summary>
+	/// Gets the flat magic reduction.
+	/// </summary>
+	/// <returns></returns>
 	virtual float MagicReductionFlat() = 0;
+
 	virtual float ArmorReductionPercent() = 0;
 	virtual float MagicReductionPercent() = 0;
 	virtual float ArmorPenetrationPercent() = 0;
@@ -261,7 +335,7 @@ public:
 	virtual bool IsValidTarget() = 0;
 	virtual bool IsCastingImportantSpell(float* EndTime) = 0;
 	virtual void* GetBuffDataByName(const char* Name) = 0;
-	virtual void* GetBuffByIndex(int Idx) = 0;
+	virtual void* GetBuffDataByIndex(int Idx) = 0;
 	virtual int GetNumberOfBuffs() = 0;
 	virtual ISpellBook* GetSpellBook() = 0;
 	virtual IUnit* GetBuffCaster(const char* Name) = 0;
@@ -286,6 +360,29 @@ public:
 	virtual int GetAssists() = 0;
 	virtual float GetExperience() = 0;
 	virtual float GetBonusArmor() = 0;
+
+	/// <summary>
+	/// Gets the masteries for a hero.
+	/// </summary>
+	/// <param name="Out">Output showing all masteries.</param>
+	/// <returns>True if masteries were found and at least one exists.</returns>
+	virtual bool GetMasteries(std::vector<HeroMastery>& Out) = 0;
+
+	/// <summary>
+	/// Determines whether this object [is in screen space].
+	/// </summary>
+	/// <returns>
+	///   <c>true</c> if [is on screen]; otherwise, <c>false</c>.
+	/// </returns>
+	virtual bool IsOnScreen() = 0;
+
+	/// <summary>
+	/// Determines whether [is hp bar being rendered].
+	/// </summary>
+	/// <returns>
+	///   <c>true</c> if [is hp bar being rendered]; otherwise, <c>false</c>.
+	/// </returns>
+	virtual bool IsHpBarBeingRendered() = 0;
 };
 
 #endif // PluginData_h__

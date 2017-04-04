@@ -1,19 +1,14 @@
 #pragma once
 #include "Extensions.h"
+#include "Combo.h"
+#include "Burst.h"
 
 PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& spell)
 {
 	auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
-	
+
 	if (spell.Caster_ == myHero)
 	{
-		if (GetAsyncKeyState(Burst_b->GetInteger()) && std::string(spell.Name_) == "RivenFengShuiEngine")
-		{
-			if (target != nullptr && myHero->IsValidTarget(target, Q->Range()) && R2->IsReady())
-			{
-				R2->CastOnPosition(target->ServerPosition());
-			}
-		}
 		if (std::string(spell.Name_) == "RivenTriCleave")
 		{
 			LastQ = GGame->CurrentTick();
@@ -21,8 +16,9 @@ PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& spell)
 			{
 				GGame->PrintChat("LastQ");
 			}
+			return;
 		}
-		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo || GetAsyncKeyState(Burst_b->GetInteger()) || GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+		/*if (GOrbwalking->GetOrbwalkingMode() == kModeCombo || GetAsyncKeyState(Burst_b->GetInteger()) || GOrbwalking->GetOrbwalkingMode() == kModeMixed)
 		{
 			if (Contains(std::string(spell.Name_), "RivenBasicAttack"))
 			{
@@ -32,8 +28,9 @@ PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& spell)
 					AutoAttack = false;
 				});
 			}
-		}
+		}*/
 	}
+
 	if (spell.Caster_->IsHero() && spell.Name_ != nullptr && spell.Caster_ != myHero && E->IsReady()
 		&& spell.Target_ == myHero && AutoE->Enabled() && CanMoveMent(myHero) && !GSpellData->IsAutoAttack(spell.Data_))
 	{

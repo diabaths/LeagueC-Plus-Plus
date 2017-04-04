@@ -734,19 +734,19 @@ PLUGIN_EVENT(void) OnRender()
 
 PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
 {
-	if (args.Sender->IsEnemy(myHero) && args.Sender->IsHero())
+	if (args.Source->IsEnemy(myHero) && args.Source->IsHero())
 	{
-		if (AutoEGapcloser->Enabled() && E->IsReady() && !args.IsTargeted && myHero->IsValidTarget(args.Sender, 300))
+		if (AutoEGapcloser->Enabled() && E->IsReady() && !args.IsTargeted && myHero->IsValidTarget(args.Source, 300))
 		{
-			E->CastOnPosition(args.Sender->ServerPosition());
+			E->CastOnPosition(args.Source->ServerPosition());
 		}
 	}
 }
 PLUGIN_EVENT(void) OnInterruptable(InterruptibleSpell const& Args)
 {
-	if(InterruptE->Enabled() && E->IsReady() && myHero->IsValidTarget(Args.Target, 300))
+	if(InterruptE->Enabled() && E->IsReady() && myHero->IsValidTarget(Args.Source, 300))
 	{
-		E->CastOnPosition(Args.Target->ServerPosition());
+		E->CastOnPosition(Args.Source->ServerPosition());
 	}
 }
 PLUGIN_EVENT(void) OnGameUpdate()

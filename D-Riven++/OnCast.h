@@ -1,6 +1,7 @@
 #pragma once
 #include "Extensions.h"
 #include "Items.h"
+#include "Burst.h"
 PLUGIN_EVENT(void) OnDoCast(CastedSpell const& spell)
 {
 	/*if (Contains(args.Name_, "ItemTiamatCleave")) forceItem = false;
@@ -10,6 +11,16 @@ PLUGIN_EVENT(void) OnDoCast(CastedSpell const& spell)
 	if (Equals(args.Name_, IsSecondR)) forceR2 = false;*/
 
 	auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
+	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+	{
+		processCombo(spell);
+		return;
+	}
+	if (GetAsyncKeyState(Burst_b->GetInteger()))
+	{
+		processBurst(spell);
+		return;
+	}
 	if (Enemy !=nullptr && spell.Caster_ == myHero && Enemy->IsHero()  && (GOrbwalking->GetOrbwalkingMode() == kModeMixed || GOrbwalking->GetOrbwalkingMode() == kModeCombo || GetAsyncKeyState(Burst_b->GetInteger())))
 	{
 		if (Hydra->Enabled())
@@ -76,7 +87,8 @@ PLUGIN_EVENT(void) OnDoCast(CastedSpell const& spell)
 		AutoAttack = true;
 		Q->CastOnPosition(Enemy->ServerPosition());
 		}*/
-		if (!AutoAttack && W->IsReady() && myHero->IsValidTarget(Enemy, Wrange) && (Qstack != 0 || Enemy->IsMelee() || Enemy->IsFacing(myHero) || !Q->IsReady() ||
+		if (!AutoAttack && W->IsReady() && myHero->IsValidTarget(Enemy, Wrange) && 
+			(Qstack != 0 || Enemy->IsMelee() || Enemy->IsFacing(myHero) || !Q->IsReady() ||
 			myHero->HasBuff("RivenFeint")))
 		{
 			if (Debug->Enabled())
@@ -84,15 +96,6 @@ PLUGIN_EVENT(void) OnDoCast(CastedSpell const& spell)
 				GGame->PrintChat("W_OnDoCast");
 			}
 			W->CastOnPlayer();
-		}
-		if (!AutoAttack && myHero->IsValidTarget(Enemy, 650) && E->IsReady() && ComboE->Enabled() && GetDistance(myHero, Enemy) <= 650
-			&& GetDistance(myHero, Enemy) > IsInAutoAttackRange(Enemy) + 100 && CanMoveMent(myHero))
-		{
-			if (Debug->Enabled())
-			{
-				GGame->PrintChat("E_OnDoCast");
-			}
-			ELogic(Enemy);
-		}
+		}		
 	}
 }

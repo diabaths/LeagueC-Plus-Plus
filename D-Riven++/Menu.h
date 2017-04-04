@@ -11,6 +11,7 @@ IMenu* MiscMenu;
 IMenu* Drawings;
 IMenu* ItemsMenu;
 IMenu* PotionMenu;
+IMenu* BurstMenu;
 IMenuOption* UseIgnitecombo;
 IMenuOption* NormalCancel;
 IMenuOption* QDelay1;
@@ -18,6 +19,8 @@ IMenuOption* QDelay2;
 IMenuOption* QDelay3;
 IMenuOption* ComboQ;
 IMenuOption* ComboW;
+IMenuOption* ComboQW;
+IMenuOption* ComboWE;
 IMenuOption* ComboE;
 IMenuOption* ComboR;
 IMenuOption* ComboR2;
@@ -68,6 +71,18 @@ IMenuOption* Debug;
 IMenuOption* Drawdmg;
 IMenuOption* Drawhealthbar;
 IMenuOption* healthbarcolor;
+IMenuOption* AutoSetDelay;
+IMenuOption* qRangeColor;
+IMenuOption* DmgPercent;
+IMenuOption* DmgPercentmin;
+IMenuOption* UseFlash;
+IMenuOption* HarassMode;
+IMenuOption* wRangeColor;
+IMenuOption* eRangeColor;
+IMenuOption* rRangeColor;
+IMenuOption* dmgRangeColor;
+IMenuOption* healRangeColor;
+
 
 IUnit* myHero;
 
@@ -84,28 +99,39 @@ IInventoryItem* RefillPot;
 IInventoryItem* hunter;
 
 int Qstack;
+int Q1Delay;
+int Q2Delay;
+int Q3Delay;
+int DelayAA;
 float LastQ;
 float LastE;
 bool AutoAttack;
 inline void  Menu()
 {
 	MainMenu = GPluginSDK->AddMenu("D-Riven++");
-	Burst_b = MainMenu->AddKey("Burst Combo", 75);
-	Flee_b = MainMenu->AddKey("Flee", 76);
+
 	Debug = MainMenu->CheckBox("Enable Debug", false);
+	BurstMenu = MainMenu->AddMenu("Misc Menu");
+	Burst_b = BurstMenu->AddKey("Burst Combo", 75);
+	UseFlash = BurstMenu->CheckBox("Use Flash In Burst", true);
+	Flee_b = BurstMenu->AddKey("Flee", 76);
+	HarassMode = BurstMenu->AddSelection("Harass Mode:", 0, { "Smart", "Normal"});
 	QMenu = MainMenu->AddMenu("Q Settings");
 	ComboQ = QMenu->CheckBox("Use Q in combo", true);
 	HarassQ = QMenu->CheckBox("Use Q in Harass", true);
 	FarmQ = QMenu->CheckBox("Use Q in Laneclear", true);
 	JungleQ = QMenu->CheckBox("Use Q in JungleClear", true);
-	AADelay = QMenu->AddInteger("AA Delay(if cancel AA play with this)", 100, 1000, 200);
-	QDelay1 = QMenu->AddInteger("Delay Q1", 100, 1000, 290);
-	QDelay2 = QMenu->AddInteger("Delay Q2", 100, 1000, 290);
-	QDelay3 = QMenu->AddInteger("Delay Q3", 100, 1000, 390);
+	//AADelay = QMenu->AddInteger("AA Delay(if cancel AA play with this)", 150, 1000, 200);
+	QDelay1 = QMenu->AddInteger("Delay Q1", 50, 1000, 280);
+	QDelay2 = QMenu->AddInteger("Delay Q2", 50, 1000, 280);
+	QDelay3 = QMenu->AddInteger("Delay Q3", 50, 1000, 390);
+	AutoSetDelay = QMenu->CheckBox("Q Dealy Inlcude the Ping ?", true);
 	KeepQ = QMenu->CheckBox("Keep Q Alive", false);
 
 	WMenu = MainMenu->AddMenu("W Settings");
 	ComboW = WMenu->CheckBox("Use W in Combo", true);
+	ComboQW = WMenu->CheckBox("Use Q1 + W in Combo", false);
+	ComboWE = WMenu->CheckBox("Use E + W in Combo", true);
 	HarassW = WMenu->CheckBox("Use W in Harass", true);
 	WGapcloser = WMenu->CheckBox("Use W Gapcloser", true);
 	InterruptE = WMenu->CheckBox("Use W Interrupt", true);
@@ -119,12 +145,15 @@ inline void  Menu()
 	HarassE = EMenu->CheckBox("Use E Harass", true);
 	JungleE = EMenu->CheckBox("Use E in Jungle", true);
 	AutoE = EMenu->CheckBox("Use E Auto Shield", true);
-	KillstealE = EMenu->CheckBox("Use Eto closse distance to Killsteal", true);
+	KillstealE = EMenu->CheckBox("Use E to close distance to Killsteal", true);
 
 
 	RMenu = MainMenu->AddMenu("R Settings");
 	ComboR = RMenu->CheckBox("Use R1 Combo", true);
+	DmgPercent = RMenu->AddInteger("Total Damage Percent to active R1", 100, 200, 130);
+	DmgPercentmin = RMenu->AddInteger("Dont Active R1 if Enemy HP% <", 1, 100, 30);
 	ComboR2 = RMenu->CheckBox("Use R2 Combo", true);
+	//ComboR2 = RMenu->AddSelection("Use R2 Mode:", 0, { "my Logic", "Only KillSteal", "First Cast", "Off" });
 	KillstealR = RMenu->CheckBox("Use R to killsteal", true);
 	
 
@@ -144,11 +173,17 @@ inline void  Menu()
 	Drawings = MainMenu->AddMenu("Drawings");
 	DrawReady = Drawings->CheckBox("Draw Only Ready Spells", true);
 	DrawQ = Drawings->CheckBox("Draw Q", true);
+	qRangeColor = Drawings->AddColor("Q Range Color", 3.f, 252.f, 19.f, 255.f);
 	DrawW = Drawings->CheckBox("Draw W", false);
+	wRangeColor = Drawings->AddColor("W Range Color", 3.f, 252.f, 19.f, 255.f);
 	DrawE = Drawings->CheckBox("Draw E", false);
+	eRangeColor = Drawings->AddColor("E Range Color", 3.f, 252.f, 19.f, 255.f);
 	DrawR = Drawings->CheckBox("Draw R", false);
+	rRangeColor = Drawings->AddColor("R Range Color", 3.f, 252.f, 19.f, 255.f);
 	Drawdmg = Drawings->CheckBox("Draw Damage (Percent)", true);
+	dmgRangeColor = Drawings->AddColor("Damage (Percent) Color", 3.f, 252.f, 19.f, 255.f);
 	Drawhealthbar = Drawings->CheckBox("Draw Damage (Healthbar)", true);
-	//healthbarcolor = Drawings->AddColor("Damage.Healthbar.Color", 0, 128, 0, 255);
+	healRangeColor = Drawings->AddColor("Damage (Healthbar) Color", 3.f, 252.f, 19.f, 255.f);
+	
 		
 }

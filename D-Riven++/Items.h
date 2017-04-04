@@ -52,7 +52,7 @@ inline void Tiamat_hydra(IUnit* target)
 
 inline void UseItems(IUnit* target)
 {
-	if (Blade_Cutlass->Enabled() && myHero->IsValidTarget(target, 550))
+	/*if (Blade_Cutlass->Enabled() && myHero->IsValidTarget(target, 550))
 	{
 		if (myHero->HealthPercent() < MyHpPreBlade->GetInteger() || target->HealthPercent() < EnemyHpPreBlade->GetInteger())
 		{
@@ -61,7 +61,7 @@ inline void UseItems(IUnit* target)
 			if (Cutlass->IsOwned() && Cutlass->IsReady())
 				Cutlass->CastOnTarget(target);
 		}
-	}
+	}*/
 	if (Tiamat->IsOwned() && Tiamat->IsReady() && _tiamat->Enabled() && myHero->IsValidTarget(target, 385))
 	{
 		Tiamat->CastOnPlayer();
@@ -73,12 +73,7 @@ inline void UseItems(IUnit* target)
 	if (Ravenous_Hydra->IsOwned() && Ravenous_Hydra->IsReady() && RHydra->Enabled() && myHero->IsValidTarget(target, 385))
 	{
 		Ravenous_Hydra->CastOnPlayer();
-	}
-	if (useYoumuu->Enabled() && Youmuu->IsReady() && Youmuu->IsOwned())
-	{
-		if (myHero->IsValidTarget(target, 550))
-			Youmuu->CastOnPlayer();
-	}
+	}	
 }
 
 inline void Usepotion()

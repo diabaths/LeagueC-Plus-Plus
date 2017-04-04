@@ -671,11 +671,11 @@ myHero->SetSkinId(ChangeSkin->GetInteger());
 
 PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
 {
-	if (args.Sender->IsEnemy(myHero) && args.Sender->IsHero())
+	if (args.Source->IsEnemy(myHero) && args.Source->IsHero())
 	{
-		if (AutoEGapcloser->Enabled() && E->IsReady() && myHero->IsValidTarget(args.Sender, 250) && !args.IsTargeted)
+		if (AutoEGapcloser->Enabled() && E->IsReady() && myHero->IsValidTarget(args.Source, 250) && !args.IsTargeted)
 		{
-			E->CastOnTarget(args.Sender);
+			E->CastOnTarget(args.Source);
 		}
 	}
 }

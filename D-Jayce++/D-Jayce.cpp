@@ -853,27 +853,27 @@ PLUGIN_EVENT(void) OnRender()
 
 PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
 {
-	if (args.Sender->IsEnemy(myHero) && args.Sender->IsHero())
+	if (args.Source->IsEnemy(myHero) && args.Source->IsHero())
 	{
-		if (GapcloseE->Enabled() && EM->IsReady() && !args.IsTargeted && myHero->IsValidTarget(args.Sender, 300))
+		if (GapcloseE->Enabled() && EM->IsReady() && !args.IsTargeted && myHero->IsValidTarget(args.Source, 300))
 		{
 			if (IsMelee() && R->IsReady())
 			{
 				R->CastOnPlayer();
 			}
-			else	EM->CastOnTarget(args.Sender);
+			else	EM->CastOnTarget(args.Source);
 		}
 	}
 }
 PLUGIN_EVENT(void) OnInterruptable(InterruptibleSpell const& Args)
 {
-	if (InterruptE->Enabled() && E->IsReady() && myHero->IsValidTarget(Args.Target, 300))
+	if (InterruptE->Enabled() && E->IsReady() && myHero->IsValidTarget(Args.Source, 300))
 	{
 		if (IsMelee() && R->IsReady())
 		{
 			R->CastOnPlayer();
 		}
-		else	EM->CastOnTarget(Args.Target);
+		else	EM->CastOnTarget(Args.Source);
 
 	}
 }

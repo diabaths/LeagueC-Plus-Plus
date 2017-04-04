@@ -483,11 +483,11 @@ PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& args)
 }
 PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
 {
-	if (args.Sender->IsEnemy(myHero) && args.Sender->IsHero())
+	if (args.Source->IsEnemy(myHero) && args.Source->IsHero())
 	{
-		if (AutoEGapcloser->Enabled() && E->IsReady() && !args.IsTargeted && myHero->IsValidTarget(args.Sender, 250))
+		if (AutoEGapcloser->Enabled() && E->IsReady() && !args.IsTargeted && myHero->IsValidTarget(args.Source, 250))
 		{
-			E->CastOnPosition(args.Sender->ServerPosition());
+			E->CastOnPosition(args.Source->ServerPosition());
 			GOrbwalking->ResetAA();
 		}
 	}

@@ -3,7 +3,7 @@
 
 PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 {
-	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo || GetAsyncKeyState(Burst_b->GetInteger()) || GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+	if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear|| GOrbwalking->GetOrbwalkingMode() == kModeCombo || GetAsyncKeyState(Burst_b->GetInteger()) || GOrbwalking->GetOrbwalkingMode() == kModeMixed)
 	{
 		if (Source == myHero)
 		{
@@ -24,6 +24,7 @@ PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 				Qstack = 1;
 				GOrbwalking->ResetAA();
 				ResetQ1();
+				return;
 			}
 			if (Contains(Args, "c39"))
 			{
@@ -34,6 +35,7 @@ PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 				Qstack = 2;
 				GOrbwalking->ResetAA();
 				ResetQ2();
+				return;
 			}
 			if (Contains(Args, "c49"))
 			{
@@ -44,6 +46,7 @@ PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 				Qstack = 0;
 				GOrbwalking->ResetAA();
 				ResetQ3();
+				return;
 			}
 			if (Contains(Args, "b5f"))
 			{
@@ -53,6 +56,7 @@ PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 				}
 				GOrbwalking->ResetAA();
 				ResetW();
+				return;
 			}
 			if (Contains(Args, "bda"))
 			{

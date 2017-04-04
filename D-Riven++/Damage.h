@@ -57,7 +57,7 @@ inline float TotalDamage(IUnit* target)
 
 	auto damage = 0;
 
-	if (Q->IsReady())
+	if (Q->IsReady() || myHero->HasBuff("RivenTriCleave"))
 	{
 		auto Qhan = 3 - Qstack;
 		auto Qhanpassive = Qhan * (1 + GetPassive());

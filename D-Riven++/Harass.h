@@ -7,31 +7,84 @@ inline void Harass()
 	auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
 	if (Enemy != nullptr)
 	{
-		auto epos = myHero->GetPosition() + (myHero->GetPosition() - Enemy->GetPosition()).VectorNormalize() * 300;
-
-		if (myHero->IsValidTarget(Enemy, 625) && E->IsReady() && Qstack == 2)
+		if (HarassMode->GetInteger() == 0)
 		{
-			if (GetDistance(myHero, Enemy) <= 325 + Q->Range() && GetDistance(myHero, Enemy) > IsInAutoAttackRange(Enemy) + 100 && CanMoveMent(myHero))
+			auto epos = myHero->GetPosition() + (myHero->GetPosition() - Enemy->GetPosition()).VectorNormalize() * E->Range();
+			if (E->IsReady() && Qstack == 2 && HarassE->Enabled())
 			{
-				if (!myHero->IsDashing() && !AutoAttack)
+				E->CastOnPosition(myHero->GetPosition().Extend(epos, E->Range()).VectorNormalize());
+			}
+
+			if (Q->IsReady() && HarassQ->Enabled() && CanMoveMent(myHero) && Qstack == 2)
+			{
+				GPluginSDK->DelayFunctionCall(100, []()
 				{
-					E->CastOnPosition(epos);
+					auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
+					auto epos = myHero->GetPosition() + (myHero->GetPosition() - Enemy->GetPosition()).VectorNormalize() * E->Range();
+					Q->CastOnPosition(myHero->GetPosition().Extend(epos, E->Range()));
+				});
+			}
+			if (W->IsReady() && HarassW->Enabled() && myHero->IsValidTarget(Enemy, Wrange) && Qstack == 1)
+			{
+				W->CastOnPlayer();
+			}
+
+
+			if (Q->IsReady() && HarassQ->Enabled())
+			{
+				if (Qstack == 0 && myHero->IsValidTarget(Enemy, Q->Range() + myHero->GetRealAutoAttackRange(Enemy)))
+				{
+					Q->CastOnTarget(Enemy);
+					GOrbwalking->GetLastTarget();
+				}
+
+				if (Qstack == 1 && GGame->CurrentTick() - LastQ > 600)
+				{
+					Q->CastOnTarget(Enemy);
+					GOrbwalking->GetLastTarget();
 				}
 			}
 		}
-		if (myHero->IsValidTarget(Enemy, Q->Range()+100) && Q->IsReady() && HarassQ->Enabled() && Qstack == 2 && CanMoveMent(myHero))
+		if (HarassMode->GetInteger() == 1)
 		{
-			Q->CastOnPosition(epos);
+			if (E->IsReady() && HarassE->Enabled() && GetDistance(myHero, Enemy) <= 325 + Q->Range() && GetDistance(myHero, Enemy) > IsInAutoAttackRange(Enemy) + 100 && CanMoveMent(myHero))
+			{
+				E->CastOnPosition(Enemy->GetPosition());
+			}
+
+			if (Q->IsReady() && HarassQ->Enabled() && myHero->IsValidTarget(Enemy, Q->Range() + myHero->GetRealAutoAttackRange(Enemy)) && Qstack == 0 &&
+				GGame->CurrentTick() - LastQ > 500)
+			{
+				Q->CastOnTarget(Enemy);
+				GOrbwalking->GetLastTarget();
+			}
+
+			if (W->IsReady() && HarassW->Enabled() && myHero->IsValidTarget(Enemy, Wrange) && (!Q->IsReady() || Qstack == 1))
+			{
+				W->CastOnPlayer();
+			}
 		}
-		if (W->IsReady() && HarassW->Enabled() && myHero->IsValidTarget(Enemy, Wrange))
-		{
-			W->CastOnPlayer();
-		
-		}
-		if (Q->IsReady() && HarassQ->Enabled()  && CanMoveMent(myHero) &&  myHero->IsValidTarget(Enemy, Q->Range()))
-		{
-			Q->CastOnUnit(Enemy);
-		}
-		
 	}
 }
+
+static void afterattackHarass(IUnit* source, IUnit* target)
+{
+	if (target == nullptr || !target->IsValidTarget())
+		return;
+
+	if (HarassQ->Enabled() && Q->IsReady())
+	{
+		if (HarassMode->GetInteger() == 0)
+		{
+			if (Qstack == 1)
+			{
+				Q->CastOnTarget(target);
+			}
+		}
+		else
+		{
+			Q->CastOnTarget(target);
+		}
+	}
+}
+

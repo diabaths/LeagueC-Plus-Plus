@@ -558,11 +558,11 @@ PLUGIN_EVENT(void) OnRender()
 
 PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
 {
-	if (args.Sender != myHero && myHero->IsValidTarget(args.Sender, E->Range())
-		&& E->IsReady() && args.Sender->IsEnemy(myHero) && AutoEGapcloser->Enabled()
+	if (args.Source != myHero && myHero->IsValidTarget(args.Source, E->Range())
+		&& E->IsReady() && args.Source->IsEnemy(myHero) && AutoEGapcloser->Enabled()
 		&& (myHero->GetPosition() - args.EndPosition).Length() < 250)
 	{
-		E->CastOnPosition(myHero->ServerPosition().Extend(args.Sender->GetPosition(), -E->Range()));
+		E->CastOnPosition(myHero->ServerPosition().Extend(args.Source->GetPosition(), -E->Range()));
 	}
 }
 
