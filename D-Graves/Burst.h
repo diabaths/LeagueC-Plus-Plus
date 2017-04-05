@@ -9,21 +9,22 @@ inline  void burst()
 	auto mana = Q->ManaCost() + E->ManaCost() + R->ManaCost();
 	if (Enemy != nullptr && myHero->IsValidTarget(Enemy, Q->Range() - 100) && myHero->GetMana() >= mana)
 	{
-		UseItems();
-		//if (!myHero->GetBuffDataByName("GravesBasicAttackAmmo2"))
-		//{
-			E->CastOnPosition(Enemy->ServerPosition());
-		//}
-		GOrbwalking->ResetAA();
-		if (!E->IsReady() && GGame->CurrentTick() - lastE > 0.01f)
+		
+		if (nowauto)
 		{
 			R->CastOnPosition(Enemy->ServerPosition());
 		}
-		if (!R->IsReady() && GGame->CurrentTick() - lastR > 0.01f)
+			GOrbwalking->ResetAA();
+			if (!R->IsReady())
+			{
+				E->CastOnPosition(Enemy->ServerPosition());
+				GOrbwalking->ResetAA();
+			}
+		if (!E->IsReady() && !R->IsReady())
 		{
 			Q->CastOnPosition(Enemy->GetPosition());
 		}
-		if (!Q->IsReady())
+		if (!Q->IsReady() && !R->IsReady())
 		{
 			W->CastOnPosition(Enemy->GetPosition());
 		}
@@ -36,20 +37,21 @@ static void burstAfter(IUnit* source, IUnit* target)
 	if (target != nullptr && myHero->IsValidTarget(target, Q->Range() - 100))
 	{
 		auto mana = Q->ManaCost() + E->ManaCost() + R->ManaCost();
-		UseItems();
-		//if (!myHero->GetBuffDataByName("GravesBasicAttackAmmo2"))
-		//{
-		E->CastOnPosition(target->ServerPosition());
-		GOrbwalking->ResetAA();
-		if (R->IsReady())
+		
+		if (nowauto)
 		{
 			R->CastOnPosition(target->ServerPosition());
 		}
-		if (Q->IsReady())
+		if (E->IsReady() && !R->IsReady())
+		{
+			E->CastOnPosition(target->ServerPosition());
+			GOrbwalking->ResetAA();
+		}
+		if (Q->IsReady() && !R->IsReady())
 		{
 			Q->CastOnPosition(target->GetPosition());
 		}
-		if (W->IsReady())
+		if (!Q->IsReady() && W->IsReady() && !R->IsReady())
 		{
 			W->CastOnPosition(target->GetPosition());
 		}

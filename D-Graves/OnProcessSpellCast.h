@@ -21,22 +21,18 @@ PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& spell)
 	}
 	if (Enemy != nullptr && spell.Caster_ == myHero && GetAsyncKeyState(Burst_b->GetInteger()))
 	{
-		if (!GSpellData->IsAutoAttack(spell.Data_))// && !myHero->GetBuffDataByName("GravesBasicAttackAmmo2"))
-		{
-			E->CastOnPosition(Enemy->ServerPosition());
-			lastE = GGame->CurrentTick();
-		}
+		
 		if (std::string(spell.Name_) == "GravesMove")
 		{
 			ResetE();
 			lastE = GGame->CurrentTick();
 
 		}
-		if (myHero->IsDashing() && GGame->CurrentTick() - lastE > 0.01f)
+		if (nowauto)
 		{
 			R->CastOnPosition(Enemy->ServerPosition());
 			lastR = GGame->CurrentTick();
-			if (!R->IsReady())
+			if(!E->IsReady() && !R->IsReady())
 			{
 				Q->CastOnPosition(Enemy->GetPosition());
 			}
@@ -45,11 +41,14 @@ PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& spell)
 		{
 			W->CastOnPosition(Enemy->GetPosition());
 		}
-		if (std::string(spell.Name_) == "GravesChargeShot" && !GSpellData->IsAutoAttack(spell.Data_))
+		if (std::string(spell.Name_) == "GravesChargeShot")
 		{
 			lastR = GGame->CurrentTick();
 			ResetR();
-			Q->CastOnPosition(Enemy->GetPosition());
+			if (!E->IsReady() && !R->IsReady())
+			{
+				Q->CastOnPosition(Enemy->GetPosition());
+			}
 		}
 	}
 }

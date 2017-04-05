@@ -23,7 +23,7 @@ PLUGIN_EVENT(void) OnRender()
 	{	
 		if (Q->IsReady() && R->IsReady() && E->IsReady() && DrawBurst->Enabled())
 		{
-			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorburst, Q->Range() - 100);
+			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorburst, Q->Range() - 300);
 		}
 		if (Q->IsReady() && DrawQ->Enabled())
 		{
@@ -44,7 +44,7 @@ PLUGIN_EVENT(void) OnRender()
 	{
 		if (DrawBurst->Enabled())
 		{
-		    GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorburst, Q->Range() - 100);
+		    GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorburst, Q->Range() - 300);
 		}
 		if (DrawQ->Enabled())
 		{

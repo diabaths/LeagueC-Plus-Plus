@@ -98,6 +98,14 @@ static void ResetQ3()
 	});
 }
 */
+
+static void ResetAA()
+{
+	GPluginSDK->DelayFunctionCall(250, []()
+	{
+		GGame->IssueOrder(myHero, kMoveTo, myHero->GetPosition().Extend(GGame->CursorPosition(), GetDistanceVectors(myHero->GetPosition(), GGame->CursorPosition()) + 10));
+	});
+}
 static void ResetQ()
 {
 	GPluginSDK->DelayFunctionCall(250, []()

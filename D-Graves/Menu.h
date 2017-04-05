@@ -80,6 +80,7 @@ IInventoryItem* RefillPot;
 IInventoryItem* hunter;
 float lastE;
 float lastR;
+ bool nowauto = false;
 inline void  Menu()
 {
 	MainMenu = GPluginSDK->AddMenu("D-Graves");
