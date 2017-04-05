@@ -9,10 +9,11 @@ inline void laneclear()
 		{
 			if (minions != nullptr && myHero->IsValidTarget(minions, 385))
 			{
-				if (!AutoAttack)
+				if (haveitems())
 				{
 					UseItems(minions);
 					GOrbwalking->ResetAA();
+					return;
 				}
 			}
 		}
@@ -32,16 +33,19 @@ inline void laneclear()
 				{
 					Q->CastOnPosition(GGame->CursorPosition());
 					LastQ = GGame->CurrentTick();
+					return;
 				}
 				if (minions->GetHealth() < dmg && GGame->CurrentTick() - LastQ > 100)
 				{
 					Q->CastOnPosition(GGame->CursorPosition());
 					LastQ = GGame->CurrentTick();
+					return;
 				}
 				if (myHero->HasBuff("RivenTriCleave") && end - GGame->Time() <= 0.1 * (end - start))
 				{
 					Q->CastOnPosition(GGame->CursorPosition());
 					LastQ = GGame->CurrentTick();
+					return;
 				}
 			}
 		}
@@ -56,10 +60,12 @@ inline void laneclear()
 				if (MinionW >= 4)
 				{
 					W->CastOnPlayer();
+					return;
 				}
 				if (minions->GetHealth() < dmg)
 				{
 					W->CastOnPlayer();
+					return;
 				}
 
 			}

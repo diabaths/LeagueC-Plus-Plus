@@ -49,6 +49,15 @@ inline void Tiamat_hydra(IUnit* target)
 		}
 	}
 }
+inline bool haveitems()
+{
+	if (Tiamat->IsOwned() && Tiamat->IsReady() || 
+		Titanic_Hydra->IsOwned() && Titanic_Hydra->IsReady() ||Ravenous_Hydra->IsOwned() && Ravenous_Hydra->IsReady())
+	{
+		return true;
+	}
+	return false;
+}
 
 inline void UseItems(IUnit* target)
 {
@@ -66,11 +75,11 @@ inline void UseItems(IUnit* target)
 	{
 		Tiamat->CastOnPlayer();
 	}
-	if (Titanic_Hydra->IsOwned() && Titanic_Hydra->IsReady() && Hydra->Enabled() && myHero->IsValidTarget(target, 385))
+	else if (Titanic_Hydra->IsOwned() && Titanic_Hydra->IsReady() && Hydra->Enabled() && myHero->IsValidTarget(target, 385))
 	{
 		Titanic_Hydra->CastOnPlayer();
 	}
-	if (Ravenous_Hydra->IsOwned() && Ravenous_Hydra->IsReady() && RHydra->Enabled() && myHero->IsValidTarget(target, 385))
+	else if (Ravenous_Hydra->IsOwned() && Ravenous_Hydra->IsReady() && RHydra->Enabled() && myHero->IsValidTarget(target, 385))
 	{
 		Ravenous_Hydra->CastOnPlayer();
 	}	

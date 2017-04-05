@@ -9,18 +9,20 @@ inline void jungleclear()
 		{
 			if (jMinion != nullptr && myHero->IsValidTarget(jMinion, 385))
 			{
-				if (!AutoAttack)
+				if (haveitems())
 				{
 					UseItems(jMinion);
 					GOrbwalking->ResetAA();
+					return;
 				}
 			}
 		}
-		if (JungleQ->Enabled() && Q->IsReady())
+		if (JungleQ->Enabled() && Q->IsReady() && !AutoAttack)
 		{
 			if (jMinion != nullptr && !jMinion->IsDead() && myHero->IsValidTarget(jMinion, Q->Range()))
 			{
 				Q->CastOnUnit(jMinion);
+				return;
 			}
 		}
 		if (JungleW->Enabled() && W->IsReady())
@@ -28,6 +30,7 @@ inline void jungleclear()
 			if (jMinion != nullptr && !jMinion->IsDead() && myHero->IsValidTarget(jMinion, W->Range()))
 			{
 				W->CastOnPlayer();
+				return;
 			}
 		}
 		if (JungleE->Enabled() && E->IsReady())
@@ -35,6 +38,7 @@ inline void jungleclear()
 			if (jMinion != nullptr && !jMinion->IsDead() && myHero->IsValidTarget(jMinion, E->Range()))
 			{
 				E->CastOnPosition(jMinion->GetPosition());
+				return;
 			}
 		}
 	}

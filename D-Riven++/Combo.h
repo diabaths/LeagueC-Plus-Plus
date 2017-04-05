@@ -159,9 +159,11 @@ static void afterattackCombo(IUnit* source, IUnit* target)
 	
 	if (target != nullptr && myHero->IsValidTarget(target, 400))
 	{
-		
-		UseItems(target);
-		
+		if (haveitems())
+		{
+			UseItems(target);
+			return;
+		}
 		if (Q->IsReady() && myHero->IsValidTarget(target, 400))
 		{
 			Q->CastOnUnit(target);
@@ -174,7 +176,7 @@ static void afterattackCombo(IUnit* source, IUnit* target)
 			return;
 		}
 
-		if (ComboW && W->IsReady() && myHero->IsValidTarget(target,Wrange))
+		if (ComboW->Enabled() && W->IsReady() && myHero->IsValidTarget(target,Wrange))
 		{
 			WLogic(target);
 			return;

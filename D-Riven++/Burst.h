@@ -97,7 +97,10 @@ inline void Burst()
 			GPluginSDK->DelayFunctionCall(64, []()
 			{
 				auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
-				UseItems(Enemy);
+				if (haveitems())
+				{
+					UseItems(Enemy);
+				}
 			});
 			GPluginSDK->DelayFunctionCall(68, []()
 			{
@@ -132,7 +135,10 @@ inline void Burst()
 			GPluginSDK->DelayFunctionCall(61, []()
 			{
 				auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
-				UseItems(Enemy);
+				if (haveitems())
+				{
+					UseItems(Enemy);
+				}
 			});
 			GPluginSDK->DelayFunctionCall(62, []()
 			{
@@ -159,8 +165,10 @@ static void afterattackBurst(IUnit* source, IUnit* target)
 {
 	if (target->IsHero())
 	{
-		UseItems(target);
-
+		if (haveitems())
+		{
+			UseItems(target);
+		}
 		if (R->IsReady() && isR2())
 		{
 			R2->CastOnPosition(target->GetPosition());

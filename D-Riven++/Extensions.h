@@ -75,7 +75,7 @@ static void ResetQ1()
 	{
 		GGame->Taunt(kLaugh);		
 		GOrbwalking->ResetAA();
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
+		GGame->IssueOrder(myHero, kMoveTo, myHero->GetPosition().Extend(GGame->CursorPosition(), GetDistanceVectors(myHero->GetPosition(), GGame->CursorPosition()) + 10));
 	});
 }
 static void ResetQ2()
@@ -85,7 +85,7 @@ static void ResetQ2()
 		
 		GGame->Say("/d");
 		GOrbwalking->ResetAA();
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+		GGame->IssueOrder(myHero, kMoveTo, myHero->GetPosition().Extend(GGame->CursorPosition(), GetDistanceVectors(myHero->GetPosition(), GGame->CursorPosition()) + 10));
 	});
 } //myHero->GetPosition().Extend(GGame->CursorPosition(), GetDistanceVectors(myHero->GetPosition(), GGame->CursorPosition()) + 10)
 static void ResetQ3()
@@ -94,7 +94,7 @@ static void ResetQ3()
 	{
 		GGame->Taunt(kLaugh);
 		GOrbwalking->ResetAA();
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
+		GGame->IssueOrder(myHero, kMoveTo, myHero->GetPosition().Extend(GGame->CursorPosition(), GetDistanceVectors(myHero->GetPosition(), GGame->CursorPosition()) + 10));
 	});
 }
 
