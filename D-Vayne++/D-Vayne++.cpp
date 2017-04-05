@@ -26,6 +26,8 @@ IMenuOption* KillstealQ;
 IMenuOption* KillstealE;
 IMenuOption* FarmManaPercent;
 IMenuOption* harassManaPercent;
+IMenuOption*I1;
+IMenuOption*I2;
 
 IMenuOption* UseEC;
 IMenuOption* UseEH;
@@ -85,6 +87,8 @@ void  Menu()
 	
 
 	Emenu = MainMenu->AddMenu("E Settings");
+	I1 = Emenu->AddInteger("I1", 10, 100, 15);
+	I2 = Emenu->AddInteger("I2", 10, 150, 100);
 	UseEC = Emenu->CheckBox("Use E Combo", true);
 	UseEH = Emenu->CheckBox("Use E Harass", true);
 	KillstealE = Emenu->CheckBox("Use E Killsteal", true);
@@ -487,7 +491,7 @@ void GetBuffName()
 	}
 }
 PLUGIN_EVENT(void) OnGameUpdate()
-{	
+{
 	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo  && R->IsReady())
 	{
 		auto enemys = EnemyArround->GetInteger();
@@ -500,7 +504,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	Usepotion();
 	auto mana = myHero->ManaPercent() > harassManaPercent->GetInteger();
 	if ((GOrbwalking->GetOrbwalkingMode() == kModeCombo && UseEC->Enabled()) || (GOrbwalking->GetOrbwalkingMode() == kModeMixed && UseEH->Enabled() && mana))
-	{
+	{	
 		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, E->Range());
 		if (target == nullptr || !target->IsValidTarget(GEntityList->Player(), E->Range())
 			|| target->IsDead() || target->IsDashing()
@@ -508,21 +512,19 @@ PLUGIN_EVENT(void) OnGameUpdate()
 			|| target->HasBuffOfType(BUFF_SpellImmunity)
 			|| !target->IsHero())
 			return;
-
+		for (auto i = 15; i < PushDistance->GetInteger(); i +=100)
+		{
 		AdvPredictionOutput prediction_output;
 		E->RunPrediction(target, false, kCollidesWithYasuoWall, &prediction_output);
-		if (prediction_output.HitChance >= kHitChanceHigh)
-		{
-			auto pushDirection = (prediction_output.TargetPosition - myHero->GetPosition()).VectorNormalize();
-			auto checkDistance = PushDistance->GetInteger() / 40;
-			for (auto i = 0; i < 40; ++i)
+			auto pushDirection = (prediction_output.TargetPosition - myHero->GetPosition()).VectorNormalize() *i ;
 			{
-				auto finalPosition = prediction_output.TargetPosition + (pushDirection * checkDistance * i);
+				Vec3 finalPosition = prediction_output.TargetPosition + pushDirection;
 				auto wall = GNavMesh->GetCollisionFlagsForPoint(finalPosition);
 
-				if (wall ==kWallMesh  || wall == kBuildingMesh)
+				if (wall ==kWallMesh  || wall == kBuildingMesh && prediction_output.HitChance >= kHitChanceHigh)
 				{
 					E->CastOnUnit(target);
+					return;
 				}
 			}
 		}
