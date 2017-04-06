@@ -36,6 +36,7 @@ IMenuOption* TurrentE;
 IMenuOption* JungleManaPercent;
 
 IMenuOption* KillstealR;
+IMenuOption* UseRoverkill;
 IMenuOption* GapglocerR;
 IMenuOption* Int_R;
 
@@ -50,6 +51,9 @@ IMenuOption* AlwaysQAfterE;
 IMenuOption* DrawReady;
 IMenuOption* DrawE;
 IMenuOption* DrawR;
+IMenuOption* eRangeColor;
+IMenuOption* rRangeColor;
+
 
 IUnit* myHero;
 
@@ -98,6 +102,7 @@ void  Menu()
 
 	RMenu = MainMenu->AddMenu("R Settings");
 	KillstealR = RMenu->CheckBox("Use R to killsteal", true);
+	UseRoverkill = RMenu->CheckBox("R if  (R+E+AUTO)Dmg > Enemy->health", true);
 	Int_R = RMenu->CheckBox("Use R to Interrupter", true);
 	GapglocerR = RMenu->CheckBox("Use R to AntiGapcloser", true);
 
@@ -119,8 +124,10 @@ void  Menu()
 
 	Drawings = MainMenu->AddMenu("Drawings");
 	DrawReady = Drawings->CheckBox("Draw Only Ready Spells", true);
-	DrawE = Drawings->CheckBox("Draw E", true);
-	DrawR = Drawings->CheckBox("Draw R", true);
+	DrawE = Drawings->CheckBox("Draw E", false);
+	eRangeColor = Drawings->AddColor("E Range Color", 50.f, 200.f, 150.f, 255.f);
+	DrawR = Drawings->CheckBox("Draw R", false);
+	rRangeColor = Drawings->AddColor("R Range Color", 50.f, 200.f, 150.f, 255.f);
 }
 void LoadSpells()
 {
@@ -210,6 +217,7 @@ int CountMinionInRange(float range)
 	}
 	return minions;
 }
+
 float DamageE(IUnit* target)
 {
 	float damage = 0;
@@ -252,9 +260,9 @@ void Combo()
 		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, ERange);
 		if (E->IsReady())
 		{
-			
 			if (target != nullptr && myHero->IsValidTarget(target, ERange))
 				E->CastOnTarget(target);
+			return;
 		}
 		if (target != nullptr && target->HasBuff("tristanaecharge") && myHero->IsValidTarget(target, ERange))
 		{
@@ -270,15 +278,15 @@ void laneclear()
 		if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
 			return;
 		auto Qmin = minminions->GetInteger();
-		if(E->IsReady()&& FarmE->Enabled() && CountMinionInRange(ERange) > Qmin)
+		if (E->IsReady() && FarmE->Enabled() && CountMinionInRange(ERange) > Qmin)
 		{
 			if (minions != nullptr && !minions->IsDead() && myHero->IsValidTarget(minions, ERange))
 			{
 				E->CastOnTarget(minions);
-			
+				return;
 			}
 		}
-		if (minions->HasBuff("tristanaecharge")  && myHero->IsValidTarget(minions, ERange))
+		if (minions->HasBuff("tristanaecharge") && myHero->IsValidTarget(minions, ERange))
 		{
 			GOrbwalking->SetOverrideTarget(minions);
 		}
@@ -287,16 +295,17 @@ void laneclear()
 void jungleclear()
 {
 	for (auto jMinion : GEntityList->GetAllMinions(false, false, true))
-	{		
+	{
 		if (myHero->ManaPercent() < JungleManaPercent->GetInteger())
 			return;
 		if (strstr(jMinion->GetObjectName(), "mini")) return;
-		
+
 		if (JungleE->Enabled() && E->IsReady())
 		{
 			if (jMinion != nullptr && !jMinion->IsDead() && myHero->IsValidTarget(jMinion, ERange))
 			{
 				E->CastOnTarget(jMinion);
+				return;
 			}
 		}
 		/*if (jMinion->HasBuff("tristanaecharge") && myHero->IsValidTarget(jMinion, ERange))
@@ -320,10 +329,12 @@ void Harass()
 				if (ChampionuseE[Enemys->GetNetworkId()]->Enabled())
 				{
 					E->CastOnTarget(target);
+					return;
 				}
 				if (!ChampionuseE[Enemys->GetNetworkId()]->Enabled() && CountEnemiesInRange(1500) == 1)
 				{
 					E->CastOnTarget(target);
+					return;
 				}
 			}
 		}
@@ -340,10 +351,17 @@ void killsteal()
 				if (myHero->IsValidTarget(Enemy, RRange) && Enemy != nullptr)
 				{
 					auto dmg = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotR);
-					if (Enemy->GetHealth() < DamageE(Enemy)) return;
+					auto autodamage = GDamage->GetAutoAttackDamage(GEntityList->Player(), Enemy, false);
+					if (DamageE(Enemy) + dmg + autodamage > Enemy->GetHealth() && UseRoverkill->Enabled())
+					{
+						R->CastOnTarget(Enemy);
+						return;
+					}
+					else if (Enemy->GetHealth() < DamageE(Enemy) ) return;
 					if (Enemy->GetHealth() < dmg &&!Enemy->IsInvulnerable())
 					{
 						R->CastOnTarget(Enemy);
+						return;
 					}
 				}
 			}
@@ -415,6 +433,7 @@ void Eturrent()
 		if (turrent->GetHealth() >= 100 && turrent != nullptr && CountEnemiesInRange(1000) == 0 && myHero->IsValidTarget(turrent, ERange))
 		{			
 			E->CastOnUnit(turrent);
+			return;
 		}
 	}
 }
@@ -426,22 +445,27 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 			return;
 		if (E->IsReady() && TurrentE->Enabled() && GetDistance(myHero, target) <= E->Range())
 		{
-		 Eturrent();
+			Eturrent();
+			return;
 		}
-		if (target != nullptr && target->HasBuff("tristanaecharge") && myHero->IsValidTarget(target, ERange))
+		auto Enemy = GTargetSelector->FindTarget(QuickestKill, SpellDamage, ERange);
+		if (Enemy != nullptr && Enemy->HasBuff("tristanaecharge") && myHero->IsValidTarget(Enemy, ERange))
 		{
-			GOrbwalking->SetOverrideTarget(target);
+			GOrbwalking->SetOverrideTarget(Enemy);
 		}
-	}	
+	}
 }
 
 PLUGIN_EVENT(void) OnBeforeAttack(IUnit* source, IUnit* target)
 {
 	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && Q->IsReady() && ComboQ->Enabled())
 	{
-		if (target != nullptr && myHero->IsValidTarget())
+		auto Enemy = GTargetSelector->FindTarget(QuickestKill, SpellDamage, ERange);
+
+		if (Enemy != nullptr && myHero->IsValidTarget(Enemy, myHero->GetRealAutoAttackRange(Enemy)))
 		{
 			Q->CastOnPlayer();
+			return;
 		}
 	}
 	if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
@@ -449,12 +473,12 @@ PLUGIN_EVENT(void) OnBeforeAttack(IUnit* source, IUnit* target)
 		for (auto minions : GEntityList->GetAllMinions(false, true, false))
 		{
 			auto Qmin = minminions->GetInteger();
-			if (Q->IsReady() && FarmQ->Enabled() && myHero->IsValidTarget())
+			if (Q->IsReady() && FarmQ->Enabled() && myHero->IsValidTarget(minions, myHero->GetRealAutoAttackRange(minions)))
 			{
 				if (CountMinionInRange(myHero->GetRealAutoAttackRange(minions)) > Qmin)
-				{
-					
+				{					
 					Q->CastOnPlayer();
+					return;
 				}
 			}
 		}
@@ -463,9 +487,10 @@ PLUGIN_EVENT(void) OnBeforeAttack(IUnit* source, IUnit* target)
 		{
 			if (JungleQ->Enabled() && Q->IsReady())
 			{
-				if (jMinion != nullptr && !jMinion->IsDead() && myHero->IsValidTarget())
+				if (jMinion != nullptr && !jMinion->IsDead() && myHero->IsValidTarget(jMinion, myHero->GetRealAutoAttackRange(jMinion)))
 				{
 					Q->CastOnPlayer();
+					return;
 				}
 			}
 		}
@@ -473,17 +498,21 @@ PLUGIN_EVENT(void) OnBeforeAttack(IUnit* source, IUnit* target)
 }
 PLUGIN_EVENT(void) OnRender()
 {
+	Vec4 colore;
+	Vec4 colorr;
+	eRangeColor->GetColor(&colore);
+	rRangeColor->GetColor(&colorr);
 	if (DrawReady->Enabled())
 	{
-		if (E->IsReady() && DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), ERange); }
+		if (E->IsReady() && DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colore, ERange); }
 
-		if (R->IsReady() && DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), RRange); }
+		if (R->IsReady() && DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorr, RRange); }
 	}
 	else
 	{
-		if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), ERange); }
+		if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colore, ERange); }
 
-		if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), RRange); }
+		if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorr, RRange); }
 	}
 }
 
@@ -524,15 +553,14 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	GEventManager->AddEventHandler(kEventOnRender, OnRender);
 	GEventManager->AddEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);
 	GEventManager->AddEventHandler(kEventOrbwalkBeforeAttack, OnBeforeAttack);
-
 	if (strcmp(GEntityList->Player()->ChampionName(), "Tristana") == 0)
 	{
-		GGame->PrintChat("D-Tristana : Loaded");
+		GRender->NotificationEx(Vec4(220, 20, 60, 255), 2, true, true, "D-Tristana++ Loaded!");
 	}
 	else
 	{
-		GGame->PrintChat("You are not playing Tristana...");
-	}
+		GRender->NotificationEx(Vec4(220, 20, 60, 255), 2, true, true, "You are not playing Tristana...");
+	}	
 }
 
 
