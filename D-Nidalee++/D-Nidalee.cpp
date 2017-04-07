@@ -462,7 +462,7 @@ void UseItems()
 }
 void Heal()
 {
-	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo || !myHero->IsRecalling())
+	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo || myHero->IsRecalling())
 		return;
 	if (E->IsReady())
 	{
