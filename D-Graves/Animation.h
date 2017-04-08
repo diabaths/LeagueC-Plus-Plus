@@ -20,7 +20,7 @@ PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 			{
 				ResetAA();
 				nowauto = true;
-				GPluginSDK->DelayFunctionCall(800, []()
+				GPluginSDK->DelayFunctionCall(400, []()
 				{
 					nowauto = false;
 				});
