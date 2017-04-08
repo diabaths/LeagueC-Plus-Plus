@@ -506,7 +506,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	if ((GOrbwalking->GetOrbwalkingMode() == kModeCombo && UseEC->Enabled()) || (GOrbwalking->GetOrbwalkingMode() == kModeMixed && UseEH->Enabled() && mana))
 	{	
 		auto target = GTargetSelector->FindTarget(QuickestKill, SpellDamage, E->Range());
-		if (target == nullptr || !target->IsValidTarget(GEntityList->Player(), E->Range())
+		if (target == nullptr || !E->IsReady()|| !target->IsValidTarget(GEntityList->Player(), E->Range())
 			|| target->IsDead() || target->IsDashing()
 			|| target->HasBuffOfType(BUFF_SpellShield)
 			|| target->HasBuffOfType(BUFF_SpellImmunity)
