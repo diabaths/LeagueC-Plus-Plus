@@ -154,6 +154,21 @@
       <Project>{c2a9b46d-96e2-49ec-b2d8-5af521dd0a76}</Project>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="AfterAttack.h" />
+    <ClInclude Include="Auto-Killsteal.h" />
+    <ClInclude Include="Combo.h" />
+    <ClInclude Include="EWQ.h" />
+    <ClInclude Include="Extension.h" />
+    <ClInclude Include="Farm.h" />
+    <ClInclude Include="Harass.h" />
+    <ClInclude Include="Items.h" />
+    <ClInclude Include="Menu.h" />
+    <ClInclude Include="OnAnimation.h" />
+    <ClInclude Include="OnProcessSpellCast.h" />
+    <ClInclude Include="Render.h" />
+    <ClInclude Include="Spells.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
