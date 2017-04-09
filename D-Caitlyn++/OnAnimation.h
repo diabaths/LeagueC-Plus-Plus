@@ -9,9 +9,9 @@ PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 		
 		if (Contains(Args, "b4f"))
 		{			
-			if (EWQCombo->GetInteger())
+			if (GetAsyncKeyState(EWQCombo->GetInteger()))
 			{
-				auto enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range() -100);
+				auto enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range() + W->Radius());
 				Vec3 Enemypos;
 				GPrediction->GetFutureUnitPosition(target, 0.1, true, Enemypos);
 				W->CastOnPosition(Enemypos);
