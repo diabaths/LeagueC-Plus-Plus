@@ -7,7 +7,7 @@ inline void laneclear()
 	{
 		if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
 			return;
-		if (Q->IsReady())
+		if (Q->IsReady() && !minions->IsWard())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
 			auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
@@ -20,16 +20,8 @@ inline void laneclear()
 				{
 					Q->CastOnPosition(pos);
 					return;
-				}
-
-				AdvPredictionOutput prediction_output;
-				Q->RunPrediction(target, true, kCollidesWithYasuoWall, &prediction_output);
-				if (harassFarmQ->Enabled() && Qhit >= 2 && prediction_output.HitChance >= kHitChanceHigh)
-				{
-					Q->CastOnUnit(target);
-					return;
-				}
-				if (!minions->IsWard() && LastHitQ->Enabled() && minions->GetHealth() < dmg && GetDistance(myHero, minions) > myHero->AttackRange())
+				}				
+				if (LastHitQ->Enabled() && minions->GetHealth() < dmg && GetDistance(myHero, minions) > myHero->AttackRange())
 				{
 					Q->CastOnUnit(minions);
 					return;

@@ -82,7 +82,7 @@ inline void  Menu()
 	QMenu = MainMenu->AddMenu("Q Settings");
 	ComboQ = QMenu->CheckBox("Use Q in combo", true);
 	HarassQ = QMenu->CheckBox("Use Q harass", true);
-	harassFarmQ = QMenu->CheckBox("Use Q harass if Hit 2 Minions", true);
+	//harassFarmQ = QMenu->CheckBox("Use Q harass if Hit 2 Minions", true);
 	FarmQ = QMenu->CheckBox("Use Q Farm", true);
 	minminions = QMenu->AddInteger("Use Q if Hit Minions =>", 1, 6, 3);
 	LastHitQ = QMenu->CheckBox("Q Lasthit Out Of AA range", true);
