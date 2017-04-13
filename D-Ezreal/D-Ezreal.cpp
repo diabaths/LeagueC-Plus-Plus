@@ -133,25 +133,13 @@ void  Menu()
 }
 void LoadSpells()
 {
-	Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, false, static_cast<eCollisionFlags>(kCollidesWithMinions | kCollidesWithYasuoWall));
-	W = GPluginSDK->CreateSpell2(kSlotW, kLineCast, true, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
-	R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, true, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
+	Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, false, kCollidesWithYasuoWall | kCollidesWithMinions);
+	Q->SetSkillshot(0.25f, 60.f, 2000.f, 1200.f);
+	W = GPluginSDK->CreateSpell2(kSlotW, kLineCast, true, true, kCollidesWithYasuoWall);
+	W->SetSkillshot(0.25f, 80, 1600, 1000);
+	R = GPluginSDK->CreateSpell2(kSlotR, kLineCast, true, false, kCollidesWithYasuoWall);
+	R->SetSkillshot(1.1f, 160, 2000, 3000);
 	E = GPluginSDK->CreateSpell2(kSlotE, kCircleCast, false, false, static_cast<eCollisionFlags>(kCollidesWithYasuoWall | kCollidesWithMinions));
-
-	Q->SetOverrideRange(1150);
-	W->SetOverrideRange(950);
-	R->SetOverrideRange(3000);
-
-	Q->SetOverrideDelay(0.25);
-	W->SetOverrideDelay(0.25);
-	R->SetOverrideDelay(1.1);
-
-	Q->SetOverrideRadius(60);
-	W->SetOverrideRadius(80);
-	R->SetOverrideRadius(160);
-	Q->SetOverrideSpeed(2000);
-	W->SetOverrideSpeed(1600);
-	R->SetOverrideSpeed(2000);
 
 	auto slot1 = GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot1);
 	auto slot2 = GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot2);
@@ -251,15 +239,7 @@ void UseItems()
 			}
 	}
 }
-void CastQ(IUnit* target)
-{
-	AdvPredictionOutput prediction_output;
-	Q->RunPrediction(target, true, kCollidesWithYasuoWall | kCollidesWithMinions, &prediction_output);
-	if (prediction_output.HitChance >= kHitChanceHigh)
-	{				
-		Q->CastOnTarget(target, kHitChanceCollision);
-	}
-}
+
 void Combo()
 {
 	if (Ignite != nullptr)
@@ -284,7 +264,7 @@ void Combo()
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
 			if (myHero->IsValidTarget(target, Q->Range()))
 			{
-				CastQ(target);
+				Q->CastOnTarget(target,kHitChanceHigh);
 			}
 		}
 	}
@@ -405,11 +385,11 @@ void Harass()
 				{
 					if (ChampionuseQ[Enemys->GetNetworkId()]->Enabled())
 					{
-						CastQ(target);
+						Q->CastOnTarget(target, kHitChanceHigh);
 					}
 					if (!ChampionuseQ[Enemys->GetNetworkId()]->Enabled() && CountEnemiesInRange(1500) == 1)
 					{
-						CastQ(target);
+						Q->CastOnTarget(target, kHitChanceHigh);
 					}
 				}
 			}
@@ -471,7 +451,7 @@ void killsteal()
 				{
 					if (Enemy->GetHealth() <= dmg && Q->IsReady())
 					{
-						CastQ(Enemy);
+						Q->CastOnTarget(Enemy, kHitChanceHigh);
 					}
 				}
 			}
