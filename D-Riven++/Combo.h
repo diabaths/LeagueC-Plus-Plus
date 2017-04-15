@@ -2,6 +2,7 @@
 #include "Spells.h"
 #include "Extensions.h"
 #include "Ultilogic.h"
+#include "Items.h"
 
 inline void Combo()
 {
@@ -45,9 +46,15 @@ inline void Combo()
 	}
 
 	if (!AutoAttack && ComboW->Enabled() && W->IsReady() &&
-		myHero->IsValidTarget(Enemy, Wrange))
+		myHero->IsValidTarget(Enemy, W->Range()))
 	{
 		WLogic(Enemy);
+		if (Hydra->Enabled() && haveitems())
+		{
+			Titanic(Enemy);
+			GOrbwalking->ResetAA();
+			return;
+		}
 		return;
 	}
 	if (Enemy != nullptr  && R->IsReady())
@@ -102,19 +109,22 @@ inline void Combo()
 static void processCombo(CastedSpell const& spell)
 {
 	auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 600);
+
 	if (spell.Data_ == nullptr) return;
-	if (spell.Caster_ == myHero && spell.Target_ != nullptr && myHero->IsValidTarget(Enemy, 600) && spell.Target_->IsHero())
+	if (spell.Target_ != nullptr && spell.Caster_ == myHero && spell.Target_->IsHero())
 	{
 		if (std::string(spell.Name_) == "ItemTiamatCleave")
 		{
-			if (ComboW->Enabled() && W->IsReady() && myHero->IsValidTarget(Enemy, Wrange))
+			if (ComboW->Enabled() && W->IsReady() && myHero->IsValidTarget(Enemy, W->Range()))
 			{
 				W->CastOnPlayer();
+				return;
 			}
-			else if (!AutoAttack && Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
+			if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 			{
 				Q->CastOnUnit(Enemy);
 				AutoAttack = true;
+				return;
 			}
 		}
 		if (std::string(spell.Name_) == "RivenMartyr")
@@ -138,9 +148,10 @@ static void processCombo(CastedSpell const& spell)
 		}
 		if (std::string(spell.Name_) == "RivenFengShuiEngine")
 		{
-			if (ComboW->Enabled() && W->IsReady() && myHero->IsValidTarget(Enemy, Wrange))
+			if (ComboW->Enabled() && W->IsReady() && myHero->IsValidTarget(Enemy, W->Range()))
 			{
 				W->CastOnPlayer();
+				return;
 			}
 		}
 		if (std::string(spell.Name_) == "RivenIzunaBlade")
@@ -176,7 +187,7 @@ static void afterattackCombo(IUnit* source, IUnit* target)
 			return;
 		}
 
-		if (ComboW->Enabled() && W->IsReady() && myHero->IsValidTarget(target,Wrange))
+		if (ComboW->Enabled() && W->IsReady() && myHero->IsValidTarget(target,W->Range()))
 		{
 			WLogic(target);
 			return;

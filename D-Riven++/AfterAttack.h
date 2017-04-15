@@ -19,5 +19,10 @@ PLUGIN_EVENT(void) Afterattack(IUnit* source, IUnit* target)
 			afterattackHarass(source, target);
 		}
 	}
+	
 }
 
+PLUGIN_EVENT(void) OnAttack(IUnit* source, IUnit* target)
+{
+	
+}

@@ -3,21 +3,23 @@
 #include "Menu.h"
 #include "Extensions.h"
 
+inline bool use_Youmuu()
+{
+	if(Youmuu->IsReady() && Youmuu->IsOwned())
+	{
+		return true;
+	}
+	return false;
+}
 inline  void _Youmuu(IUnit* target)
 {
-	if (useYoumuu->Enabled() && Youmuu->IsReady() && Youmuu->IsOwned())
+	if (useYoumuu->Enabled())
 	{
 		if (myHero->IsValidTarget(target, 550))
 			Youmuu->CastOnPlayer();
 	}
 }
-inline bool canusetiamate()
-{
-	if (Tiamat->IsOwned() && Tiamat->IsReady() || Titanic_Hydra->IsOwned() && Titanic_Hydra->IsReady() || (Ravenous_Hydra->IsOwned() && Ravenous_Hydra->IsReady()))
-		return true;
-	else return false;
-	
-}
+
 inline void Titanic(IUnit* target)
 {
 	if (Hydra->Enabled() && myHero->IsValidTarget(target, 385))
@@ -38,6 +40,7 @@ inline void Tiamat_hydra(IUnit* target)
 		{
 			Tiamat->CastOnTarget(target);
 			GOrbwalking->ResetAA();
+			return;
 		}
 	}	
 	if (RHydra->Enabled() && myHero->IsValidTarget(target, 385))
@@ -74,12 +77,14 @@ inline void UseItems(IUnit* target)
 	if (Tiamat->IsOwned() && Tiamat->IsReady() && _tiamat->Enabled() && myHero->IsValidTarget(target, 385))
 	{
 		Tiamat->CastOnPlayer();
+		return;
 	}
-	else if (Titanic_Hydra->IsOwned() && Titanic_Hydra->IsReady() && Hydra->Enabled() && myHero->IsValidTarget(target, 385))
+	if (Titanic_Hydra->IsOwned() && Titanic_Hydra->IsReady() && Hydra->Enabled() && myHero->IsValidTarget(target, 385))
 	{
 		Titanic_Hydra->CastOnPlayer();
+		return;
 	}
-	else if (Ravenous_Hydra->IsOwned() && Ravenous_Hydra->IsReady() && RHydra->Enabled() && myHero->IsValidTarget(target, 385))
+	if (Ravenous_Hydra->IsOwned() && Ravenous_Hydra->IsReady() && RHydra->Enabled() && myHero->IsValidTarget(target, 385))
 	{
 		Ravenous_Hydra->CastOnPlayer();
 	}	
@@ -101,6 +106,7 @@ inline void Usepotion()
 				if (Biscuit->IsOwned() && !InFountain(myHero) && Biscuit->IsReady())
 				{
 					Biscuit->CastOnPlayer();
+
 				}
 				else if (HealthPot->IsOwned() && !InFountain(myHero) && HealthPot->IsReady())
 				{

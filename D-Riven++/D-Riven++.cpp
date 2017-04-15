@@ -24,6 +24,32 @@
 
 PluginSetup("D-Riven++")
 
+void ChangePriority()
+{
+	if (GetAsyncKeyState(BurstModeChange->GetInteger()) && !GGame->IsChatOpen() && GGame->Time() > keyDown)
+	{
+		if (BurstMode == 0)
+		{
+			BurstMode = 1;
+			keyDown = GGame->Time() + 0.250;
+		}
+		else if (BurstMode == 1)
+		{
+			BurstMode = 2;
+			keyDown = GGame->Time() + 0.250;
+		}
+		else if (BurstMode == 2)
+		{
+			BurstMode = 3;
+			keyDown = GGame->Time() + 0.250;
+		}
+		else
+		{
+			BurstMode = 0;
+			keyDown = GGame->Time() + 0.250;
+		}
+	}
+}
 PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
 {
 	if (args.Source->IsEnemy(myHero) && args.Source->IsHero())
@@ -50,11 +76,10 @@ PLUGIN_EVENT(void) OnGameUpdate()
 		Qstack = 0;
 		return;
 	}
-	if (Qstack != 0 && GGame->CurrentTick() - LastQ > 3800)
+	if (Qstack != 0 && GGame->TickCount() - LastQ > 3800)
 	{
 		Qstack = 0;
 	}
-
 	if (AutoSetDelay->Enabled())
 	{
 		auto delay = 0;
@@ -76,9 +101,9 @@ PLUGIN_EVENT(void) OnGameUpdate()
 		{
 			delay = 70;
 		}
-		Q1Delay = QDelay1->GetInteger() + delay;
-		Q2Delay = QDelay2->GetInteger() + delay;
-		Q3Delay = QDelay3->GetInteger() + delay;
+		Q1Delay = QDelay1->GetInteger() - delay;
+		Q2Delay = QDelay2->GetInteger() - delay;
+		Q3Delay = QDelay3->GetInteger() - delay;
 		//DelayAA = AADelay->GetInteger() + delay;
 	}
 	if (!AutoSetDelay->Enabled())
@@ -89,11 +114,12 @@ PLUGIN_EVENT(void) OnGameUpdate()
 		//DelayAA = AADelay->GetInteger();
 	}
 
-	if (myHero->HasBuff("RivenFengShuiEngine"))
+	if (isR2())
 	{
-		Wrange = 265;
+		W->SetOverrideRange(330);
 	} 
-	else Wrange = 330;
+	else W->SetOverrideRange(265); 
+	
 
 	if (GOrbwalking->GetOrbwalkingMode() != kModeCombo && GOrbwalking->GetOrbwalkingMode() != kModeMixed && GOrbwalking->GetOrbwalkingMode() != kModeLaneClear)
 	{
@@ -134,6 +160,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	}
 	killsteal();
 	Usepotion();
+	ChangePriority();
 }
 
 PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
@@ -151,7 +178,7 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	GEventManager->AddEventHandler(kEventOnSpellCast, OnProcessSpellCast);
 	GEventManager->AddEventHandler(kEventOnInterruptible, OnInterruptable);
 	GEventManager->AddEventHandler(kEventOnGapCloser, OnGapcloser);
-	//GEventManager->AddEventHandler(kEventOrbwalkOnAttack, OnAttack);
+	GEventManager->AddEventHandler(kEventOrbwalkOnAttack, OnAttack);
 	
 
 
@@ -177,5 +204,5 @@ PLUGIN_API void OnUnload()
 	GEventManager->RemoveEventHandler(kEventOnSpellCast, OnProcessSpellCast);
 	GEventManager->RemoveEventHandler(kEventOnInterruptible, OnInterruptable);
 	GEventManager->RemoveEventHandler(kEventOnGapCloser, OnGapcloser);
-	//GEventManager->RemoveEventHandler(kEventOrbwalkOnAttack, OnAttack);
+	GEventManager->RemoveEventHandler(kEventOrbwalkOnAttack, OnAttack);
 }

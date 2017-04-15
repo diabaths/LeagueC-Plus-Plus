@@ -7,7 +7,7 @@ static void Flee()
 	{
 		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
 		auto x = myHero->GetPosition().Extend(GGame->CursorPosition(), 300);
-		if (Enemy != nullptr && W->IsReady() && myHero->IsValidTarget(Enemy, Wrange))
+		if (Enemy != nullptr && W->IsReady() && myHero->IsValidTarget(Enemy, W->Range()))
 		{
 			W->CastOnPlayer();
 		}

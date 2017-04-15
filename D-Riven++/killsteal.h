@@ -1,9 +1,9 @@
 #pragma once
 #include "Spells.h"
-
+#include "Extensions.h"
 inline void killsteal()
 {
-	if (GGame->IsChatOpen()) return;
+	if (GGame->IsChatOpen() || GetAsyncKeyState(Burst_b->GetInteger())) return;
 	for (auto Enemy : GEntityList->GetAllHeros(false, true))
 	{
 		if (Enemy != nullptr && !Enemy->IsDead())
@@ -11,7 +11,7 @@ inline void killsteal()
 			if (KillstealW->Enabled() && W->IsReady())
 			{
 				auto dmg = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotW);
-				if (myHero->IsValidTarget(Enemy, Wrange) && !Enemy->IsInvulnerable())
+				if (myHero->IsValidTarget(Enemy, W->Range()) && !Enemy->IsInvulnerable())
 				{
 					if (Enemy->GetHealth() <= dmg && W->IsReady())
 					{

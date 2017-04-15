@@ -11,36 +11,22 @@ PLUGIN_EVENT(void) OnDoCast(CastedSpell const& spell)
 	if (Equals(args.Name_, IsSecondR)) forceR2 = false;*/
 
 	auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
-	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
-	{
-		processCombo(spell);
-		return;
-	}
-	if (GetAsyncKeyState(Burst_b->GetInteger()))
-	{
-		processBurst(spell);
-		return;
-	}
-	if (Enemy !=nullptr && spell.Caster_ == myHero && Enemy->IsHero()  && (GOrbwalking->GetOrbwalkingMode() == kModeMixed || GOrbwalking->GetOrbwalkingMode() == kModeCombo || GetAsyncKeyState(Burst_b->GetInteger())))
-	{
-		if (Hydra->Enabled())
+
+	if (Enemy != nullptr && spell.Caster_ == myHero && Enemy->IsHero() && (GOrbwalking->GetOrbwalkingMode() == kModeMixed || GOrbwalking->GetOrbwalkingMode() == kModeCombo))
+	{		
+		if (Q->IsReady() && ComboQ->Enabled())
 		{
-			
-				Titanic(Enemy);
-				GOrbwalking->ResetAA();
-			
-		}
-		if (Q->IsReady() && ComboQ->Enabled() && (!W->IsReady() || !ComboW->Enabled()))
-		{
-			if (myHero->IsValidTarget(Enemy, 385))
+			if (myHero->IsValidTarget(Enemy, 385) && haveitems())
+			{
 				if (_tiamat->Enabled() || RHydra->Enabled())
 				{
-					
-						Tiamat_hydra(Enemy);
-						GOrbwalking->ResetAA();
-					
+
+					Tiamat_hydra(Enemy);
+					GOrbwalking->ResetAA();
+					return;
 				}
-			if (Qstack == 1)
+			}
+			if (Qstack == 1 )
 			{
 				if (Enemy != nullptr && myHero->IsValidTarget(Enemy, Q->Range() + IsInAutoAttackRange(Enemy) + 75))
 				{
@@ -49,7 +35,7 @@ PLUGIN_EVENT(void) OnDoCast(CastedSpell const& spell)
 						GGame->PrintChat("ONATTACK_1");
 					}
 					Q->CastOnPosition(Enemy->ServerPosition());
-					
+					return;
 				}
 			}
 			if (Qstack == 2 )
@@ -61,7 +47,7 @@ PLUGIN_EVENT(void) OnDoCast(CastedSpell const& spell)
 						GGame->PrintChat("ONATTACK_2");
 					}
 					Q->CastOnPosition(Enemy->ServerPosition());
-					
+					return;
 				}
 			}
 			if (Qstack == 0 )
@@ -73,7 +59,7 @@ PLUGIN_EVENT(void) OnDoCast(CastedSpell const& spell)
 						GGame->PrintChat("ONATTACK_3");
 					}
 					Q->CastOnPosition(Enemy->ServerPosition());
-					
+					return;
 				}
 			}
 		}
@@ -87,15 +73,15 @@ PLUGIN_EVENT(void) OnDoCast(CastedSpell const& spell)
 		AutoAttack = true;
 		Q->CastOnPosition(Enemy->ServerPosition());
 		}*/
-		if (!AutoAttack && W->IsReady() && myHero->IsValidTarget(Enemy, Wrange) && 
+		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo && ComboW->Enabled() && !AutoAttack && W->IsReady() && myHero->IsValidTarget(Enemy, W->Range()) &&
 			(Qstack != 0 || Enemy->IsMelee() || Enemy->IsFacing(myHero) || !Q->IsReady() ||
-			myHero->HasBuff("RivenFeint")))
+				myHero->HasBuff("RivenFeint")))
 		{
 			if (Debug->Enabled())
 			{
 				GGame->PrintChat("W_OnDoCast");
 			}
 			W->CastOnPlayer();
-		}		
+		}
 	}
 }

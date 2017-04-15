@@ -8,7 +8,7 @@ int Width = 103;
 int Height = 8;
 
 PLUGIN_EVENT(void) OnRender()
-{	
+{
 	Vec4 color;
 	Vec4 colorw;
 	Vec4 colore;
@@ -21,13 +21,34 @@ PLUGIN_EVENT(void) OnRender()
 	rRangeColor->GetColor(&colorr);
 	dmgRangeColor->GetColor(&colordmg);
 	healRangeColor->GetColor(&colorheal);
+	if (DrawCombomode->Enabled())
+	{
+		Vec3 worldToScreen;
+		GGame->Projection(myHero->GetPosition(), &worldToScreen);
 
+		if (BurstMode == 0)
+		{
+			GRender->DrawTextW(Vec2(worldToScreen.x, worldToScreen.y), Vec4(255, 255, 0, 255), "Burst: Shy");
+		}
+		if (BurstMode == 1)
+		{
+			GRender->DrawTextW(Vec2(worldToScreen.x, worldToScreen.y), Vec4(255, 255, 0, 255), "Burst: Werhli (Enable R1)");
+		}
+		if (BurstMode == 2)
+		{
+			GRender->DrawTextW(Vec2(worldToScreen.x, worldToScreen.y), Vec4(255, 255, 0, 255), "Burst: Sexy (Enable R1)");
+		}
+		if (BurstMode == 3)
+		{
+			GRender->DrawTextW(Vec2(worldToScreen.x, worldToScreen.y), Vec4(255, 255, 0, 255), "Burst: NidaleeJR");
+		}
+	}
 	if (DrawReady->Enabled())
 	{
-		
+
 		if (Q->IsReady() && DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), color, Q->Range()); }
 
-		if (W->IsReady() && DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorw, Wrange); }
+		if (W->IsReady() && DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorw, W->Range()); }
 
 		if (E->IsReady() && DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colore, E->Range()); }
 
@@ -37,7 +58,7 @@ PLUGIN_EVENT(void) OnRender()
 	{
 		if (DrawQ->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), color, Q->Range()); }
 
-		if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorw, Wrange); }
+		if (DrawW->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorw, W->Range()); }
 
 		if (DrawE->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colore, E->Range()); }
 
@@ -48,7 +69,7 @@ PLUGIN_EVENT(void) OnRender()
 	{
 		if (enemy->IsDead() || !enemy->IsVisible())
 			continue;
-		
+
 		static IFont* pFont = nullptr;
 
 		if (pFont == nullptr)
@@ -84,7 +105,7 @@ PLUGIN_EVENT(void) OnRender()
 
 		if (Drawdmg->Enabled())
 		{
-			auto Damage =TotalDamage(enemy);
+			auto Damage = TotalDamage(enemy);
 			auto currentPercentage = ceil(Damage / enemy->GetHealth() * 100);
 
 			GRender->DrawTextW(Vec2(worldToScreen.x, worldToScreen.y), currentPercentage >= 100 ? Vec4(255, 255, 0, 255) : colordmg, currentPercentage >= 100 ? "Killable" : "%d (%.1f%%)", Damage, currentPercentage);
@@ -115,35 +136,7 @@ PLUGIN_EVENT(void) OnRender()
 					}
 				}
 			}
-			/*auto Damage = TotalDamage(enemy);
-
-			if (Damage > 0)
-			{
-				auto DamagePercentage = (enemy->GetHealth() - Damage) / enemy->GetMaxHealth();
-				auto missingHealthPercentage = 100 - enemy->GetHealth() / enemy->GetMaxHealth() * 100;
-
-				Vec2 barPosition;
-
-				if (enemy->GetHPBarPosition(barPosition))
-				{
-					if (strcmp(enemy->ChampionName(), "XinZhao") == 0)
-					{
-						auto startPoint = Vec2(barPosition.x + 10 + DamagePercentage * 104, barPosition.y + 22);
-						auto size = Vec2(104 - DamagePercentage * 104 - 104 * missingHealthPercentage / 100, 8.5f);
-						//auto color = healthbarcolor->GetColor();
-						GRender->DrawFilledBox(startPoint, size, Vec4(255, 239, 213, 255));
-					}
-					if (strcmp(enemy->ChampionName(), "XinZhao") != 0)
-					{
-						auto startPoint = Vec2(barPosition.x + 10 + DamagePercentage * 104, barPosition.y + 9);
-						auto size = Vec2(104 - DamagePercentage * 104 - 104 * missingHealthPercentage / 100, 8.5f);
-						//auto color = healthbarcolor->GetColor();
-						GRender->DrawFilledBox(startPoint, size, Vec4(255, 239, 213, 255));
-					}
-
-				}
-			}*/
 		}
 	}
 }
- 
+			

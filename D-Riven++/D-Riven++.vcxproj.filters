@@ -39,9 +39,6 @@
     <ClInclude Include="OnProcessSpellCast.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Burst.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Flee.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -70,6 +67,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="JungleClear.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Burst.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ShyCombo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="WerhliCombo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Sexy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="nidalee.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

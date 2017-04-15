@@ -155,6 +155,7 @@
     <ClInclude Include="JungleClear.h" />
     <ClInclude Include="killsteal.h" />
     <ClInclude Include="Laneclear.h" />
+    <ClInclude Include="nidalee.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="Extensions.h" />
     <ClInclude Include="Flee.h" />
@@ -164,8 +165,11 @@
     <ClInclude Include="AfterAttack.h" />
     <ClInclude Include="OnCast.h" />
     <ClInclude Include="OnProcessSpellCast.h" />
+    <ClInclude Include="Sexy.h" />
+    <ClInclude Include="ShyCombo.h" />
     <ClInclude Include="Spells.h" />
     <ClInclude Include="Ultilogic.h" />
+    <ClInclude Include="WerhliCombo.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D-Riven++.cpp" />

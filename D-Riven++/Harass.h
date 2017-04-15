@@ -24,7 +24,7 @@ inline void Harass()
 					Q->CastOnPosition(myHero->GetPosition().Extend(epos, E->Range()));
 				});
 			}
-			if (W->IsReady() && HarassW->Enabled() && myHero->IsValidTarget(Enemy, Wrange) && Qstack == 1)
+			if (W->IsReady() && HarassW->Enabled() && myHero->IsValidTarget(Enemy, W->Range()) && Qstack == 1)
 			{
 				W->CastOnPlayer();
 			}
@@ -59,7 +59,7 @@ inline void Harass()
 				GOrbwalking->GetLastTarget();
 			}
 
-			if (W->IsReady() && HarassW->Enabled() && myHero->IsValidTarget(Enemy, Wrange) && (!Q->IsReady() || Qstack == 1))
+			if (W->IsReady() && HarassW->Enabled() && myHero->IsValidTarget(Enemy, W->Range()) && (!Q->IsReady() || Qstack == 1))
 			{
 				W->CastOnPlayer();
 			}

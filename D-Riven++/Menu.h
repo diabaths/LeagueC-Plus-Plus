@@ -82,6 +82,10 @@ IMenuOption* eRangeColor;
 IMenuOption* rRangeColor;
 IMenuOption* dmgRangeColor;
 IMenuOption* healRangeColor;
+//IMenuOption* burstMode;
+IMenuOption* DrawCombomode;
+IMenuOption* BurstModeChange;
+
 
 
 IUnit* myHero;
@@ -103,18 +107,25 @@ int Q1Delay;
 int Q2Delay;
 int Q3Delay;
 int DelayAA;
+int BurstMode;
 float LastQ;
+float LastQJ;
 float LastE;
+float keyDown;
 bool AutoAttack;
 inline void  Menu()
 {
 	MainMenu = GPluginSDK->AddMenu("D-Riven++");
 
 	Debug = MainMenu->CheckBox("Enable Debug", false);
+
 	BurstMenu = MainMenu->AddMenu("Misc Menu");
 	Burst_b = BurstMenu->AddKey("Burst Combo", 75);
+	//burstMode = BurstMenu->AddSelection("Burst Mode:", 0, { "Shy", "Werhli" , "Sexy", "NidaleeJR" });
+	BurstModeChange = BurstMenu->AddKey("Change Burst Combo Mode", 84);
 	UseFlash = BurstMenu->CheckBox("Use Flash In Burst", true);
 	Flee_b = BurstMenu->AddKey("Flee", 76);
+
 	HarassMode = BurstMenu->AddSelection("Harass Mode:", 0, { "Smart", "Normal"});
 	QMenu = MainMenu->AddMenu("Q Settings");
 	ComboQ = QMenu->CheckBox("Use Q in combo", true);
@@ -122,8 +133,8 @@ inline void  Menu()
 	FarmQ = QMenu->CheckBox("Use Q in Laneclear", true);
 	JungleQ = QMenu->CheckBox("Use Q in JungleClear", true);
 	//AADelay = QMenu->AddInteger("AA Delay(if cancel AA play with this)", 150, 1000, 200);
-	QDelay1 = QMenu->AddInteger("Delay Q1", 50, 1000, 280);
-	QDelay2 = QMenu->AddInteger("Delay Q2", 50, 1000, 280);
+	QDelay1 = QMenu->AddInteger("Delay Q1", 50, 1000, 290);
+	QDelay2 = QMenu->AddInteger("Delay Q2", 50, 1000, 290);
 	QDelay3 = QMenu->AddInteger("Delay Q3", 50, 1000, 390);
 	AutoSetDelay = QMenu->CheckBox("Q Dealy Inlcude the Ping ?", true);
 	KeepQ = QMenu->CheckBox("Keep Q Alive", false);
@@ -151,7 +162,7 @@ inline void  Menu()
 	RMenu = MainMenu->AddMenu("R Settings");
 	ComboR = RMenu->CheckBox("Use R1 Combo", true);
 	DmgPercent = RMenu->AddInteger("Total Damage Percent to active R1", 100, 200, 130);
-	DmgPercentmin = RMenu->AddInteger("Dont Active R1 if Enemy HP% <", 1, 100, 30);
+	DmgPercentmin = RMenu->AddInteger("Dont Active R1 if Enemy HP% <", 1, 100, 5);
 	ComboR2 = RMenu->CheckBox("Use R2 Combo", true);
 	//ComboR2 = RMenu->AddSelection("Use R2 Mode:", 0, { "my Logic", "Only KillSteal", "First Cast", "Off" });
 	KillstealR = RMenu->CheckBox("Use R to killsteal", true);
@@ -180,10 +191,11 @@ inline void  Menu()
 	eRangeColor = Drawings->AddColor("E Range Color", 3.f, 252.f, 19.f, 255.f);
 	DrawR = Drawings->CheckBox("Draw R", false);
 	rRangeColor = Drawings->AddColor("R Range Color", 3.f, 252.f, 19.f, 255.f);
-	Drawdmg = Drawings->CheckBox("Draw Damage (Percent)", true);
+	Drawdmg = Drawings->CheckBox("Draw Damage (Percent)", false);
 	dmgRangeColor = Drawings->AddColor("Damage (Percent) Color", 3.f, 252.f, 19.f, 255.f);
-	Drawhealthbar = Drawings->CheckBox("Draw Damage (Healthbar)", true);
+	Drawhealthbar = Drawings->CheckBox("Draw Damage (Healthbar)", false);
 	healRangeColor = Drawings->AddColor("Damage (Healthbar) Color", 3.f, 252.f, 19.f, 255.f);
+	DrawCombomode = Drawings->CheckBox("Draw Combo Mode", true); 
 	
 		
 }

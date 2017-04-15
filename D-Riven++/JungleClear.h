@@ -17,7 +17,7 @@ inline void jungleclear()
 				}
 			}
 		}
-		if (JungleQ->Enabled() && Q->IsReady() && !AutoAttack)
+		if (JungleQ->Enabled() && Q->IsReady() && GGame->TickCount() - LastQ > 700)
 		{
 			if (jMinion != nullptr && !jMinion->IsDead() && myHero->IsValidTarget(jMinion, Q->Range()))
 			{

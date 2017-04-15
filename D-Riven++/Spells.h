@@ -10,15 +10,16 @@ ISpell2* R2;
 ISpell* Ignite;
 ISpell* Flash;
 
-float Wrange;
+//float Wrange;
 
 inline void LoadSpells()
 {
 	Q = GPluginSDK->CreateSpell2(kSlotQ, kTargetCast, false, true, static_cast<eCollisionFlags>(kCollidesWithNothing));
 	Q->SetOverrideRange(260);
+	Q->SetOverrideRadius(FLT_MAX);
 
 	W = GPluginSDK->CreateSpell2(kSlotW, kTargetCast, true, true, static_cast<eCollisionFlags>(kCollidesWithNothing));
-	W->SetOverrideRange(Wrange);
+	W->SetOverrideRange(265);
 
 	E = GPluginSDK->CreateSpell2(kSlotE, kLineCast, true, false, static_cast<eCollisionFlags> (kCollidesWithYasuoWall | kCollidesWithMinions));
 	E->SetSkillshot(0.f, 0.f, 1450.f, 325.f);

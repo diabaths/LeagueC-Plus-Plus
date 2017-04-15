@@ -20,7 +20,7 @@ static bool isR2()
 }
 static bool R1Logic(IUnit* target)
 {
-	if (!myHero->IsValidTarget(target, 500) || !isR1() || !ComboR->Enabled() || target->HealthPercent() <= DmgPercentmin->GetInteger())
+	if (!myHero->IsValidTarget(target, R2->Range()) || !isR1() || !ComboR->Enabled() || target->HealthPercent() <= DmgPercentmin->GetInteger())
 	{
 		return false;
 	}
@@ -43,7 +43,7 @@ static bool R2Logic(IUnit* target)
 		if (end - GGame->Time() <= 0.1 * (end - start) || target->HealthPercent() < 20 || (target->GetHealth() > dmg + dmg1 * 2 && target->HealthPercent() < 40) ||
 			(target->GetHealth() <= dmg || (target->GetHealth() <= TotalDamage(target))))
 		{
-			return R2->CastOnPosition(target->GetPosition());
+			return R2->CastOnTarget(target, kHitChanceHigh);
 		}
 
 	return false;
