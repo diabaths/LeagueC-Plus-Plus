@@ -51,6 +51,10 @@ IMenuOption* DrawQ;
 IMenuOption* DrawW;
 IMenuOption* DrawE;
 IMenuOption* DrawR;
+IMenuOption* ComboRCC;
+IMenuOption* HarassRCC;
+IMenuOption* Wally;
+IMenuOption* manaally;
 
 IUnit* myHero;
 
@@ -83,6 +87,7 @@ void  Menu()
 	ComboW = ComboMenu->CheckBox("Use W", true);
 	ComboR = ComboMenu->CheckBox("Use R if Is killable", true);
 	ComboRAOEuse = ComboMenu->CheckBox("Use R if hit 3 Enemys", false);
+	ComboRCC = ComboMenu->CheckBox("Use R during CC ", true);
 	//ComboRAOE = ComboMenu->AddInteger("Use R if hit X Enemys", 1, 5, 3);
 
 
@@ -94,6 +99,8 @@ void  Menu()
 		ChampionuseQ[Enemys->GetNetworkId()] = HarassMenu->CheckBox(szMenuName.c_str(), false);
 	}
 	HarassW = HarassMenu->CheckBox("Use W", true);
+	HarassRCC = ComboMenu->CheckBox("Use R during CC ", true);
+
 	HarassManaPercent = HarassMenu->AddInteger("Mana Percent for harass", 10, 100, 70);
 	Drawings = MainMenu->AddMenu("Drawings");
 
@@ -108,6 +115,8 @@ void  Menu()
 
 	MiscMenu = MainMenu->AddMenu("Misc Setting");
 	//SemiR = MiscMenu->AddKey("Semi-Manual R", 84);
+	Wally = MiscMenu->CheckBox("W on Ally To Push Tower", true);
+	manaally = MiscMenu->AddInteger("Mana Percentto Use W in ally", 10, 100, 70);
 	StackTear = MiscMenu->CheckBox("Stack Tear", true);
 	StackManaPercent = MiscMenu->AddInteger("Mana Percent To Stuck", 10, 100, 95);
 	//UseIgnitekillsteal = MiscMenu->CheckBox("Use Ignite to killsteal", false);
@@ -163,6 +172,17 @@ void LoadSpells()
 	RefillPot = GPluginSDK->CreateItemForId(2031, 0);
 	Biscuit = GPluginSDK->CreateItemForId(2010, 0);
 	hunter = GPluginSDK->CreateItemForId(2032, 0);
+}
+static bool CanMoveMent(IUnit* Source)
+{
+	if (!Source->HasBuffOfType(BUFF_Stun) && !Source->HasBuffOfType(BUFF_Fear) && !Source->HasBuffOfType(BUFF_Snare)
+		&& !Source->HasBuffOfType(BUFF_Knockup) && !Source->IsRecalling() && !Source->HasBuffOfType(BUFF_Knockback)
+		&& !Source->HasBuffOfType(BUFF_Charm) && !Source->HasBuffOfType(BUFF_Taunt) &&
+		!Source->HasBuffOfType(BUFF_Suppression) || Source->IsMoving())
+	{
+		return true;
+	}
+	return false;
 }
 
 static bool InFountain(IUnit *unit)
@@ -278,7 +298,7 @@ void Combo()
 		}
 	}
 
-	if (ComboR->Enabled() && R->IsReady())
+	if (ComboR->Enabled())
 	{
 		for (auto Enemy : GEntityList->GetAllHeros(false, true))
 		{
@@ -288,7 +308,11 @@ void Combo()
 				if (myHero->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable()
 					&& !myHero->IsValidTarget(Enemy, Q->Range()))
 				{
-					if (Enemy->GetHealth() <= dmg && R->IsReady())
+					if (R->IsReady() && Enemy->GetHealth() <= dmg && R->IsReady())
+					{
+						R->CastOnTarget(Enemy, kHitChanceHigh);
+					}
+					if (!CanMoveMent(Enemy) && ComboRCC->Enabled())
 					{
 						R->CastOnTarget(Enemy, kHitChanceHigh);
 					}
@@ -315,6 +339,8 @@ void lasthit()
 {
 	if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
 	{
+		if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
+			return;
 		for (auto minions : GEntityList->GetAllMinions(false, true, false))
 		{
 			if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))
@@ -369,6 +395,26 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 			}
 		}
 	}
+	if (Wally->Enabled() && myHero->ManaPercent() > manaally->GetInteger())
+	{
+		for (auto turrent : GEntityList->GetAllTurrets(false, true))
+		{
+			if (turrent != nullptr && myHero->IsValidTarget(turrent, myHero->GetRealAutoAttackRange(turrent)) && turrent->GetHealth() >= 100 && CountEnemiesInRange(1000) == 0)
+			{
+				GGame->PrintChat("stage1");
+				for (auto ally : GEntityList->GetAllHeros(true, false))
+				{
+					GGame->PrintChat("stage2");
+
+					if (ally != myHero && W->IsReady() && myHero->IsValidTarget(ally, 600))
+						GGame->PrintChat("stage3");
+
+					W->CastOnPosition(ally->GetPosition());
+					return;
+				}
+			}
+		}
+	}
 }
 void Harass()
 {
@@ -402,6 +448,15 @@ void Harass()
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
 			if (myHero->IsValidTarget(target, W->Range()))
 				W->CastOnTarget(target, kHitChanceHigh);
+		}
+	}
+	if (HarassRCC->Enabled())
+	{
+		if (R->IsReady())
+		{
+			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
+			if (myHero->IsValidTarget(target, R->Range()) && !CanMoveMent(target))
+				R->CastOnTarget(target, kHitChanceHigh);
 		}
 	}
 }
@@ -507,7 +562,8 @@ void Usepotion()
 		}
 	}
 }
-		
+
+
 PLUGIN_EVENT(void) OnRender()
 {
 	if (DrawReady->Enabled())
@@ -527,6 +583,7 @@ PLUGIN_EVENT(void) OnRender()
 		if (DrawR->Enabled()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), Vec4(255, 255, 0, 255), R->Range()); }
 	}
 }
+
 
 /*void SkinChanger()
 {
@@ -571,6 +628,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	stucktear();
 	Usepotion();
 	lasthit();
+	
 }
 
 PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)

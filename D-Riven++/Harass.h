@@ -5,7 +5,7 @@
 inline void Harass()
 {
 	auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
-	if (Enemy != nullptr)
+	if (Enemy != nullptr && !Enemy->IsDead())
 	{
 		if (HarassMode->GetInteger() == 0)
 		{
@@ -21,7 +21,10 @@ inline void Harass()
 				{
 					auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
 					auto epos = myHero->GetPosition() + (myHero->GetPosition() - Enemy->GetPosition()).VectorNormalize() * E->Range();
-					Q->CastOnPosition(myHero->GetPosition().Extend(epos, E->Range()));
+					if (Enemy != nullptr && !Enemy->IsDead())
+					{
+						Q->CastOnPosition(myHero->GetPosition().Extend(epos, E->Range()));
+					}
 				});
 			}
 			if (W->IsReady() && HarassW->Enabled() && myHero->IsValidTarget(Enemy, W->Range()) && Qstack == 1)
