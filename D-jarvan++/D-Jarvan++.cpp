@@ -116,7 +116,7 @@ void  Menu()
 	ComboW = ComboMenu->CheckBox("Use W", true);
 	ComboE = ComboMenu->CheckBox("Use E", true);
 	ComboR = ComboMenu->CheckBox("Use R", true);
-	ComboRAOEuse = ComboMenu->CheckBox("Use R if Hit 3 Enemys", true);
+	//ComboRAOEuse = ComboMenu->CheckBox("Use R if Hit 3 Enemys", true);
 
 	HarassMenu = MainMenu->AddMenu("Harass Setting");
 	Harassitems = HarassMenu->CheckBox("Use Items Jungle", true);
@@ -414,13 +414,16 @@ void Combo()
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, E->Range());
 			if (myHero->IsValidTarget(target, E->Range()) && target != nullptr)
 			{
-				auto Rstartcast = target->ServerPosition() ;
-				 AdvPredictionOutput prediction_output;
-				E->RunPrediction(target, true, kCollidesWithNothing, &prediction_output);
-				if (prediction_output.HitChance >= kHitChanceHigh)
-					E->CastFrom(Rstartcast, prediction_output.CastPosition);
-				Q->CastOnPosition(target->ServerPosition());
-
+				AdvPredictionOutput prediction_output;
+				E->RunPrediction(target, true, kCollidesWithYasuoWall | kCollidesWithMinions, &prediction_output);
+				if (E->IsReady() && prediction_output.HitChance >= kHitChanceHigh)
+				{
+					Vec3 Enemypos;
+					//auto Rstartcast = target->ServerPosition().Extend(target->ServerPosition(), 50);
+					GPrediction->GetFutureUnitPosition(target, 0.5, true, Enemypos);
+					E->CastOnPosition(Enemypos);
+					Q->CastOnPosition(Enemypos);
+				}
 			}
 		}
 	}
@@ -474,25 +477,26 @@ void Combo()
 		auto Enemy = GTargetSelector->GetFocusedTarget();
 		if (myHero->IsValidTarget(Enemy, R->Range()) && Enemy != nullptr)
 		{
+			//auto dmg = GDamage->GetSpellDamage(myHero, Enemy, kSlotQ);
 			auto Rlvl = GEntityList->Player()->GetSpellLevel(kSlotR) - 1;
 			auto BaseDamage = std::vector<double>({ 200, 325, 450 }).at(Rlvl);
 			auto ADMultiplier = 1.5 * GEntityList->Player()->TotalPhysicalDamage();
 			auto dmg = GDamage->GetSpellDamage(myHero, Enemy, kSlotQ);
 			auto TotalD = BaseDamage + ADMultiplier;
-			if (!Enemy->IsInvulnerable() && Enemy->GetHealth() < TotalD + dmg)
+			if (!Enemy->IsInvulnerable() && Enemy->GetHealth() < TotalD+ dmg)
 			{
 				R->CastOnTarget(Enemy);
 			}
 		}
 	}
-	if (R->IsReady() && ComboRAOEuse->Enabled())
+	/*if (R->IsReady() && ComboRAOEuse->Enabled())
 	{
 		for (auto target : GEntityList->GetAllHeros(false, true))
 			if (target != nullptr &&  myHero->IsValidTarget(target, R->Range()))
 			{
 				R->CastOnTargetAoE(target, 3, kHitChanceLow);
 			}
-	}
+	}*/
 }
 void Forest()
 {
@@ -651,7 +655,7 @@ void Harass()
 			}
 		}
 	}
-	
+
 	if (myHero->ManaPercent() < HarassManaPercent->GetInteger())
 		return;
 	if (HarassQ->Enabled())
@@ -661,10 +665,7 @@ void Harass()
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
 			if (myHero->IsValidTarget(target, Q->Range()) && target != nullptr)
 			{
-				AdvPredictionOutput prediction_output;
-				Q->RunPrediction(target, true, kCollidesWithYasuoWall, &prediction_output);
-				if (prediction_output.HitChance >= kHitChanceHigh)
-					Q->CastOnTarget(target);
+				Q->CastOnTarget(target, kHitChanceHigh);
 			}
 		}
 	}
@@ -675,11 +676,9 @@ void Harass()
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, E->Range());
 			if (target != nullptr)
 			{
-				if (myHero->IsValidTarget(target, E->Range())) {
-					AdvPredictionOutput prediction_output;
-					E->RunPrediction(target, true, kCollidesWithNothing, &prediction_output);
-					if (prediction_output.HitChance >= kHitChanceHigh)
-						E->CastOnTarget(target);
+				if (myHero->IsValidTarget(target, E->Range()))
+				{
+					E->CastOnTarget(target, kHitChanceHigh);
 				}
 			}
 		}
@@ -694,11 +693,16 @@ void Harass()
 				if (myHero->IsValidTarget(target, E->Range()) && target != nullptr)
 				{
 					AdvPredictionOutput prediction_output;
-					E->RunPrediction(target, true, kCollidesWithNothing, &prediction_output);
-					if (prediction_output.HitChance >= kHitChanceHigh)
-						E->CastOnPosition(target->ServerPosition());
-					Q->CastOnPosition(target->ServerPosition());
+					E->RunPrediction(target, true, kCollidesWithYasuoWall | kCollidesWithMinions, &prediction_output);
+					if (E->IsReady() && prediction_output.HitChance >= kHitChanceHigh)
+					{
+						Vec3 Enemypos;
+						//auto Rstartcast = target->ServerPosition().Extend(target->ServerPosition(), 50);
+						GPrediction->GetFutureUnitPosition(target, 0.5, true, Enemypos);
+						E->CastOnPosition(Enemypos);
+						Q->CastOnPosition(Enemypos);
 
+					}
 				}
 			}
 		}
