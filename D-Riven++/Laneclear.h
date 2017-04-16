@@ -34,7 +34,7 @@ inline void laneclear()
 					Q->CastOnPosition(GGame->CursorPosition());
 					return;
 				}
-				if (minions->GetHealth() < dmg && GGame->TickCount() - LastQ > 500)
+				if (minions->GetHealth() < dmg && GGame->TickCount() - LastQ > 700)
 				{
 					Q->CastOnPosition(GGame->CursorPosition());
 						return;
@@ -51,12 +51,10 @@ inline void laneclear()
 			auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotW);
 			if (minions != nullptr && myHero->IsValidTarget(minions, W->Range()))
 			{
-				int MinionW = 0;
-				if (minions->IsValidTarget(myHero, W->Range()))
-				{
-					MinionW++;
-				}
-				if (MinionW >= 3)
+				Vec3 pos;
+				int Whit;
+				GPrediction->FindBestCastPosition(W->Range(), W->Radius(), false, true, false, pos, Whit);
+				if (Whit >= 3)
 				{
 					W->CastOnPlayer();
 					return;

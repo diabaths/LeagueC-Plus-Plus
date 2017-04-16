@@ -68,7 +68,7 @@ inline int CountEnemiesInRange(float range)
 	}
 	return enemies;
 }
-
+//Credits to hoola and Synx
 static void ResetQ1()
 {
 	GOrbwalking->ResetAA();
@@ -79,6 +79,7 @@ static void ResetQ1()
 		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
 	});
 }
+//Credits to hoola and Synx
 static void ResetQ2()
 {
 	GOrbwalking->ResetAA();
@@ -89,6 +90,8 @@ static void ResetQ2()
 		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
 	});
 } //myHero->GetPosition().Extend(GGame->CursorPosition(), GetDistanceVectors(myHero->GetPosition(), GGame->CursorPosition()) + 10)
+  //Credits to hoola and Synx
+
 static void ResetQ3()
 {
 	GOrbwalking->ResetAA();
@@ -99,7 +102,7 @@ static void ResetQ3()
 		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
 	});
 }
-
+//Credits to hoola and Synx
 static void ResetW()
 {
 	GOrbwalking->ResetAA();
@@ -109,6 +112,8 @@ static void ResetW()
 			//	GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
 	});
 }
+//Credits to hoola and Synx
+
 static void ResetR1()
 {
 	GOrbwalking->ResetAA();
@@ -119,6 +124,7 @@ static void ResetR1()
 		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
 	});
 }
+//Credits to hoola and Synx
 static void ResetR2()
 {
 	GOrbwalking->ResetAA();
