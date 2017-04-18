@@ -307,6 +307,7 @@ Vec2 Perpendicular(Vec2 v)
 {
 	return Vec2(-v.y, v.x);
 }
+
 //Dewblackio2 logic from Victor
 void CastR(IUnit* target)
 {

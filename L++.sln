@@ -31,6 +31,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "L++ SDK", "L++ SDK\L++ SDK.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D-Lucian++", "D-Lucian++\D-Lucian++.vcxproj", "{9C8011F5-66EE-42A0-BE3F-AD89AED524E1}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D-Diana++", "D-Diana++\D-Diana++.vcxproj", "{817E5ACD-378E-4DCA-B409-D7B8080B59E8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -151,6 +153,14 @@ Global
 		{9C8011F5-66EE-42A0-BE3F-AD89AED524E1}.Release|x64.Build.0 = Release|x64
 		{9C8011F5-66EE-42A0-BE3F-AD89AED524E1}.Release|x86.ActiveCfg = Release|Win32
 		{9C8011F5-66EE-42A0-BE3F-AD89AED524E1}.Release|x86.Build.0 = Release|Win32
+		{817E5ACD-378E-4DCA-B409-D7B8080B59E8}.Debug|x64.ActiveCfg = Debug|x64
+		{817E5ACD-378E-4DCA-B409-D7B8080B59E8}.Debug|x64.Build.0 = Debug|x64
+		{817E5ACD-378E-4DCA-B409-D7B8080B59E8}.Debug|x86.ActiveCfg = Debug|Win32
+		{817E5ACD-378E-4DCA-B409-D7B8080B59E8}.Debug|x86.Build.0 = Debug|Win32
+		{817E5ACD-378E-4DCA-B409-D7B8080B59E8}.Release|x64.ActiveCfg = Release|x64
+		{817E5ACD-378E-4DCA-B409-D7B8080B59E8}.Release|x64.Build.0 = Release|x64
+		{817E5ACD-378E-4DCA-B409-D7B8080B59E8}.Release|x86.ActiveCfg = Release|Win32
+		{817E5ACD-378E-4DCA-B409-D7B8080B59E8}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
