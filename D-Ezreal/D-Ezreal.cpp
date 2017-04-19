@@ -378,7 +378,7 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 				{
 					if (MinionDie > 1)
 						Q->CastOnUnit(minions) || Q->LastHitMinion();
-				}				
+				}
 			}
 		}
 
@@ -401,16 +401,13 @@ PLUGIN_EVENT(void) OnAfterAttack(IUnit* source, IUnit* target)
 		{
 			if (turrent != nullptr && myHero->IsValidTarget(turrent, myHero->GetRealAutoAttackRange(turrent)) && turrent->GetHealth() >= 100 && CountEnemiesInRange(1000) == 0)
 			{
-				GGame->PrintChat("stage1");
 				for (auto ally : GEntityList->GetAllHeros(true, false))
 				{
-					GGame->PrintChat("stage2");
-
 					if (ally != myHero && W->IsReady() && myHero->IsValidTarget(ally, 600))
-						GGame->PrintChat("stage3");
-
-					W->CastOnPosition(ally->GetPosition());
-					return;
+					{
+						W->CastOnPosition(ally->GetPosition());
+						return;
+					}
 				}
 			}
 		}

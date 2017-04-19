@@ -10,7 +10,7 @@ inline void laneclear()
 		if (Q->IsReady() && !minions->IsWard())
 		{
 			auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
-			if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range()) && !minions->IsWard())
+			if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range())) //&& !minions->IsWard())
 			{
 				Vec3 pos;
 				int Qhit;
