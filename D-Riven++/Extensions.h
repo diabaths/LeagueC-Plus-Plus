@@ -89,7 +89,9 @@ static void ResetQ2()
 		GGame->IssueOrder(myHero, kAttackTo, GOrbwalking->GetLastTarget());
 		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
 	});
-} //myHero->GetPosition().Extend(GGame->CursorPosition(), GetDistanceVectors(myHero->GetPosition(), GGame->CursorPosition()) + 10)
+} 
+//GOrbwalking->Orbwalk(Enemy, GGame->CursorPosition());
+//myHero->GetPosition().Extend(GGame->CursorPosition(), GetDistanceVectors(myHero->GetPosition(), GGame->CursorPosition()) + 10)
   //Credits to hoola and Synx
 
 static void ResetQ3()

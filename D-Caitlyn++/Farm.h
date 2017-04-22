@@ -12,14 +12,18 @@ inline void laneclear()
 			auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
 			if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range())) //&& !minions->IsWard())
 			{
-				Vec3 pos;
+				/*Vec3 pos;
 				int Qhit;
 				GPrediction->FindBestCastPosition(Q->Range(), Q->Radius(), false, true, false, pos, Qhit);
 				if (FarmQ->Enabled() && Qhit >= minminions->GetInteger())
 				{
 					Q->CastOnPosition(pos);
 					return;
-				}				
+				}	*/
+				if (FarmQ->Enabled())
+				{
+					Q->AttackMinions(4);
+				}
 				if (LastHitQ->Enabled() && minions->GetHealth() < dmg && GetDistance(myHero, minions) > myHero->AttackRange())
 				{
 					Q->CastOnUnit(minions);

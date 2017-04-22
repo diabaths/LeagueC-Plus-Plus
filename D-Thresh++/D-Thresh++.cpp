@@ -751,6 +751,7 @@ PLUGIN_EVENT(void) OnInterruptable(InterruptibleSpell const& Args)
 }
 PLUGIN_EVENT(void) OnGameUpdate()
 {
+	if (GGame->IsChatOpen() || myHero->IsDead() || myHero->IsRecalling()) return;
 	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 	{
 		Combo();
