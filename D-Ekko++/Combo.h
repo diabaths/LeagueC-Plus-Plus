@@ -65,17 +65,7 @@ inline void Combo()
 			if (Rpos != nullptr)
 			{
 				if (Enemy->GetHealth() < TotalDamage(Enemy))
-				{
-					if (ComboW->Enabled() && W->IsReady())
-					{
-						if (GetDistance(Rpos->GetPosition(), myHero->GetPosition()) <= W->Range())
-						{
-							if (W->CastOnPosition(Rpos->GetPosition()))
-							{
-								R->CastOnPlayer();
-							}
-						}
-					}
+				{					
 					if (Enemy->IsValidTarget(Rpos, R->Range()))
 					{
 						if (GetDistance(Rpos, Enemy) <= R->Range())
