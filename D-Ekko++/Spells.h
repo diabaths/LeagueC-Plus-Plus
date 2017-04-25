@@ -4,7 +4,7 @@
 inline void LoadSpells()
 {	
 	Q = GPluginSDK->CreateSpell2(kSlotQ, kLineCast, true, true, static_cast<eCollisionFlags>(kCollidesWithYasuoWall));
-	Q->SetSkillshot(0.25f, 60.f, 1650.f, 1075.f);
+	Q->SetSkillshot(0.25f, 60.f, 1650.f, 950.f);
 
 	W = GPluginSDK->CreateSpell2(kSlotW, kCircleCast, true, true, static_cast<eCollisionFlags>(kCollidesWithNothing));
 	W->SetSkillshot(3.75f, 200.f, 1650, 1600.f);
@@ -13,7 +13,7 @@ inline void LoadSpells()
 	E->SetOverrideRange(325);
 
 	R = GPluginSDK->CreateSpell2(kSlotR, kCircleCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
-	R->SetSkillshot(0.4f, 280.f, FLT_MAX, 400.f);
+	R->SetSkillshot(0.25f, 375.f, FLT_MAX, 280.f);
 	
 	auto slot1 = GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot1);
 	auto slot2 = GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot2);

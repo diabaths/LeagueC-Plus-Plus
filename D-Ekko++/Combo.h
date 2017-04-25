@@ -37,11 +37,9 @@ inline void Combo()
 				AdvPredictionOutput QPred;
 				Q->RunPrediction(Enemy, true, kCollidesWithNothing, &QPred);
 
-				if (QPred.HitChance >= kHitChanceHigh)
+				if (QPred.HitChance >= kHitChanceVeryHigh)
 				{
-					Vec3 Enemypos;
-					GPrediction->GetFutureUnitPosition(Enemy, 0.5, true, Enemypos);
-					Q->CastOnPosition(Enemypos);
+					Q->CastOnUnit(Enemy);
 				}
 			}
 		}
