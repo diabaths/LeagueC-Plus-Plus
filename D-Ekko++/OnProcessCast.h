@@ -34,7 +34,7 @@ PLUGIN_EVENT(void) OnProcessCast(CastedSpell const& spell)
 			if (slot != kSlotUnknown)
 			{				
 				auto spelldmg = GDamage->GetSpellDamage(spell.Caster_, spell.Target_, slot) *2;
-				if (CountEnemiesInRange(W->Range()) > 0 && (myHero->GetHealth() < spelldmg || myHero->HealthPercent() < 2))
+				if (CountEnemiesInRange(W->Range()) > 0 && (myHero->GetHealth() < spelldmg || myHero->HealthPercent() < 4))
 				{					
 					if (Usezhonyas->Enabled() && zhonyas->IsOwned() && zhonyas->IsReady())
 					{

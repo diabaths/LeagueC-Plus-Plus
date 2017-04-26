@@ -16,7 +16,7 @@ PLUGIN_EVENT(void) OnCast(CastedSpell const& spell)
 			return;
 				
 		auto attackdmg = GDamage->GetAutoAttackDamage(spell.Caster_, spell.Target_, true)*2;
-		if (CountEnemiesInRange(W->Range()) > 0 && (myHero->HealthPercent() < 2 || myHero->GetHealth() < attackdmg))
+		if (CountEnemiesInRange(W->Range()) > 0 && (myHero->HealthPercent() < 4 || myHero->GetHealth() < attackdmg))
 		{
 			if (Usezhonyas->Enabled() && zhonyas->IsOwned() && zhonyas->IsReady())
 			{
