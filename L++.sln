@@ -35,6 +35,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D-Diana++", "D-Diana++\D-Di
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D-Ekko++", "D-Ekko++\D-Ekko++.vcxproj", "{D9910794-5FF7-406A-9959-A5F962848C71}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "D-Vladimir++", "D-Vladimir++\D-Vladimir++.vcxproj", "{CEFA3DDC-4E23-4E59-AE43-490728EA9F99}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -171,6 +173,14 @@ Global
 		{D9910794-5FF7-406A-9959-A5F962848C71}.Release|x64.Build.0 = Release|x64
 		{D9910794-5FF7-406A-9959-A5F962848C71}.Release|x86.ActiveCfg = Release|Win32
 		{D9910794-5FF7-406A-9959-A5F962848C71}.Release|x86.Build.0 = Release|Win32
+		{CEFA3DDC-4E23-4E59-AE43-490728EA9F99}.Debug|x64.ActiveCfg = Debug|x64
+		{CEFA3DDC-4E23-4E59-AE43-490728EA9F99}.Debug|x64.Build.0 = Debug|x64
+		{CEFA3DDC-4E23-4E59-AE43-490728EA9F99}.Debug|x86.ActiveCfg = Debug|Win32
+		{CEFA3DDC-4E23-4E59-AE43-490728EA9F99}.Debug|x86.Build.0 = Debug|Win32
+		{CEFA3DDC-4E23-4E59-AE43-490728EA9F99}.Release|x64.ActiveCfg = Release|x64
+		{CEFA3DDC-4E23-4E59-AE43-490728EA9F99}.Release|x64.Build.0 = Release|x64
+		{CEFA3DDC-4E23-4E59-AE43-490728EA9F99}.Release|x86.ActiveCfg = Release|Win32
+		{CEFA3DDC-4E23-4E59-AE43-490728EA9F99}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -51,6 +51,7 @@ IMenuOption* wRangeColor;
 IMenuOption* eRangeColor;
 IMenuOption* rRangeColor;
 IMenuOption* harassFarmQ;
+IMenuOption* RMinenemies;
 
 IUnit* myHero;
 
@@ -106,7 +107,8 @@ inline void  Menu()
 	RMenu = MainMenu->AddMenu("R Settings");
 	ComboR = RMenu->CheckBox("Use R Combo", true);
 	KillstealR = RMenu->CheckBox("Use R to killsteal", true);
-	RMin = RMenu->AddInteger("MMIn Distance to Use R", 10, 3000, 1500);
+	RMin = RMenu->AddInteger("MIn Distance to Use R", 10, 3000, 1500);
+	RMinenemies = RMenu->AddInteger("Min Distance check enemies Around to Use R", 400, 1500, 800);
 
 	ManaMenu = MainMenu->AddMenu("Mana Settings");
 	HarassManaPercent = ManaMenu->AddInteger("Mana Percent for harass", 10, 100, 70);

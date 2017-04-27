@@ -19,7 +19,10 @@ inline float TotalDamage(IUnit* target)
 	{
 		damage += GDamage->GetSpellDamage(myHero, target, kSlotW);
 	}
-
+	if (E->IsReady())
+	{
+		damage += GDamage->GetSpellDamage(myHero, target, kSlotE);
+	}
 	if (R->IsReady())
 	{
 		damage += GDamage->GetSpellDamage(myHero, target, kSlotR);

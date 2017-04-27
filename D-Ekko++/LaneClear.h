@@ -12,13 +12,13 @@ inline void laneclear()
 			if (Q->IsReady())
 			{
 				auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
-				if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))
+				if (FarmQ->Enabled() && minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))
 				{
 
-					Q->AttackMinions(3);
+					Q->CastOnUnit(minions);
 					return;
 				}
-				if (FarmQ->Enabled() && minions->GetHealth() < dmg && !myHero->GetRealAutoAttackRange(minions))
+				if (LastHitQ->Enabled() && minions->GetHealth() < dmg)
 				{
 					Q->CastOnUnit(minions);
 					return;
