@@ -15,7 +15,7 @@ inline void laneclear()
 				if (FarmQ->Enabled() && minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))
 				{
 
-					Q->CastOnUnit(minions);
+					Q->AttackMinions(3);
 					return;
 				}
 				if (LastHitQ->Enabled() && minions->GetHealth() < dmg)
