@@ -9,16 +9,16 @@ inline void laneclear()
 		{
 			if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
 				return;
-			if (Q->IsReady())
+			if (Q->IsReady() && FarmQ->Enabled())
 			{
 				auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
-				if (FarmQ->Enabled() && minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))
+				if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))
 				{
 
 					Q->AttackMinions(3);
 					return;
 				}
-				if (LastHitQ->Enabled() && minions->GetHealth() < dmg)
+				if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range()) && minions->GetHealth() < dmg)
 				{
 					Q->CastOnUnit(minions);
 					return;
