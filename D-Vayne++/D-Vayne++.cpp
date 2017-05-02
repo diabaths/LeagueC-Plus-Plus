@@ -87,8 +87,6 @@ void  Menu()
 	
 
 	Emenu = MainMenu->AddMenu("E Settings");
-	I1 = Emenu->AddInteger("I1", 10, 100, 15);
-	I2 = Emenu->AddInteger("I2", 10, 150, 100);
 	UseEC = Emenu->CheckBox("Use E Combo", true);
 	UseEH = Emenu->CheckBox("Use E Harass", true);
 	KillstealE = Emenu->CheckBox("Use E Killsteal", true);

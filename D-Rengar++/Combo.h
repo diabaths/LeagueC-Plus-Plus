@@ -36,6 +36,6 @@ inline void Combo(CastedSpell const& spell)
 	}
 	if (ComboMode == 2)
 	{
-		RETWQ();
+		RETWQ(spell);
 	}
 }
