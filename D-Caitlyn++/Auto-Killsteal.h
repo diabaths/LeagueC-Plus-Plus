@@ -23,12 +23,12 @@ inline void killsteal()
 	{
 		if (Enemy != nullptr && !Enemy->IsDead())
 		{
-			if (KillstealQ->Enabled() && Q->IsReady())
+			if (KillstealQ->Enabled() && Q->IsReady() && !Enemy->IsWard())
 			{
 				auto dmg = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotQ);
 				if (myHero->IsValidTarget(Enemy, Q->Range()) && !Enemy->IsInvulnerable())
 				{
-					if (Enemy->GetHealth() <= dmg)
+					if (Enemy->GetHealth() <= dmg )
 					{
 						Q->CastOnTarget(Enemy, kHitChanceHigh);
 					}

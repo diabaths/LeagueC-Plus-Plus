@@ -1,0 +1,109 @@
+#pragma once
+#include "Extension.h"
+#include "Damage.h"
+
+
+int xOffset = 10;
+int yOffset = 15;
+int Width = 103;
+int Height = 8;
+PLUGIN_EVENT(void) OnRender()
+{
+	Vec4 color;
+	Vec4 colorb;
+	Vec4 colore;
+	Vec4 colorr;
+	qRangeColor->GetColor(&color);
+	eRangeColor->GetColor(&colore);
+	rRangeColor->GetColor(&colorr);
+	bRangeColor->GetColor(&colorb);
+	/*if (DrawCombomode->Enabled())
+	{
+	Vec3 worldToScreen;
+	GGame->Projection(myHero->GetPosition(), &worldToScreen);
+
+	if (mode == 0)
+	{
+	GRender->DrawTextW(Vec2(worldToScreen.x, worldToScreen.y), Vec4(255, 255, 0, 255), "Combo:Q-R");
+	}
+	if (mode == 1)
+	{
+	GRender->DrawTextW(Vec2(worldToScreen.x, worldToScreen.y), Vec4(255, 255, 0, 255), "Combo:R-Q");
+	}
+	}*/
+	if(Burstdraw->Enabled())
+	{
+		if(Flash->IsReady() && UseFlash->Enabled())
+		{
+			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorb, 1300);
+		}
+		if (!Flash->IsReady() || !UseFlash->Enabled())
+		{
+			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorb, 800);
+		}
+	}
+	if (DrawReady->Enabled())
+	{
+		if (Q->IsReady() && DrawQ->Enabled())
+		{
+			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), color, Q->Range());
+		}
+		
+		if (E->IsReady() && DrawE->Enabled())
+		{
+			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colore, E->Range());
+		}
+		if (R->IsReady() && DrawR->Enabled())
+		{
+			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorr, R->Range());
+		}
+	}
+	else
+	{
+		if (DrawQ->Enabled())
+		{
+			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), color, Q->Range());
+		}
+		
+		if (DrawE->Enabled())
+		{
+			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colore, E->Range());
+		}
+		if (DrawR->Enabled())
+		{
+			GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorr, R->Range());
+		}
+	}
+
+	if (Drawhealthbar->Enabled()) //Damage.Healthbar"))
+	{
+		for (auto enemy : GEntityList->GetAllHeros(false, true))
+		{
+			Vec4 colorheal;
+			healRangeColor->GetColor(&colorheal);
+			Vec2 barPos = Vec2();
+			if (enemy->GetHPBarPosition(barPos))
+			{
+				auto Damage = TotalDamage(enemy);
+				float percentHealthAfterDamage = max(0, enemy->GetHealth() - float(Damage)) / enemy->GetMaxHealth();
+				float yPos = barPos.y + yOffset;
+				float xPosDamage = (barPos.x + xOffset) + Width * percentHealthAfterDamage;
+				float xPosCurrentHp = barPos.x + xOffset + Width * (enemy->GetHealth() / enemy->GetMaxHealth());
+				if (!enemy->IsDead() && enemy->IsValidTarget())
+				{
+					float differenceInHP = xPosCurrentHp - xPosDamage;
+					float pos1 = barPos.x + 9 + (107 * percentHealthAfterDamage);
+
+					for (int i = 0; i < differenceInHP; i++)
+					{
+						GRender->DrawLine(Vec2(pos1 + i, yPos), Vec2(pos1 + i, yPos + Height), colorheal);
+					}
+					if (!enemy->IsVisible())
+					{
+
+					}
+				}
+			}
+		}
+	}
+}
