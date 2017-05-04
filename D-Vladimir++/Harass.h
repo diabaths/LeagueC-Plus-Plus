@@ -18,20 +18,19 @@ inline void Harass()
 
 		if (E->IsReady() && HarassE->Enabled() && myHero->HealthPercent() > UseEHPH->GetInteger())
 		{
-			if (myHero->HasBuff("VladimirE") && myHero->IsValidTarget(Enemy, E->Range()))
+			if (myHero->IsValidTarget(Enemy, E->Range() + 100) && Enemy->IsFacing(myHero))
 			{
 				E->CastOnPlayer();
 				return;
 			}
-			if (!myHero->HasBuff("VladimirE") && myHero->IsValidTarget(Enemy, E->Range() + 100) && Enemy->IsFacing(myHero))
+			if (myHero->IsValidTarget(Enemy, E->Range()))
 			{
-				E->StartCharging();
+				E->CastOnPlayer();
 				return;
 			}
-			if (!myHero->HasBuff("VladimirE") && myHero->IsValidTarget(Enemy, E->Range()))
+			if (myHero->HasBuff("VladimirE") && myHero->IsValidTarget(Enemy, E->Range()))
 			{
 				E->StartCharging();
-				return;
 			}
 		}
 	}
