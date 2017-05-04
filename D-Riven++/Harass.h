@@ -20,9 +20,9 @@ inline void Harass()
 				GPluginSDK->DelayFunctionCall(100, []()
 				{
 					auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
-					auto epos = myHero->GetPosition() + (myHero->GetPosition() - Enemy->GetPosition()).VectorNormalize() * E->Range();
 					if (Enemy != nullptr && !Enemy->IsDead())
 					{
+						auto epos = myHero->GetPosition() + (myHero->GetPosition() - Enemy->GetPosition()).VectorNormalize() * E->Range();
 						Q->CastOnPosition(myHero->GetPosition().Extend(epos, E->Range()).VectorNormalize());
 					}
 				});
