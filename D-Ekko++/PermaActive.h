@@ -42,10 +42,8 @@ inline void killsteal()
 					{
 						if (Enemy->GetHealth() <= dmgR)
 						{
-							if (GetDistance(Rpos, Enemy) <= R->Range())
-							{
-								R->CastOnPlayer();
-							}
+															R->CastOnPlayer();
+							
 						}
 					}
 				}

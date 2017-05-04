@@ -1,6 +1,7 @@
 #pragma once
 #include "PluginSDK.h"
 #include <map>
+#include "SpellDatabase.h"
 
 IMenu* MainMenu;
 IMenu* QMenu;
@@ -77,6 +78,15 @@ IMenuOption* UseProtojungle;
 IMenuOption* AutoE;
 IMenuOption* smitekey;
 IMenuOption* DrawSmite;
+std::map<std::string, IMenuOption*> MenuOptions;
+inline bool GetMenuBoolean(std::string name)
+{
+	return MenuOptions[name]->Enabled();
+}
+inline void AddCheckBox(std::string name, std::string title, bool value)
+{
+	MenuOptions[name] = WMenu->CheckBox(title.c_str(), value);
+}
 
 IUnit* Rpos;
 IUnit* myHero;
@@ -131,7 +141,6 @@ inline void  Menu()
 	EMenu = MainMenu->AddMenu("E Settings");
 	ComboE = EMenu->CheckBox("Use E Combo", true);
 	HarassE = EMenu->CheckBox("Use E Harass", true);
-	AutoE = EMenu->CheckBox("Use E to dodge Skills", true);
 	FarmE = EMenu->CheckBox("Use E Laneclear", false);
 	JungleE = EMenu->CheckBox("Use E JungleClear", true);
 	KillstealE = EMenu->CheckBox("Use E Killsteal", true);
@@ -139,7 +148,24 @@ inline void  Menu()
 	AoeE = EMenu->CheckBox("Use E if X Enemys Around", true);
 	AoeEEnemys = EMenu->AddInteger("Dont Use E if Enemys Around =>", 1, 5, 3);
 	UseEHP = EMenu->AddInteger("Dont Use E if HP% <=", 1, 100, 1);
-	//AutoEGapcloser = EMenu->CheckBox("Use E to Gapcloser", true);
+	AutoE = EMenu->CheckBox("Use E to dodge Skills", true);
+	{
+		for (auto unit : GEntityList->GetAllHeros(false, true))
+		{
+			for (auto champion : SpellDatabase::Champions)
+			{
+				if (std::string(champion.second.DisplayName) == std::string(unit->ChampionName()))
+				{
+					auto spells = champion.second.Spells;
+					for (auto championSpell : spells)
+					{
+						std::string Content = std::string(champion.second.DisplayName) + " " + SpellDatabase::Slots[championSpell.Slot] + ": " + std::string(championSpell.Name);
+						AddCheckBox(std::string(championSpell.Name), Content, true);
+					}
+				}
+			}
+		}
+	}
 
 
 	RMenu = MainMenu->AddMenu("R Settings");

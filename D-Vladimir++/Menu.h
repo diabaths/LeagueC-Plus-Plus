@@ -152,7 +152,8 @@ inline void  Menu()
 					}
 				}
 			}
-		}}
+		}
+	}
 	
 	
 	EMenu = MainMenu->AddMenu("E Settings");

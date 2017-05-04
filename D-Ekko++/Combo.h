@@ -66,10 +66,9 @@ inline void Combo()
 				{					
 					if (Enemy->IsValidTarget(Rpos, R->Range()))
 					{
-						if (GetDistance(Rpos, Enemy) <= R->Range())
-						{
+						
 							R->CastOnPlayer();
-						}
+						
 					}
 				}
 				if (myHero->HealthPercent() <= 4)
