@@ -25,8 +25,7 @@ inline void LoadSpells()
 	{
 		Ignite = GPluginSDK->CreateSpell(kSummonerSlot2, 600);
 	}
-	else Ignite == nullptr;
-
+	
 	if (strstr(slot1, "SummonerSmite"))
 	{
 		smite = GPluginSDK->CreateSpell2(kSummonerSlot1, kTargetCast, false, false, kCollidesWithNothing);
@@ -35,8 +34,7 @@ inline void LoadSpells()
 	{
 		smite = GPluginSDK->CreateSpell2(kSummonerSlot2, kTargetCast, false, false, kCollidesWithNothing);
 	}
-	else smite == nullptr;
-
+	
 	Titanic_Hydra = GPluginSDK->CreateItemForId(3748, 385);
 	Ravenous_Hydra = GPluginSDK->CreateItemForId(3074, 385);
 	Tiamat = GPluginSDK->CreateItemForId(3077, 385);
