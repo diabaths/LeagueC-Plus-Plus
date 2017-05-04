@@ -89,7 +89,7 @@ ISpell2* WC;
 ISpell2* EC;
 ISpell2* R;
 
-ISpell* smite;
+ISpell2* smite;
 ISpell* Ignite;
 
 IInventoryItem* blade;
@@ -204,13 +204,13 @@ void LoadSpells()
 
 	auto slot1 = GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot1);
 	auto slot2 = GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot2);
-	if (strcmp(slot1, "SummonerSmite") == 0)
+	if (strstr(slot1, "SummonerSmite"))
 	{
-		smite = GPluginSDK->CreateSpell(kSummonerSlot1, 570);
+		smite = GPluginSDK->CreateSpell2(kSummonerSlot1, kTargetCast, false, false, kCollidesWithNothing);
 	}
-	else if (strcmp(slot2, "SummonerSmite") == 0)
+	if (strstr(slot2, "SummonerSmite"))
 	{
-		smite = GPluginSDK->CreateSpell(kSummonerSlot2, 570);
+		smite = GPluginSDK->CreateSpell2(kSummonerSlot2, kTargetCast, false, false, kCollidesWithNothing);
 	}
 	else smite == nullptr;
 
@@ -462,7 +462,7 @@ void UseItems()
 }
 void Heal()
 {
-	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo || myHero->IsRecalling())
+	if (myHero->IsRecalling())
 		return;
 	if (E->IsReady())
 	{
