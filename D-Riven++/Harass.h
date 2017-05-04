@@ -23,7 +23,7 @@ inline void Harass()
 					auto epos = myHero->GetPosition() + (myHero->GetPosition() - Enemy->GetPosition()).VectorNormalize() * E->Range();
 					if (Enemy != nullptr && !Enemy->IsDead())
 					{
-						Q->CastOnPosition(myHero->GetPosition().Extend(epos, E->Range()));
+						Q->CastOnPosition(myHero->GetPosition().Extend(epos, E->Range()).VectorNormalize());
 					}
 				});
 			}
@@ -37,13 +37,13 @@ inline void Harass()
 			{
 				if (Qstack == 0 && myHero->IsValidTarget(Enemy, Q->Range() + myHero->GetRealAutoAttackRange(Enemy)))
 				{
-					Q->CastOnTarget(Enemy);
+					Q->CastOnPosition(Enemy->ServerPosition());
 					GOrbwalking->GetLastTarget();
 				}
 
 				if (Qstack == 1 && GGame->CurrentTick() - LastQ > 600)
 				{
-					Q->CastOnTarget(Enemy);
+					Q->CastOnPosition(Enemy->ServerPosition());
 					GOrbwalking->GetLastTarget();
 				}
 			}
@@ -58,7 +58,7 @@ inline void Harass()
 			if (Q->IsReady() && HarassQ->Enabled() && myHero->IsValidTarget(Enemy, Q->Range() + myHero->GetRealAutoAttackRange(Enemy)) && Qstack == 0 &&
 				GGame->CurrentTick() - LastQ > 500)
 			{
-				Q->CastOnTarget(Enemy);
+				Q->CastOnPosition(Enemy->ServerPosition());
 				GOrbwalking->GetLastTarget();
 			}
 
@@ -81,12 +81,12 @@ static void afterattackHarass(IUnit* source, IUnit* target)
 		{
 			if (Qstack == 1)
 			{
-				Q->CastOnTarget(target);
+				Q->CastOnPosition(target->ServerPosition());
 			}
 		}
-		else
+		if (HarassMode->GetInteger() == 1)
 		{
-			Q->CastOnTarget(target);
+			Q->CastOnPosition(target->ServerPosition());
 		}
 	}
 }

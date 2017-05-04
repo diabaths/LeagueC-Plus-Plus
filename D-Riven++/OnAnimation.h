@@ -3,7 +3,7 @@
 
 PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 {
-	if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear|| GOrbwalking->GetOrbwalkingMode() == kModeCombo || GetAsyncKeyState(Burst_b->GetInteger()) || GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+	if (ManualAACancel->Enabled() || GOrbwalking->GetOrbwalkingMode() == kModeLaneClear|| GOrbwalking->GetOrbwalkingMode() == kModeCombo || GetAsyncKeyState(Burst_b->GetInteger()) || GOrbwalking->GetOrbwalkingMode() == kModeMixed)
 	{
 		if (Source == myHero)
 		{
@@ -13,7 +13,8 @@ PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 				{
 					GGame->PrintChat("AA_cancel");
 				}
-				//AAcancel();
+				//	AAcancel();
+				
 			}
 			if (Contains(Args, "c29"))
 			{
@@ -21,8 +22,6 @@ PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 				{
 					GGame->PrintChat("AnimQ-1");
 				}
-				Qstack = 1;
-				LastQ = GGame->TickCount();
 				ResetQ1();
 				return;
 			}
@@ -33,7 +32,6 @@ PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 					GGame->PrintChat("AnimQ-2");
 				}
 				Qstack = 2;
-				LastQ = GGame->TickCount();
 				ResetQ2();
 				return;
 			}
@@ -44,7 +42,6 @@ PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 					GGame->PrintChat("AnimQ-3");
 				}
 				Qstack = 0;
-				LastQ = GGame->TickCount();
 				ResetQ3();
 				return;
 			}

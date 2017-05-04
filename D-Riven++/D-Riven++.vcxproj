@@ -156,6 +156,7 @@
     <ClInclude Include="killsteal.h" />
     <ClInclude Include="Laneclear.h" />
     <ClInclude Include="nidalee.h" />
+    <ClInclude Include="OnCreate_OnDelete.h" />
     <ClInclude Include="Render.h" />
     <ClInclude Include="Extensions.h" />
     <ClInclude Include="Flee.h" />
@@ -167,6 +168,7 @@
     <ClInclude Include="OnProcessSpellCast.h" />
     <ClInclude Include="Sexy.h" />
     <ClInclude Include="ShyCombo.h" />
+    <ClInclude Include="SpellDatabase.h" />
     <ClInclude Include="Spells.h" />
     <ClInclude Include="Ultilogic.h" />
     <ClInclude Include="WerhliCombo.h" />

@@ -7,7 +7,7 @@
 
 inline void Nidalee()
 {
-	auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
+	auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 1500);
 	if (Enemy == nullptr || Enemy->IsDead()) return;
 	GGame->IssueOrder(myHero, kAttackUnit, GGame->CursorPosition());
 	GOrbwalking->Orbwalk(Enemy, GGame->CursorPosition());
@@ -70,7 +70,7 @@ inline void Nidalee()
 						auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
 						if (Enemy != nullptr && !Enemy->IsDead())
 						{
-							Q->CastOnUnit(Enemy);
+							Q->CastOnPosition(Enemy->ServerPosition());
 						}
 					});
 				}
@@ -90,7 +90,7 @@ inline void Nidalee()
 					auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
 					if (Enemy != nullptr && !Enemy->IsDead())
 					{
-						Q->CastOnUnit(Enemy);
+						Q->CastOnPosition(Enemy->ServerPosition());
 					}
 				});
 			}
@@ -118,7 +118,7 @@ static void processNidaleeBurst(CastedSpell const& spell)
 				}
 				else if (!W->IsReady() && Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 				{
-					Q->CastOnUnit(Enemy);
+					Q->CastOnPosition(Enemy->ServerPosition());
 					AutoAttack = true;
 					return;
 				}
@@ -141,7 +141,7 @@ static void processNidaleeBurst(CastedSpell const& spell)
 			{
 				if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 				{
-					Q->CastOnUnit(Enemy);
+					Q->CastOnPosition(Enemy->ServerPosition());
 					AutoAttack = true;
 					return;
 				}
@@ -159,7 +159,7 @@ static void processNidaleeBurst(CastedSpell const& spell)
 			{
 				if (!R2->IsReady() && Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 				{
-					Q->CastOnPosition(Enemy->GetPosition());
+					Q->CastOnPosition(Enemy->ServerPosition());
 					AutoAttack = true;
 				}
 			}

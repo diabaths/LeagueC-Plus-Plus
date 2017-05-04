@@ -1,5 +1,6 @@
 #pragma once
 #include "PluginSDK.h"
+#include "SpellDatabase.h"
 
 IMenu* MainMenu;
 IMenu* QMenu;
@@ -84,8 +85,13 @@ IMenuOption* dmgRangeColor;
 IMenuOption* healRangeColor;
 //IMenuOption* burstMode;
 IMenuOption* DrawCombomode;
-IMenuOption* BurstModeChange;
-
+IMenuOption* BurstModeChange; 
+IMenuOption*ChangeSkin;
+IMenuOption* SkinChangeid;
+IMenuOption* ManualAACancel;
+IMenuOption* Autoattackanimation;
+IMenuOption* burstRangeColor;
+IMenuOption* Drawburst;
 
 
 IUnit* myHero;
@@ -102,6 +108,15 @@ IInventoryItem* Biscuit;
 IInventoryItem* RefillPot;
 IInventoryItem* hunter;
 
+std::map<std::string, IMenuOption*> MenuOptions;
+inline bool GetMenuBoolean(std::string name)
+{
+	return MenuOptions[name]->Enabled();
+}
+inline void AddCheckBox(std::string name, std::string title, bool value)
+{
+	MenuOptions[name] = WMenu->CheckBox(title.c_str(), value);
+}
 int Qstack;
 int Q1Delay;
 int Q2Delay;
@@ -125,18 +140,21 @@ inline void  Menu()
 	BurstModeChange = BurstMenu->AddKey("Change Burst Combo Mode", 84);
 	UseFlash = BurstMenu->CheckBox("Use Flash In Burst", true);
 	Flee_b = BurstMenu->AddKey("Flee", 76);
-
 	HarassMode = BurstMenu->AddSelection("Harass Mode:", 0, { "Smart", "Normal"});
+	ManualAACancel = BurstMenu->CheckBox("Cancel Q animation when manual use it", true);
+	ChangeSkin = BurstMenu->CheckBox("Use Skin", true);
+	SkinChangeid = BurstMenu->AddInteger("Skin ID", 1, 8, 1);
+
 	QMenu = MainMenu->AddMenu("Q Settings");
 	ComboQ = QMenu->CheckBox("Use Q in combo", true);
 	HarassQ = QMenu->CheckBox("Use Q in Harass", true);
 	FarmQ = QMenu->CheckBox("Use Q in Laneclear", true);
 	JungleQ = QMenu->CheckBox("Use Q in JungleClear", true);
-	//AADelay = QMenu->AddInteger("AA Delay(if cancel AA play with this)", 150, 1000, 200);
+	//Autoattackanimation = QMenu->CheckBox("Cancel AutoAttack Animation", true);
 	QDelay1 = QMenu->AddInteger("Delay Q1", 50, 1000, 290);
 	QDelay2 = QMenu->AddInteger("Delay Q2", 50, 1000, 290);
 	QDelay3 = QMenu->AddInteger("Delay Q3", 50, 1000, 390);
-	AutoSetDelay = QMenu->CheckBox("Q Dealy Inlcude the Ping ?", true);
+	AutoSetDelay = QMenu->CheckBox("Q Delay Inlcude the Ping ?", true);
 	KeepQ = QMenu->CheckBox("Keep Q Alive", false);
 
 	WMenu = MainMenu->AddMenu("W Settings");
@@ -155,8 +173,25 @@ inline void  Menu()
 	ComboE = EMenu->CheckBox("Use E Combo", true);
 	HarassE = EMenu->CheckBox("Use E Harass", true);
 	JungleE = EMenu->CheckBox("Use E in Jungle", true);
-	AutoE = EMenu->CheckBox("Use E Auto Shield", true);
 	KillstealE = EMenu->CheckBox("Use E to close distance to Killsteal", true);
+	AutoE = EMenu->CheckBox("Use E Auto Shield", true);
+	{
+		for (auto unit : GEntityList->GetAllHeros(false, true))
+		{
+			for (auto champion : SpellDatabase::Champions)
+			{
+				if (std::string(champion.second.DisplayName) == std::string(unit->ChampionName()))
+				{
+					auto spells = champion.second.Spells;
+					for (auto championSpell : spells)
+					{
+						std::string Content = std::string(champion.second.DisplayName) + " " + SpellDatabase::Slots[championSpell.Slot] + ": " + std::string(championSpell.Name);
+						AddCheckBox(std::string(championSpell.Name), Content, true);
+					}
+				}
+			}
+		}}
+
 
 
 	RMenu = MainMenu->AddMenu("R Settings");
@@ -196,6 +231,8 @@ inline void  Menu()
 	Drawhealthbar = Drawings->CheckBox("Draw Damage (Healthbar)", false);
 	healRangeColor = Drawings->AddColor("Damage (Healthbar) Color", 3.f, 252.f, 19.f, 255.f);
 	DrawCombomode = Drawings->CheckBox("Draw Combo Mode", true); 
+	Drawburst= Drawings->CheckBox("Draw Burst Range", true);
+	burstRangeColor = Drawings->AddColor("Burst range  Color", 3.f, 252.f, 19.f, 255.f);
 	
 		
 }

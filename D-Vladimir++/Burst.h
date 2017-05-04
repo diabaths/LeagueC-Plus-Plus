@@ -33,7 +33,7 @@ inline void burst()
 		{
 			if (protobelt->IsOwned() && protobelt->IsReady())
 			{
-				if (Flash != nullptr && Flash->IsReady() && GetDistance(myHero, Enemy) > 600)
+				if (Flash != nullptr && Flash->IsReady() && UseFlash->Enabled() && GetDistance(myHero, Enemy) > 600)
 				{
 					Flash->CastOnPosition(Enemy->GetPosition());
 				}
@@ -42,7 +42,7 @@ inline void burst()
 			{
 				if (myHero->IsValidTarget(Enemy, 800))
 				{
-					if (Flash != nullptr && Flash->IsReady() && GetDistance(myHero, Enemy) > 600)
+					if (Flash != nullptr && Flash->IsReady() && UseFlash->Enabled() && GetDistance(myHero, Enemy) > 600)
 					{
 						Flash->CastOnPosition(Enemy->GetPosition());
 					}
@@ -100,7 +100,7 @@ inline void Burstonprocess(CastedSpell const& spell)
 			{
 				if (protobelt->IsOwned() && protobelt->IsReady())
 				{
-					if (Flash != nullptr && Flash->IsReady() && GetDistance(myHero, spell.Target_) > 600)
+					if (Flash != nullptr && Flash->IsReady() && UseFlash->Enabled() && GetDistance(myHero, spell.Target_) > 600)
 					{
 						Flash->CastOnPosition(spell.Target_->GetPosition());
 					}
@@ -109,7 +109,7 @@ inline void Burstonprocess(CastedSpell const& spell)
 				{
 					if (myHero->IsValidTarget(spell.Target_, 800))
 					{
-						if (Flash != nullptr && Flash->IsReady() && GetDistance(myHero, spell.Target_) > 600)
+						if (Flash != nullptr && Flash->IsReady() && UseFlash->Enabled() && GetDistance(myHero, spell.Target_) > 600)
 						{
 							Flash->CastOnPosition(spell.Target_->GetPosition());
 						}

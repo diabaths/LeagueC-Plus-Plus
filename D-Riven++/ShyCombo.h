@@ -7,7 +7,7 @@
 
 inline void Burstshy()
 {
-	auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
+	auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 1500);
 	if (Enemy == nullptr || Enemy->IsDead()) return;
 	GGame->IssueOrder(myHero, kAttackUnit, GGame->CursorPosition());
 	GOrbwalking->Orbwalk(Enemy, GGame->CursorPosition());
@@ -87,7 +87,7 @@ inline void Burstshy()
 					auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
 					if (Enemy != nullptr && !Enemy->IsDead())
 					{
-						Q->CastOnPosition(Enemy->GetPosition());
+						Q->CastOnPosition(Enemy->ServerPosition());
 					}
 				});
 			}
@@ -149,7 +149,7 @@ inline void Burstshy()
 					auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
 					if (Enemy != nullptr && !Enemy->IsDead())
 					{
-						Q->CastOnPosition(Enemy->GetPosition());
+						Q->CastOnPosition(Enemy->ServerPosition());
 					}
 				});
 			}
@@ -205,7 +205,7 @@ static void ShyBurstafter(IUnit* source, IUnit* target)
 		}
 		if (!W->IsReady() && !R->IsReady() && Q->IsReady() && myHero->IsValidTarget(target, Q->Range()))
 		{
-			Q->CastOnPosition(target->GetPosition());
+			Q->CastOnPosition(target->ServerPosition());
 		}
 	}
 }
@@ -231,7 +231,7 @@ static void processShyBurst(CastedSpell const& spell)
 				}
 				else if (!W->IsReady() && Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 				{
-					Q->CastOnUnit(Enemy);
+					Q->CastOnPosition(Enemy->ServerPosition());
 					AutoAttack = true;
 					return;
 				}
@@ -259,7 +259,7 @@ static void processShyBurst(CastedSpell const& spell)
 				}
 				if (!R->IsReady() && Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 				{
-					Q->CastOnUnit(Enemy);
+					Q->CastOnPosition(Enemy->ServerPosition());
 					AutoAttack = true;
 					return;
 				}
@@ -268,7 +268,7 @@ static void processShyBurst(CastedSpell const& spell)
 			{
 				if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 				{
-					Q->CastOnPosition(Enemy->GetPosition());
+					Q->CastOnPosition(Enemy->ServerPosition());
 					AutoAttack = true;
 				}
 			}

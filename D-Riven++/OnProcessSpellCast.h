@@ -2,6 +2,7 @@
 #include "Extensions.h"
 #include "Combo.h"
 #include "Burst.h"
+#include "SpellDatabase.h"
 
 PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& spell)
 {
@@ -44,162 +45,59 @@ PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& spell)
 		}
 	}
 	
-
-	if (spell.Caster_->IsHero() && spell.Name_ != nullptr && spell.Caster_ != myHero && E->IsReady()
-		&& spell.Target_ == myHero && AutoE->Enabled() && CanMoveMent(myHero) && !GSpellData->IsAutoAttack(spell.Data_))
+	if (AutoE->Enabled() && E->IsReady())
 	{
-		auto epos = myHero->GetPosition() + (myHero->GetPosition() - target->GetPosition()).VectorNormalize() * 300;
-		if (myHero->IsValidTarget(target, 900))
+		if (!spell.Caster_->IsEnemy(GEntityList->Player()))
+			return;
+		if (spell.Caster_->IsHero())
 		{
-			if (Contains(spell.Name_, "FizzPiercingStrike"))
-			{
-				E->CastOnPosition(epos);
-				return;
-			}
-			if (Contains(spell.Name_, "UFSlash"))
-			{
-				E->CastOnPosition(epos);
-				return;
-			}
-			if (Contains(spell.Name_, "HungeringStrike"))
-			{
-				E->CastOnPosition(epos);
-				return;
-			}
-			if (Contains(spell.Name_, "YasuoDash"))
-			{
-				E->CastOnPosition(epos);
-				return;
-			}
-			if (Contains(spell.Name_, "KatarinaRTrigger"))
-			{
-				E->CastOnPosition(epos);
-				return;
-			}
-			if (Contains(spell.Name_, "KatarinaE"))
-			{
-				E->CastOnPosition(epos);
-				return;
-			}
-			if (Contains(spell.Name_, "DariusR"))
-			{
-				E->CastOnPosition(epos);
-				return;
-			}
+			auto championName = const_cast<char*>(spell.Caster_->GetBaseSkinName());
+			auto spellName = const_cast<char*>(GSpellData->GetSpellName(spell.Data_));
 
-			if (Contains(spell.Name_, "GarenQ"))
+			for (auto champion : SpellDatabase::Champions)
 			{
-				E->CastOnPosition(epos);
-				return;
-			}
+				if (strstr(champion.first, championName) != nullptr)
+				{
+					for (auto championSpell : champion.second.Spells)
+					{
+						if (strstr(championSpell.Name, spellName) != nullptr)
+						{
+							if (GetMenuBoolean(std::string(championSpell.Name)))
+							{
+								auto UseE = false;
 
-			if (Contains(spell.Name_, "GarenR"))
-			{
-				E->CastOnPosition(epos);
-				return;
-			}
+								if (spell.Target_ != nullptr && spell.Target_ == myHero)
+									UseE = true;
 
-			if (Contains(spell.Name_, "IreliaE"))
-			{
-				E->CastOnPosition(epos);
-				return;
-			}
+							/*	if (spell.Target_ == nullptr)
+								{
+									auto currentSpell = GPluginSDK->CreateSpell2(championSpell.Slot, championSpell.SpellType, championSpell.Missile, championSpell.AoE, championSpell.Collisions);
+									currentSpell->SetSkillshot(championSpell.Delay, championSpell.Radius, championSpell.Speed, championSpell.Range);
 
-			if (Contains(spell.Name_, "LeeSinR"))
-			{
-				E->CastOnPosition(epos);
-				return;
-			}
+									AdvPredictionOutput pOutput;
+									currentSpell->RunPrediction(myHero, championSpell.AoE, championSpell.Collisions, &pOutput);
 
-			if (Contains(spell.Name_, "OlafE"))
-			{
-				E->CastOnPosition(epos);
-				return;
-			}
+									if (pOutput.HitChance >= kHitChanceHigh)
+									{
+										UseE = true;
+									}
+								}
 
-			if (Contains(spell.Name_, "RenektonW"))
-			{
-				E->CastOnPosition(epos);
-				return;
-			}
-
-			if (Contains(spell.Name_, "RenektonPreExecute"))
-			{
-				E->CastOnPosition(epos);
-				return;
-			}
-
-			if (Contains(spell.Name_, "RengarQ"))
-			{
-				E->CastOnPosition(epos);
-				return;
-			}
-
-			if (Contains(spell.Name_, "VeigarR"))
-			{
-				E->CastOnPosition(epos);
-				return;
-			}
-
-			if (Contains(spell.Name_, "VolibearW"))
-			{
-				E->CastOnPosition(epos);
-				return;
-			}
-
-			if (Contains(spell.Name_, "XenZhaoThrust3"))
-			{
-				E->CastOnPosition(epos);
-				return;
-			}
-			if (Contains(spell.Name_, "TwitchEParticle"))
-			{
-				E->CastOnPosition(epos);
-				return;
-			}
-			if (Contains(spell.Name_, "MonkeyKingSpinToWin"))
-			{
-				E->CastOnPosition(epos);
-				return;
-			}
-			if (Contains(spell.Name_, "RengarPassiveBuffDash"))
-			{
-				E->CastOnPosition(epos);
-				return;
-			}
-			if (Contains(spell.Name_, "TalonCutthroat"))
-			{
-				E->CastOnPosition(epos);
-				return;
-			}
-			if (Contains(spell.Name_, "attack") && (spell.Caster_->HasBuff("BlueCardAttack") || spell.Caster_->HasBuff("GoldCardAttack") || spell.Caster_->HasBuff("RedCardAttack")))
-			{
-				E->CastOnPosition(epos);
+								if (UseE)
+								{
+									GPluginSDK->DelayFunctionCall(championSpell.Delay - championSpell.Delay * 0.3, []
+									{
+										auto epos = myHero->GetPosition() + (myHero->GetPosition() - spell.Caster_->GetPosition()).VectorNormalize() * 300;
+										E->CastOnPosition(epos);
+										return;
+									});
+								}*/
+							}
+						}
+						break;
+					}
+				}
 			}
 		}
-	}
-	/*if (std::string(args.Name_) == "RivenMartyr")
-	{
-	ResetW();
-	if (Debug->Enabled())
-	{
-	GGame->PrintChat("reset_W:");
-	}
-	}
-	if (std::string(args.Name_) == "RivenFeint")
-	{
-	GOrbwalking->ResetAA();
-	if (Debug->Enabled())
-	{
-	GGame->PrintChat("reset_E:");
-	}
-	}
-	if (std::string(args.Name_) == "RivenIzunaBlade")
-	{
-	ResetR2();
-	if (Debug->Enabled())
-	{
-	GGame->PrintChat("reset_R:");
-	}
-	}*/
+	}	
 }

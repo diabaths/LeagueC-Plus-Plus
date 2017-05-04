@@ -41,21 +41,41 @@ inline void Combo()
 				GGame->PrintChat("Q_COMBO");
 			}
 			AutoAttack = true;
-			Q->CastOnUnit(Enemy);
+			Q->CastOnPosition(Enemy->ServerPosition());
 		}
 	}
 
-	if (!AutoAttack && ComboW->Enabled() && W->IsReady() &&
-		myHero->IsValidTarget(Enemy, W->Range()))
+	if (ComboW->Enabled() && W->IsReady() && myHero->IsValidTarget(Enemy, W->Range()))
 	{
 		WLogic(Enemy);
-		if (Hydra->Enabled() && haveitems())
+	}
+	if (haveitems() && myHero->IsValidTarget(Enemy, 380))
+	{
+		if (_tiamat->Enabled())
 		{
-			Titanic(Enemy);
-			GOrbwalking->ResetAA();
-			return;
+			if (Tiamat->IsOwned() && Tiamat->IsReady())
+			{
+				Tiamat->CastOnPlayer();
+				GOrbwalking->ResetAA();
+				return;
+			}
 		}
-		return;
+		if (RHydra->Enabled())
+		{
+			if (Ravenous_Hydra->IsOwned() && Ravenous_Hydra->IsReady())
+			{
+				Ravenous_Hydra->CastOnPlayer();
+				GOrbwalking->ResetAA();
+			}
+		}
+		if (Hydra->Enabled())
+		{
+			if (Titanic_Hydra->IsOwned() && Titanic_Hydra->IsReady())
+			{
+				Titanic_Hydra->CastOnTarget(Enemy);
+				GOrbwalking->ResetAA();
+			}
+		}
 	}
 	if (Enemy != nullptr  && R->IsReady())
 	{
@@ -122,7 +142,7 @@ static void processCombo(CastedSpell const& spell)
 			}
 			if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 			{
-				Q->CastOnUnit(Enemy);
+				Q->CastOnPosition(Enemy->ServerPosition());
 				AutoAttack = true;
 				return;
 			}
@@ -131,7 +151,7 @@ static void processCombo(CastedSpell const& spell)
 		{
 			if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 			{
-				Q->CastOnUnit(Enemy);
+				Q->CastOnPosition(Enemy->GetPosition());
 				AutoAttack = true;
 			}
 			else if (ComboR2->Enabled() && R->IsReady() && myHero->HasBuff("RivenFengShuiEngine") && R2Logic(Enemy))
@@ -158,7 +178,7 @@ static void processCombo(CastedSpell const& spell)
 		{
 			if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 			{
-				Q->CastOnPosition(Enemy->GetPosition());
+				Q->CastOnPosition(Enemy->ServerPosition());
 				AutoAttack = true;
 			}
 		}
@@ -177,7 +197,7 @@ static void afterattackCombo(IUnit* source, IUnit* target)
 		}
 		if (Q->IsReady() && myHero->IsValidTarget(target, 400))
 		{
-			Q->CastOnUnit(target);
+			Q->CastOnPosition(target->ServerPosition());
 			AutoAttack = true;
 			return;
 		}

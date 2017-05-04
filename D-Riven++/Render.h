@@ -15,12 +15,14 @@ PLUGIN_EVENT(void) OnRender()
 	Vec4 colorr;
 	Vec4 colordmg;
 	Vec4 colorheal;
+	Vec4 colorbr;
 	qRangeColor->GetColor(&color);
 	wRangeColor->GetColor(&colorw);
 	eRangeColor->GetColor(&colore);
 	rRangeColor->GetColor(&colorr);
 	dmgRangeColor->GetColor(&colordmg);
 	healRangeColor->GetColor(&colorheal);
+	burstRangeColor->GetColor(&colorbr);
 	if (DrawCombomode->Enabled())
 	{
 		Vec3 worldToScreen;
@@ -29,18 +31,23 @@ PLUGIN_EVENT(void) OnRender()
 		if (BurstMode == 0)
 		{
 			GRender->DrawTextW(Vec2(worldToScreen.x, worldToScreen.y), Vec4(255, 255, 0, 255), "Burst: Shy");
+			if (Drawburst->Enabled() && Flash->IsReady()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorbr, 600 + Q->Range()); }
 		}
 		if (BurstMode == 1)
 		{
 			GRender->DrawTextW(Vec2(worldToScreen.x, worldToScreen.y), Vec4(255, 255, 0, 255), "Burst: Werhli (Enable R1)");
+			if (Drawburst->Enabled() && Flash->IsReady()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorbr, 425 + E->Range()); }
 		}
 		if (BurstMode == 2)
 		{
 			GRender->DrawTextW(Vec2(worldToScreen.x, worldToScreen.y), Vec4(255, 255, 0, 255), "Burst: Sexy (Enable R1)");
+			if (Drawburst->Enabled() && Flash->IsReady()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorbr, R2->Range() - 50); }
 		}
 		if (BurstMode == 3)
 		{
 			GRender->DrawTextW(Vec2(worldToScreen.x, worldToScreen.y), Vec4(255, 255, 0, 255), "Burst: NidaleeJR");
+			if (Drawburst->Enabled() && Flash->IsReady()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorbr, 600 + Q->Range()); }
+
 		}
 	}
 	if (DrawReady->Enabled())

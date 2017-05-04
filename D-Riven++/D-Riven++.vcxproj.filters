@@ -84,6 +84,12 @@
     <ClInclude Include="nidalee.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="SpellDatabase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OnCreate_OnDelete.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D-Riven++.cpp">

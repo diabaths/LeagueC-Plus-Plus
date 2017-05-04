@@ -20,9 +20,24 @@
 #include "Color.h"
 #include "AfterAttack.h"
 #include "JungleClear.h"
-
+#include "OnCreate_OnDelete.h"
 
 PluginSetup("D-Riven++")
+
+static void CheatRito()
+{
+	if (ChangeSkin->Enabled())
+	{
+		if (myHero->GetSkinId() != SkinChangeid->GetInteger())
+		{
+			myHero->SetSkinId(SkinChangeid->GetInteger());
+		}
+	}
+	else
+	{
+		myHero->SetSkinId(myHero->GetSkinId());
+	}
+}
 
 void ChangePriority()
 {
@@ -101,10 +116,10 @@ PLUGIN_EVENT(void) OnGameUpdate()
 		{
 			delay = 70;
 		}
-		Q1Delay = QDelay1->GetInteger() - delay;
-		Q2Delay = QDelay2->GetInteger() - delay;
-		Q3Delay = QDelay3->GetInteger() - delay;
-		//DelayAA = AADelay->GetInteger() + delay;
+		Q1Delay = QDelay1->GetInteger() - GGame->Latency();
+		Q2Delay = QDelay2->GetInteger() - GGame->Latency();
+		Q3Delay = QDelay3->GetInteger() - GGame->Latency();
+		//DelayAA = 170 - GGame->Latency();
 	}
 	if (!AutoSetDelay->Enabled())
 	{
@@ -120,7 +135,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	} 
 	else W->SetOverrideRange(265); 
 	
-
+	CheatRito();
 	if (GOrbwalking->GetOrbwalkingMode() != kModeCombo && GOrbwalking->GetOrbwalkingMode() != kModeMixed && GOrbwalking->GetOrbwalkingMode() != kModeLaneClear)
 	{
 		auto end = GBuffData->GetEndTime(myHero->GetBuffDataByName("RivenTriCleave"));
@@ -179,6 +194,8 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	GEventManager->AddEventHandler(kEventOnInterruptible, OnInterruptable);
 	GEventManager->AddEventHandler(kEventOnGapCloser, OnGapcloser);
 	GEventManager->AddEventHandler(kEventOrbwalkOnAttack, OnAttack);
+	GEventManager->AddEventHandler(kEventOnCreateObject, OnCreateObject);
+	GEventManager->AddEventHandler(kEventOnDestroyObject, OnDestroyObject);
 	
 
 
@@ -205,4 +222,6 @@ PLUGIN_API void OnUnload()
 	GEventManager->RemoveEventHandler(kEventOnInterruptible, OnInterruptable);
 	GEventManager->RemoveEventHandler(kEventOnGapCloser, OnGapcloser);
 	GEventManager->RemoveEventHandler(kEventOrbwalkOnAttack, OnAttack);
+	GEventManager->RemoveEventHandler(kEventOnCreateObject, OnCreateObject);
+	GEventManager->RemoveEventHandler(kEventOnDestroyObject, OnDestroyObject);
 }

@@ -70,77 +70,74 @@ inline int CountEnemiesInRange(float range)
 }
 //Credits to hoola and Synx
 static void ResetQ1()
-{
-	GOrbwalking->ResetAA();
+{	
 	GPluginSDK->DelayFunctionCall(Q1Delay, []()
-	{
+	{  
+		GOrbwalking->ResetAA();
 		GGame->Taunt(kDance);
 		GGame->IssueOrder(myHero, kAttackTo, GOrbwalking->GetLastTarget());
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
+		GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
 	});
 }
 //Credits to hoola and Synx
 static void ResetQ2()
 {
-	GOrbwalking->ResetAA();
 	GPluginSDK->DelayFunctionCall(Q2Delay, []()
-	{		
+	{	
+		GOrbwalking->ResetAA();
 		GGame->Taunt(kDance);
 		GGame->IssueOrder(myHero, kAttackTo, GOrbwalking->GetLastTarget());
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
+		GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
 	});
 } 
-//GOrbwalking->Orbwalk(Enemy, GGame->CursorPosition());
-//myHero->GetPosition().Extend(GGame->CursorPosition(), GetDistanceVectors(myHero->GetPosition(), GGame->CursorPosition()) + 10)
-  //Credits to hoola and Synx
 
 static void ResetQ3()
 {
-	GOrbwalking->ResetAA();
 	GPluginSDK->DelayFunctionCall(Q3Delay, []()
-	{
+	{ 
+		GOrbwalking->ResetAA();
 		GGame->Taunt(kDance);
 		GGame->IssueOrder(myHero, kAttackTo, GOrbwalking->GetLastTarget());
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+		GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
 	});
 }
 //Credits to hoola and Synx
 static void ResetW()
 {
-	GOrbwalking->ResetAA();
-	GPluginSDK->DelayFunctionCall(170, []()
+	GPluginSDK->DelayFunctionCall(DelayAA, []()
 	{
+		GOrbwalking->ResetAA();
 		GGame->Taunt(kDance);
-			//	GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
 	});
 }
 //Credits to hoola and Synx
 
 static void ResetR1()
 {
-	GOrbwalking->ResetAA();
 	GPluginSDK->DelayFunctionCall(50, []()
 	{
+		GOrbwalking->ResetAA();
 		GGame->Taunt(kDance);
-		//GGame->Say("/d");
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+		GGame->IssueOrder(myHero, kAttackTo, GOrbwalking->GetLastTarget());
+		GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
 	});
 }
 //Credits to hoola and Synx
 static void ResetR2()
 {
-	GOrbwalking->ResetAA();
-	GPluginSDK->DelayFunctionCall(180, []()
-	{	
+	GPluginSDK->DelayFunctionCall(150, []()
+	{
+		GOrbwalking->ResetAA();
 		GGame->Taunt(kDance);
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
+		GGame->IssueOrder(myHero, kAttackTo, GOrbwalking->GetLastTarget());
+		GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
 	});
 }
 static void AAcancel()
 {
-	GPluginSDK->DelayFunctionCall(AADelay->GetInteger(), []()
+	GPluginSDK->DelayFunctionCall(390, []()
 	{
-		GGame->Taunt(kDance);
 		GOrbwalking->ResetAA();
 	});
 }
@@ -207,10 +204,9 @@ static void ELogic(IUnit* target)
 		{
 			GGame->PrintChat("E-stage_1");
 		}
-		E->CastOnPosition(target->GetPosition());
+		E->CastOnPosition(target->ServerPosition());
 		return;
 	}
-
 	if (GetDistance(myHero, target) <= 325 + W->Range() && W->IsReady() && GetDistance(myHero, target) > IsInAutoAttackRange(target) + 100 && CanMoveMent(myHero))
 	{
 		if (Debug->Enabled())
@@ -245,17 +241,17 @@ static void EDash(IUnit* target)
 
 	if (GetDistance(myHero, target) <= 325 + (Q->IsReady() && Qstack == 0 ? 260 : 0))
 	{
-		E->CastOnPosition(target->GetPosition());
+		E->CastOnPosition(target->ServerPosition());
 	}
 
 	if (GetDistance(myHero, target) <= 325 + (W->IsReady() ? W->Range() : 0))
 	{
-		E->CastOnPosition(target->GetPosition());
+		E->CastOnPosition(target->ServerPosition());
 	}
 
 	if (!Q->IsReady() && !W->IsReady() && GetDistance(myHero, target) <= 325 + myHero->AttackRange())
 	{
-		E->CastOnPosition(target->GetPosition());
+		E->CastOnPosition(target->ServerPosition());
 	}
 }
 
