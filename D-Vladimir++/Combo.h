@@ -36,17 +36,17 @@ inline void Combo()
 
 		if (ComboE->Enabled() && E->IsReady() && myHero->HealthPercent() > UseEHPC->GetInteger())
 		{
-			if (myHero->IsValidTarget(Enemy, E->Range() + 100) && Enemy->IsFacing(myHero))
-			{
-				E->CastOnPlayer();
-				return;
-			}
-			if (myHero->IsValidTarget(Enemy, E->Range()))
-			{
-				E->CastOnPlayer();
-				return;
-			}
 			if (myHero->HasBuff("VladimirE") && myHero->IsValidTarget(Enemy, E->Range()))
+			{
+				E->CastOnPlayer();
+				return;
+			}
+			if (!myHero->HasBuff("VladimirE") && myHero->IsValidTarget(Enemy, E->Range() +100) && Enemy->IsFacing(myHero))
+			{
+				E->StartCharging();
+				return;
+			}
+			if (!myHero->HasBuff("VladimirE") && myHero->IsValidTarget(Enemy, E->Range()))
 			{
 				E->StartCharging();
 				return;

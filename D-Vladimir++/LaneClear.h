@@ -29,12 +29,12 @@ inline void laneclear()
 			{
 				if (CountminionInRange(E->Range()) >= minminionsE->GetInteger())
 				{
-					if (myHero->IsValidTarget(minions, E->Range() + 100))
+					if (myHero->HasBuff("VladimirE") && myHero->IsValidTarget(minions, E->Range()))
 					{
 						E->CastOnPlayer();
 						return;
 					}
-					if (myHero->HasBuff("VladimirE") && myHero->IsValidTarget(minions, E->Range()))
+					if (!myHero->HasBuff("VladimirE") && myHero->IsValidTarget(minions, E->Range()))
 					{
 						E->StartCharging();
 						return;

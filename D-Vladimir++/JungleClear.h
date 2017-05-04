@@ -26,12 +26,12 @@ inline void jungleclear()
 		{
 			if (jMinion != nullptr && !jMinion->IsDead())
 			{
-				if (myHero->IsValidTarget(jMinion, E->Range() + 100))
+				if (myHero->HasBuff("VladimirE") && myHero->IsValidTarget(jMinion, E->Range()))
 				{
 					E->CastOnPlayer();
 					return;
 				}
-				if (myHero->HasBuff("VladimirE") && myHero->IsValidTarget(jMinion, E->Range()))
+				if (!myHero->HasBuff("VladimirE") && myHero->IsValidTarget(jMinion, E->Range()))
 				{
 					E->StartCharging();
 					return;

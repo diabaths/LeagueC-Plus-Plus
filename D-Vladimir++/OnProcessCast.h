@@ -2,6 +2,7 @@
 #include "Extension.h"
 #include "SpellDatabase.h"
 #include "Burst.h"
+#include "Damage.h"
 
 PLUGIN_EVENT(void) OnProcessCast(CastedSpell const& spell)
 {
@@ -15,7 +16,7 @@ PLUGIN_EVENT(void) OnProcessCast(CastedSpell const& spell)
 
 		if (Contains(std::string(spell.Name_), "VladimirE"))
 		{
-			if (W->IsReady() && ComboW->Enabled() && Enemy->GetHealth() <= 1.4 * TotalDamage(Enemy) && myHero->IsValidTarget(Enemy, 250))
+			if (W->IsReady() && ComboW->Enabled() && myHero->IsValidTarget(Enemy, 250) && (myHero->HealthPercent()<5 || Enemy->GetHealth() <= 1.4 * TotalDamage(Enemy)))
 			{
 				W->CastOnPlayer();
 			}

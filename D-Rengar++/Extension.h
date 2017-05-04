@@ -142,10 +142,11 @@ inline float Distance(Vec2 from, Vec2 to)
 }
 static void ResetQ()
 {
-	GOrbwalking->ResetAA();
+
 	GPluginSDK->DelayFunctionCall(290, []()
-	{		
-	GGame->IssueOrder(myHero, kAttackTo, GOrbwalking->GetLastTarget());
+	{
+		GOrbwalking->ResetAA();
+		GGame->IssueOrder(myHero, kAttackTo, GOrbwalking->GetLastTarget());
 
 	});
 }
