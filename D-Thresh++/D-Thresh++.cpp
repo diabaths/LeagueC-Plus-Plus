@@ -18,6 +18,7 @@ IMenu* Drawings;
 IMenu* ItemsMenu;
 IMenu* PotionMenu;
 IMenu* EMenu;
+IMenu* Wsetting;
 IMenuOption* SemiR;
 IMenuOption* UseIgnitecombo;
 IMenuOption* ComboQ;
@@ -62,6 +63,16 @@ IMenuOption* DrawE;
 IMenuOption* DrawR;
 IMenuOption* Combormin;
 IMenuOption* AutoW;
+IMenuOption* Wcharm;
+IMenuOption* WCombatdehancer;
+IMenuOption* Wfear;
+IMenuOption* Wknockback;
+IMenuOption* Wknockup;
+IMenuOption* Wpolymorph;
+IMenuOption* Wsnare;
+IMenuOption* Wstun;
+IMenuOption* Wsuppression;
+IMenuOption* Wtaunt;
 
 IUnit* myHero;
 
@@ -117,6 +128,21 @@ void  Menu()
 	UseEpush = EMenu->AddKey("Use E to Push", 75);
 	UseEpull = EMenu->AddKey("Use E to Pull", 76);
 	
+	Wsetting = MainMenu->AddMenu("W Setting");
+	Uselatern = Wsetting->AddKey("Use Lantern to Ally", 84);
+	AutoW = Wsetting->CheckBox("Use W to Ally if Have CC", true);
+	Wcharm = Wsetting->CheckBox("Use W in (Charm)", true);
+	WCombatdehancer = Wsetting->CheckBox("Use W in (Dehancer)", true);
+	Wfear = Wsetting->CheckBox("Use W W in (Fear)", true);
+	Wknockback = Wsetting->CheckBox("Use W  in (KnockBack)", true);
+	Wknockup = Wsetting->CheckBox("Use W in (KnockUp)", true);
+	Wpolymorph = Wsetting->CheckBox("Use W in (Polymorph)", true);
+	Wsnare = Wsetting->CheckBox("Use W in (Snare)", true);
+	Wstun = Wsetting->CheckBox("Use W to in (Stun)", true);
+	Wsuppression = Wsetting->CheckBox("Use W in (Suppresion)", true);
+	Wtaunt = Wsetting->CheckBox("Use W in (Taunt)", true);
+
+
 	FarmMenu = MainMenu->AddMenu("LaneClear Setting");
 	FarmQ = FarmMenu->CheckBox("Use Q Farm", false);
 	FarmE = FarmMenu->CheckBox("Use E Farm", true);
@@ -128,8 +154,6 @@ void  Menu()
 	JungleManaPercent = JungleMenu->AddInteger("Mana Percent for Farm", 10, 100, 70);
 
 	MiscMenu = MainMenu->AddMenu("Misc Setting");
-	Uselatern = MiscMenu->AddKey("Use Lantern to Ally", 84);
-	AutoW = MiscMenu->CheckBox("Use W to Ally if Have CC", true);
 	UseIgnitekillsteal = MiscMenu->CheckBox("Use Ignite to killsteal", false);
 	KillstealQ = MiscMenu->CheckBox("Use Q to killsteal", true);
 	ImmobileQ = MiscMenu->CheckBox("Use Q in Immobile", true);
@@ -343,18 +367,18 @@ void CastW()
 		{
 			if (Ally != myHero && !Ally->IsDead() && Ally != nullptr && myHero->IsValidTarget(Ally, W->Range() + W->Radius()))
 			{
-				if (GetDistance(myHero, Ally) >= 250 && target != nullptr && myHero->IsValidTarget(target, Q->Range()) && target->HasBuff("ThreshQ") && GGame->CurrentTick() - lastq > 80)
+				if (GetDistance(myHero, Ally) >= 250 && target != nullptr && myHero->IsValidTarget(target, Q->Range()) && target->HasBuff("ThreshQ") && GGame->TickCount() - lastq > 80)
 				{
 					W->CastOnPosition(Ally->ServerPosition());
 				}
 			}
-			if (myHero->IsValidTarget(Ally, W->Range()) && CountEnemiesInRange(2000) > 0)
+			if (myHero->IsValidTarget(Ally, W->Range()) && CountEnemiesInRange(2000) > 0 && Q->ManaCost() + W->ManaCost()> myHero->GetMana())
 			{
-				if (Ally->HealthPercent() <= 30 && !Ally->IsDead() && Ally != myHero && !Ally->IsRecalling())
+				if (Ally->HealthPercent() <= 10 && !Ally->IsDead() && Ally != myHero && !Ally->IsRecalling())
 				{
 					W->CastOnPosition(Ally->ServerPosition());
 				}
-				if (myHero->HealthPercent() <= 30)
+				if (myHero->HealthPercent() <= 10)
 				{
 					W->CastOnPlayer();
 				}
@@ -384,20 +408,20 @@ void Combo()
 		if (myHero->IsValidTarget(target, Q->Range()) && !IsImmune(target))
 		{
 			CastQ(target);
-			lastq = GGame->CurrentTick();
+			lastq = GGame->TickCount();
 		}
 	}
 	
 	if (ComboQ2->Enabled())
 	{
 		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q2->Range());
-		if (myHero->IsValidTarget(target, Q2->Range()) && target->HasBuff("threshQ") && GGame->CurrentTick() - lastq > 100)
+		if (myHero->IsValidTarget(target, Q2->Range()) && target->HasBuff("threshQ") && GGame->TickCount() - lastq > 100)
 		{
 			Q2->CastOnPlayer();
-			lastq2 = GGame->CurrentTick();
+			lastq2 = GGame->TickCount();
 		}
 	}
-	if (ComboE->Enabled()  && GGame->CurrentTick() - lastq2 > 250)
+	if (ComboE->Enabled()  && GGame->TickCount() - lastq2 > 250)
 	{
 		if (E->IsReady())
 		{
@@ -419,24 +443,7 @@ void Combo()
 	{
 		CastW();
 	}
-	if (ComboR->Enabled() && R->IsReady())
-	{
-		for (auto Enemy : GEntityList->GetAllHeros(false, true))
-		{
-			if (Enemy != nullptr && !Enemy->IsDead())
-			{
-				auto dmg = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotR);
-				if (myHero->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable())
-
-				{
-					if (Enemy->GetHealth() <= 1.5* dmg && GetDistance(myHero, Enemy) <= R->Range() - 60)
-					{
-						R->CastOnPlayer();
-					}
-				}
-			}
-		}
-	}
+	
 	if (R->IsReady() && ComboRAOEuse->Enabled())
 	{
 		for (auto Enemy : GEntityList->GetAllHeros(false, true))
@@ -652,11 +659,15 @@ void Usepotion()
 }
 static bool HaveCC(IUnit* Ally)
 {
-	return Ally->HasBuffOfType(BUFF_Charm) || Ally->HasBuffOfType(BUFF_CombatDehancer) ||
-		Ally->HasBuffOfType(BUFF_Fear) || Ally->HasBuffOfType(BUFF_Knockback) ||
-		Ally->HasBuffOfType(BUFF_Knockup) || Ally->HasBuffOfType(BUFF_Polymorph) ||
-		Ally->HasBuffOfType(BUFF_Snare) || Ally->HasBuffOfType(BUFF_Stun) ||
-		Ally->HasBuffOfType(BUFF_Suppression) || Ally->HasBuffOfType(BUFF_Taunt);
+	if((Ally->HasBuffOfType(BUFF_Charm)&& Wcharm->Enabled()) || (Ally->HasBuffOfType(BUFF_CombatDehancer) && WCombatdehancer->Enabled())||
+		(Ally->HasBuffOfType(BUFF_Fear) && Wfear->Enabled() )|| (Ally->HasBuffOfType(BUFF_Knockback) && Wknockback->Enabled()) ||
+		(Ally->HasBuffOfType(BUFF_Knockup) && Wknockup->Enabled())|| (Ally->HasBuffOfType(BUFF_Polymorph) && Wpolymorph->Enabled() )||
+		(Ally->HasBuffOfType(BUFF_Snare) && Wsnare->Enabled()) || (Ally->HasBuffOfType(BUFF_Stun) && Wstun->Enabled()) ||
+		(Ally->HasBuffOfType(BUFF_Suppression) &&  Wsuppression->Enabled()) || (Ally->HasBuffOfType(BUFF_Taunt) && Wtaunt->Enabled()))
+	{
+		return true;
+	}
+	return true;
 }
 void Lantern()
 {
@@ -688,9 +699,41 @@ PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& args)
 		if (std::string(args.Name_) == "ThreshE")
 		{
 			GOrbwalking->ResetAA();
-		}
-	}	
+		}		
+	}
 }
+
+PLUGIN_EVENT(void) OnCast(CastedSpell const& args)
+{
+	if (args.Caster_ == myHero)
+	{
+		if ((std::string(args.Name_) == "ThreshE" || std::string(args.Name_) == "ThreshQLeap")&& GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+		{
+			if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
+			{
+				if (ComboR->Enabled() && R->IsReady())
+				{
+					for (auto Enemy : GEntityList->GetAllHeros(false, true))
+					{
+						if (Enemy != nullptr && !Enemy->IsDead())
+						{
+							auto dmg = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotR);
+							if (myHero->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable())
+
+							{
+								if (Enemy->GetHealth() <= 1.5* dmg && GetDistance(myHero, Enemy) <= R->Range())
+								{
+									R->CastOnPlayer();
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}
+
 PLUGIN_EVENT(void) OnRender()
 {
 	if (DrawReady->Enabled())
@@ -789,14 +832,16 @@ PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)
 	GEventManager->AddEventHandler(kEventOnGapCloser, OnGapcloser);
 	GEventManager->AddEventHandler(kEventOnInterruptible, OnInterruptable);
 	GEventManager->AddEventHandler(kEventOnSpellCast, OnProcessSpellCast);
+	GEventManager->AddEventHandler(kEventOnDoCast, OnCast);
+	
 	if (strcmp(GEntityList->Player()->ChampionName(), "Thresh") == 0)
 	{
-		GGame->PrintChat("D-Thresh : Loaded");
+		GRender->NotificationEx(Vec4(220, 20, 60, 255), 2, true, true, "D-Thresh : Loaded!");
 	}
 	else
 	{
-		GGame->PrintChat("You are not playing Thresh...");
-	}
+		GRender->NotificationEx(Vec4(220, 20, 60, 255), 2, true, true, "You are not playing Thresh...");
+	}	
 }
 
 
@@ -810,6 +855,6 @@ PLUGIN_API void OnUnload()
 	GEventManager->RemoveEventHandler(kEventOnGapCloser, OnGapcloser);
 	GEventManager->RemoveEventHandler(kEventOnInterruptible, OnInterruptable);
 	GEventManager->RemoveEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);
-	GEventManager->RemoveEventHandler(kEventOnSpellCast, OnProcessSpellCast);
+	GEventManager->RemoveEventHandler(kEventOnDoCast, OnCast);
 	
 }
