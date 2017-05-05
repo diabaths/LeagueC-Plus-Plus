@@ -855,6 +855,7 @@ PLUGIN_API void OnUnload()
 	GEventManager->RemoveEventHandler(kEventOnGapCloser, OnGapcloser);
 	GEventManager->RemoveEventHandler(kEventOnInterruptible, OnInterruptable);
 	GEventManager->RemoveEventHandler(kEventOrbwalkAfterAttack, OnAfterAttack);
+	GEventManager->RemoveEventHandler(kEventOnSpellCast, OnProcessSpellCast);
 	GEventManager->RemoveEventHandler(kEventOnDoCast, OnCast);
 	
 }
