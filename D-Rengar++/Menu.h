@@ -99,7 +99,7 @@ ISpell2* E;
 ISpell2* R;
 
 
-ISpell* Ignite;
+ISpell2* Ignite;
 ISpell2* smite;
 
 IInventoryItem* Titanic_Hydra;
@@ -135,7 +135,7 @@ inline void  Menu()
 	HarassQ = QMenu->CheckBox("Use Q harass", false);
 	FarmQ = QMenu->CheckBox("Use Q Farm", true);
 	JungleQ = QMenu->CheckBox("Use Q Jungle", true);
-	KillstealQ = QMenu->CheckBox("Use Q to killsteal", true);
+	//KillstealQ = QMenu->CheckBox("Use Q to killsteal", true);
 
 	WMenu = MainMenu->AddMenu("W Settings");
 	ComboW = WMenu->CheckBox("Use W in Combo", true);
@@ -151,7 +151,7 @@ inline void  Menu()
 	HarassE = EMenu->CheckBox("Use E Harass", true);
 	FarmE = EMenu->CheckBox("Use E Laneclear", false);
 	JungleE = EMenu->CheckBox("Use E JungleClear", true);
-	KillstealE = EMenu->CheckBox("Use E Killsteal", true);
+	//KillstealE = EMenu->CheckBox("Use E Killsteal", true);
 		
 
 	MiscMenu = MainMenu->AddMenu("Misc Settings");

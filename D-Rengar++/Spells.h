@@ -17,15 +17,16 @@ inline void LoadSpells()
 	auto slot1 = GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot1);
 	auto slot2 = GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot2);
 
-	if (strstr(slot1, "SummonerDot") == 0)
+	if (strstr(slot1, "SummonerDot"))
 	{
-		Ignite = GPluginSDK->CreateSpell(kSummonerSlot1, 600);
+		Ignite = GPluginSDK->CreateSpell2(kSummonerSlot1, kTargetCast, false, false, kCollidesWithNothing);
+		Ignite->SetOverrideRange(600.f);
 	}
-	if (strstr(slot2, "SummonerDot") == 0)
+	if (strstr(slot2, "SummonerDot"))
 	{
-		Ignite = GPluginSDK->CreateSpell(kSummonerSlot2, 600);
+		Ignite = GPluginSDK->CreateSpell2(kSummonerSlot2, kTargetCast, false, false, kCollidesWithNothing);
+		Ignite->SetOverrideRange(600.f);
 	}
-	
 	if (strstr(slot1, "SummonerSmite"))
 	{
 		smite = GPluginSDK->CreateSpell2(kSummonerSlot1, kTargetCast, false, false, kCollidesWithNothing);
