@@ -10,7 +10,7 @@ PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& spell)
 	{
 		if (std::string(spell.Name_) == "CaitlynYordleTrap")
 		{
-			LastWTick = GGame->CurrentTick();
+			LastWTick = GGame->TickCount();
 		}
 
 		if (std::string(spell.Name_) == "CaitlynPiltoverPeacemaker" || std::string(spell.Name_) == "CaitlynEntrapment")

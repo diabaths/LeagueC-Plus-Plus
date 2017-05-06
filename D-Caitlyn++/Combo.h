@@ -8,19 +8,19 @@ inline void Combo()
 		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, Q->Range());
 		CastQ(target);
 	}
-	if (ComboW->Enabled() && W->IsReady() && GGame->CurrentTick() - LastWTick > 1500)
+	if (ComboW->Enabled() && W->IsReady() && GGame->TickCount() - LastWTick > 2000)
 	{
 		if (myHero->GetMana() > Q->ManaCost() + E->ManaCost())
 		{
+		
 			auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
 			if (myHero->IsValidTarget(Enemy, W->Range()) && Enemy != nullptr && !Enemy->HasBuff("caitlynyordletrapinternal"))
 			{
 				AdvPredictionOutput prediction_output;
 				W->RunPrediction(Enemy, true, kCollidesWithNothing, &prediction_output);
-				if (!Enemy->IsInvulnerable() && prediction_output.HitChance >= kHitChanceHigh)
+				if (prediction_output.HitChance >= kHitChanceVeryHigh)
 				{
 					W->CastOnTarget(Enemy);
-					LastWTick = GGame->CurrentTick();
 				}
 			}
 		}

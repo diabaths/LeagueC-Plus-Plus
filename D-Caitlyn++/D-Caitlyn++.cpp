@@ -40,7 +40,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	{
 		RRange = 1500 + 500 * GEntityList->Player()->GetSpellLevel(kSlotR);
 	}
-	if (W->IsReady() && GGame->CurrentTick() - LastWTick > 500)
+	if (W->IsReady() && GGame->TickCount() - LastWTick > 1000)
 	{
 		if ( myHero->GetMana() > Q->ManaCost() + E->ManaCost())
 		{
@@ -50,17 +50,14 @@ PLUGIN_EVENT(void) OnGameUpdate()
 				if (!EWQCombo->GetInteger() && AutoW->Enabled() && !target->IsDead() && target->HasBuffOfType(BUFF_Stun) || target->HasBuffOfType(BUFF_Snare) || target->HasBuffOfType(BUFF_Knockup)
 					|| target->HasBuffOfType(BUFF_Suppression) /*target->IsCastingImportantSpell()*/)
 				{
-					LastWTick = GGame->CurrentTick();
 					W->CastOnPosition(target->ServerPosition());
 				}
 				if (AutoWtele->Enabled() && target->HasBuff("teleport_target"))
 				{
-					LastWTick = GGame->CurrentTick();
 					W->CastOnPosition(target->ServerPosition());
 				}
 				if (AutoWmelee->Enabled() && target->IsMelee() && GetDistance(myHero, target) < target->GetRealAutoAttackRange(myHero))
 				{
-					LastWTick = GGame->CurrentTick();
 					W->CastOnPosition(myHero->ServerPosition());
 				}
 			}
