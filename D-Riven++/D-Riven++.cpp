@@ -103,7 +103,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 		{
 			delay = GGame->Latency();
 		}
-		else if (GGame->Latency() <= 50)
+		else if (GGame->Latency() <= 50 && GGame->Latency() > 20)
 		{
 			delay = GGame->Latency() / 2 + 5;
 		}

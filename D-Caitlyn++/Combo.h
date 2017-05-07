@@ -12,15 +12,20 @@ inline void Combo()
 	{
 		if (myHero->GetMana() > Q->ManaCost() + E->ManaCost())
 		{
-		
 			auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, W->Range());
 			if (myHero->IsValidTarget(Enemy, W->Range()) && Enemy != nullptr && !Enemy->HasBuff("caitlynyordletrapinternal"))
 			{
 				AdvPredictionOutput prediction_output;
 				W->RunPrediction(Enemy, true, kCollidesWithNothing, &prediction_output);
-				if (prediction_output.HitChance >= kHitChanceVeryHigh)
+				if (prediction_output.HitChance >= kHitChanceVeryHigh && Enemy->IsFacing(myHero))
 				{
-					W->CastOnTarget(Enemy);
+					W->CastOnPosition(prediction_output.CastPosition);
+				}
+				if (prediction_output.HitChance >= kHitChanceVeryHigh && !Enemy->IsFacing(myHero))
+				{
+					auto vector = Enemy->GetPosition() - myHero->GetPosition();
+					auto Behind = prediction_output.CastPosition + vector.VectorNormalize() * 100;
+					W->CastOnPosition(Behind);
 				}
 			}
 		}

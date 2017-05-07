@@ -40,7 +40,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	{
 		RRange = 1500 + 500 * GEntityList->Player()->GetSpellLevel(kSlotR);
 	}
-	if (W->IsReady() && GGame->TickCount() - LastWTick > 1000)
+	if (W->IsReady() && GGame->TickCount() - LastWTick > 1500)
 	{
 		if ( myHero->GetMana() > Q->ManaCost() + E->ManaCost())
 		{

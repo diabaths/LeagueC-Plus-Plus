@@ -30,7 +30,7 @@ inline void Combo()
 		EDash(Enemy);
 	}
 	_Youmuu(Enemy);
-	if (Enemy != nullptr && ComboQ->Enabled() && Q->IsReady() && CanMoveMent(myHero) && Qstack == 0 &&
+	/*if (Enemy != nullptr && ComboQ->Enabled() && Q->IsReady() && CanMoveMent(myHero) && Qstack == 0 &&
 		GetDistance(myHero, Enemy) <= myHero->AttackRange() + Q->Range() &&
 		GetDistance(myHero, Enemy) > myHero->AttackRange() + 50 && GGame->CurrentTick() - LastQ > 900)
 	{
@@ -43,7 +43,7 @@ inline void Combo()
 			AutoAttack = true;
 			ModeQ(Enemy);
 		}
-	}
+	}*/
 
 	if (ComboW->Enabled() && W->IsReady() && myHero->IsValidTarget(Enemy, W->Range()))
 	{
@@ -142,14 +142,14 @@ static void processCombo(CastedSpell const& spell)
 			}
 			if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 			{
-				ModeQ(Enemy);
+				//ModeQ(Enemy);
 				AutoAttack = true;
 				return;
 			}
 		}
 		if (std::string(spell.Name_) == "RivenMartyr")
 		{
-			if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
+			if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400) && !myHero->IsWindingUp())
 			{
 				ModeQ(Enemy);
 				AutoAttack = true;
@@ -174,9 +174,9 @@ static void processCombo(CastedSpell const& spell)
 				return;
 			}
 		}
-		if (std::string(spell.Name_) == "RivenIzunaBlade")
+		if (std::string(spell.Name_) == "RivenIzunaBlade" && Qstack ==2)
 		{
-			if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
+			if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400) && !myHero->IsWindingUp())
 			{
 				ModeQ(Enemy);
 				AutoAttack = true;
