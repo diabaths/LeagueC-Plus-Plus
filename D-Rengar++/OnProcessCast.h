@@ -1,5 +1,6 @@
 #pragma once
-
+#include "Extension.h"
+#include "Combo.h"
 PLUGIN_EVENT(void) OnProcessCast(CastedSpell const& spell)
 {
 	if (spell.Caster_ == myHero)

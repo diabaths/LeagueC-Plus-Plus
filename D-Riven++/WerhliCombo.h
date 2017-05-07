@@ -76,7 +76,7 @@ inline void Werhli()
 						auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
 						if (Enemy != nullptr &&  !Enemy->IsDead())
 						{
-							Q->CastOnPosition(Enemy->ServerPosition());
+							ModeQ(Enemy);
 						}
 					});
 				}
@@ -137,7 +137,7 @@ inline void Werhli()
 							auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
 							if (Enemy != nullptr &&  !Enemy->IsDead())
 							{
-								Q->CastOnPosition(Enemy->ServerPosition());
+								ModeQ(Enemy);
 							}
 						});
 					}
@@ -157,7 +157,7 @@ inline void Werhli()
 			{
 				if (Q->IsReady() && Qstack < 2 && GGame->CurrentTick() - LastQ >= 850)
 				{
-					Q->CastOnPosition(GGame->CursorPosition());
+					ModeQ(Enemy);
 				}
 			}
 		}
@@ -184,7 +184,7 @@ static void processWerhliBurst(CastedSpell const& spell)
 				}
 				else if (!W->IsReady() && Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 				{
-					Q->CastOnPosition(Enemy->ServerPosition());
+					ModeQ(Enemy);
 					AutoAttack = true;
 					return;
 				}
@@ -207,7 +207,7 @@ static void processWerhliBurst(CastedSpell const& spell)
 			{
 				if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 				{
-					Q->CastOnPosition(Enemy->ServerPosition());
+					ModeQ(Enemy);
 					AutoAttack = true;
 					return;
 				}
@@ -216,7 +216,7 @@ static void processWerhliBurst(CastedSpell const& spell)
 			{
 				if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 				{
-					Q->CastOnPosition(Enemy->ServerPosition());
+					ModeQ(Enemy);
 					AutoAttack = true;
 				}
 			}
@@ -255,7 +255,7 @@ static void WerhliBurstafter(IUnit* source, IUnit* target)
 		}
 		if (Q->IsReady() && myHero->IsValidTarget(target, Q->Range()))
 		{
-			Q->CastOnPosition(target->ServerPosition());
+			ModeQ(target);
 		}
 	}
 }

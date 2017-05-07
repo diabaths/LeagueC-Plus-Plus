@@ -78,7 +78,7 @@ inline void Sexy()
 						auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
 						if (Enemy != nullptr && !Enemy->IsDead())
 						{
-							Q->CastOnPosition(Enemy->ServerPosition());
+							ModeQ(Enemy);
 						}
 					});
 				}
@@ -118,7 +118,7 @@ static void processSexyBurst(CastedSpell const& spell)
 				}
 				else if (!W->IsReady() && Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 				{
-					Q->CastOnPosition(Enemy->GetPosition());
+					ModeQ(Enemy);
 					AutoAttack = true;
 					return;
 				}
@@ -135,7 +135,7 @@ static void processSexyBurst(CastedSpell const& spell)
 			{
 				if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 				{
-					Q->CastOnPosition(Enemy->ServerPosition());
+					ModeQ(Enemy);
 					AutoAttack = true;
 					return;
 				}
@@ -154,7 +154,7 @@ static void processSexyBurst(CastedSpell const& spell)
 				}
 				if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 				{
-					Q->CastOnPosition(Enemy->ServerPosition());
+					ModeQ(Enemy);
 					AutoAttack = true;
 				}
 			}

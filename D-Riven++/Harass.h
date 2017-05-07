@@ -37,13 +37,13 @@ inline void Harass()
 			{
 				if (Qstack == 0 && myHero->IsValidTarget(Enemy, Q->Range() + myHero->GetRealAutoAttackRange(Enemy)))
 				{
-					Q->CastOnPosition(Enemy->ServerPosition());
+					ModeQ(Enemy);
 					GOrbwalking->GetLastTarget();
 				}
 
 				if (Qstack == 1 && GGame->CurrentTick() - LastQ > 600)
 				{
-					Q->CastOnPosition(Enemy->ServerPosition());
+					ModeQ(Enemy);
 					GOrbwalking->GetLastTarget();
 				}
 			}
@@ -58,7 +58,7 @@ inline void Harass()
 			if (Q->IsReady() && HarassQ->Enabled() && myHero->IsValidTarget(Enemy, Q->Range() + myHero->GetRealAutoAttackRange(Enemy)) && Qstack == 0 &&
 				GGame->CurrentTick() - LastQ > 500)
 			{
-				Q->CastOnPosition(Enemy->ServerPosition());
+				ModeQ(Enemy);
 				GOrbwalking->GetLastTarget();
 			}
 
@@ -81,12 +81,12 @@ static void afterattackHarass(IUnit* source, IUnit* target)
 		{
 			if (Qstack == 1)
 			{
-				Q->CastOnPosition(target->ServerPosition());
+				ModeQ(target);
 			}
 		}
 		if (HarassMode->GetInteger() == 1)
 		{
-			Q->CastOnPosition(target->ServerPosition());
+			ModeQ(target);
 		}
 	}
 }

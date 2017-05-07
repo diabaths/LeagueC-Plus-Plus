@@ -13,7 +13,7 @@ static void Flee()
 			W->CastOnPlayer();
 		}
 	}
-	if (Q->IsReady() && !myHero->IsRecalling())
+	if (Q->IsReady() && !myHero->IsRecalling() && !myHero->IsDashing())
 	{
 		Q->CastOnPosition(GGame->CursorPosition());
 	}

@@ -519,7 +519,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 				Vec3 finalPosition = prediction_output.TargetPosition + pushDirection;
 				auto wall = GNavMesh->GetCollisionFlagsForPoint(finalPosition);
 
-				if (wall ==kWallMesh  || wall == kBuildingMesh && prediction_output.HitChance >= kHitChanceHigh)
+				if ((wall == kPropMesh || wall ==kWallMesh  || wall == kBuildingMesh) && prediction_output.HitChance >= kHitChanceHigh)
 				{
 					E->CastOnUnit(target);
 					return;

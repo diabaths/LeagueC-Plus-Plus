@@ -70,7 +70,7 @@ inline void Nidalee()
 						auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
 						if (Enemy != nullptr && !Enemy->IsDead())
 						{
-							Q->CastOnPosition(Enemy->ServerPosition());
+							ModeQ(Enemy);
 						}
 					});
 				}
@@ -90,7 +90,7 @@ inline void Nidalee()
 					auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
 					if (Enemy != nullptr && !Enemy->IsDead())
 					{
-						Q->CastOnPosition(Enemy->ServerPosition());
+						ModeQ(Enemy);
 					}
 				});
 			}
@@ -118,7 +118,7 @@ static void processNidaleeBurst(CastedSpell const& spell)
 				}
 				else if (!W->IsReady() && Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 				{
-					Q->CastOnPosition(Enemy->ServerPosition());
+					ModeQ(Enemy);
 					AutoAttack = true;
 					return;
 				}
@@ -141,7 +141,7 @@ static void processNidaleeBurst(CastedSpell const& spell)
 			{
 				if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 				{
-					Q->CastOnPosition(Enemy->ServerPosition());
+					ModeQ(Enemy);
 					AutoAttack = true;
 					return;
 				}
@@ -159,7 +159,7 @@ static void processNidaleeBurst(CastedSpell const& spell)
 			{
 				if (!R2->IsReady() && Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 				{
-					Q->CastOnPosition(Enemy->ServerPosition());
+					ModeQ(Enemy);
 					AutoAttack = true;
 				}
 			}

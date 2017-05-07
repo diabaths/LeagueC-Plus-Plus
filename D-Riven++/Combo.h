@@ -41,7 +41,7 @@ inline void Combo()
 				GGame->PrintChat("Q_COMBO");
 			}
 			AutoAttack = true;
-			Q->CastOnPosition(Enemy->ServerPosition());
+			ModeQ(Enemy);
 		}
 	}
 
@@ -142,7 +142,7 @@ static void processCombo(CastedSpell const& spell)
 			}
 			if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 			{
-				Q->CastOnPosition(Enemy->ServerPosition());
+				ModeQ(Enemy);
 				AutoAttack = true;
 				return;
 			}
@@ -151,7 +151,7 @@ static void processCombo(CastedSpell const& spell)
 		{
 			if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 			{
-				Q->CastOnPosition(Enemy->GetPosition());
+				ModeQ(Enemy);
 				AutoAttack = true;
 			}
 			else if (ComboR2->Enabled() && R->IsReady() && myHero->HasBuff("RivenFengShuiEngine") && R2Logic(Enemy))
@@ -178,7 +178,7 @@ static void processCombo(CastedSpell const& spell)
 		{
 			if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 			{
-				Q->CastOnPosition(Enemy->ServerPosition());
+				ModeQ(Enemy);
 				AutoAttack = true;
 			}
 		}
@@ -197,7 +197,7 @@ static void afterattackCombo(IUnit* source, IUnit* target)
 		}
 		if (Q->IsReady() && myHero->IsValidTarget(target, 400))
 		{
-			Q->CastOnPosition(target->ServerPosition());
+			ModeQ(target);
 			AutoAttack = true;
 			return;
 		}

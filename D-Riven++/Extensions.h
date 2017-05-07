@@ -358,3 +358,14 @@ static bool HaveUlti2()
 
 	return false;
 }
+inline void ModeQ(IUnit* target)
+{
+	if (QMode->GetInteger() == 0)
+	{
+		Q->CastOnPosition(target->ServerPosition());
+	}
+	if (QMode->GetInteger() == 1)
+	{
+		Q->CastOnPosition(GGame->CursorPosition());
+	}
+}

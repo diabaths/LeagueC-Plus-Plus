@@ -92,6 +92,7 @@ IMenuOption* ManualAACancel;
 IMenuOption* Autoattackanimation;
 IMenuOption* burstRangeColor;
 IMenuOption* Drawburst;
+IMenuOption* QMode;
 
 
 IUnit* myHero;
@@ -146,6 +147,7 @@ inline void  Menu()
 	SkinChangeid = BurstMenu->AddInteger("Skin ID", 1, 8, 1);
 
 	QMenu = MainMenu->AddMenu("Q Settings");
+	QMode = QMenu->AddSelection("Q Mode:", 0, { "Enemy Position", "Cursor Position" });
 	ComboQ = QMenu->CheckBox("Use Q in combo", true);
 	HarassQ = QMenu->CheckBox("Use Q in Harass", true);
 	FarmQ = QMenu->CheckBox("Use Q in Laneclear", true);

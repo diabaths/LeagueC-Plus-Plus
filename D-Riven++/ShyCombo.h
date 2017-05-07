@@ -87,7 +87,7 @@ inline void Burstshy()
 					auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
 					if (Enemy != nullptr && !Enemy->IsDead())
 					{
-						Q->CastOnPosition(Enemy->ServerPosition());
+						ModeQ(Enemy);
 					}
 				});
 			}
@@ -95,7 +95,7 @@ inline void Burstshy()
 		}
 		if (Qstack < 2 && GGame->CurrentTick() - LastQ > 850)
 		{
-			Q->CastOnPosition(GGame->CursorPosition());
+			ModeQ(Enemy);
 		}
 	}
 	else if (!UseFlash->Enabled())
@@ -149,7 +149,7 @@ inline void Burstshy()
 					auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
 					if (Enemy != nullptr && !Enemy->IsDead())
 					{
-						Q->CastOnPosition(Enemy->ServerPosition());
+						ModeQ(Enemy);
 					}
 				});
 			}
@@ -160,7 +160,7 @@ inline void Burstshy()
 		{
 			if (Qstack < 2 && GGame->CurrentTick() - LastQ >= 850)
 			{
-				Q->CastOnPosition(GGame->CursorPosition());
+				ModeQ(Enemy);
 			}
 		}
 	}
@@ -205,7 +205,7 @@ static void ShyBurstafter(IUnit* source, IUnit* target)
 		}
 		if (!W->IsReady() && !R->IsReady() && Q->IsReady() && myHero->IsValidTarget(target, Q->Range()))
 		{
-			Q->CastOnPosition(target->ServerPosition());
+			ModeQ(target);
 		}
 	}
 }
@@ -231,7 +231,7 @@ static void processShyBurst(CastedSpell const& spell)
 				}
 				else if (!W->IsReady() && Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 				{
-					Q->CastOnPosition(Enemy->ServerPosition());
+					ModeQ(Enemy);
 					AutoAttack = true;
 					return;
 				}
@@ -259,7 +259,7 @@ static void processShyBurst(CastedSpell const& spell)
 				}
 				if (!R->IsReady() && Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 				{
-					Q->CastOnPosition(Enemy->ServerPosition());
+					ModeQ(Enemy);
 					AutoAttack = true;
 					return;
 				}
@@ -268,7 +268,7 @@ static void processShyBurst(CastedSpell const& spell)
 			{
 				if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
 				{
-					Q->CastOnPosition(Enemy->ServerPosition());
+					ModeQ(Enemy);
 					AutoAttack = true;
 				}
 			}
