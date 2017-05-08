@@ -13,25 +13,6 @@ inline float GetRealDistance(IUnit* sender, IUnit* target)
 	return (sender->ServerPosition() - target->ServerPosition()).Length2D() + sender->BoundingRadius() + target->BoundingRadius();
 }
 
-inline int EnemiesInRange(IUnit* Source, float range)
-{
-	auto Targets = GEntityList->GetAllHeros(false, true);
-	auto enemiesInRange = 0;
-
-	for (auto target : Targets)
-	{
-		if (target != nullptr)
-		{
-			auto flDistance = (target->GetPosition() - Source->GetPosition()).Length();
-			if (flDistance < range)
-			{
-				enemiesInRange++;
-			}
-		}
-	}
-	return enemiesInRange;
-}
-
 inline float GetDistance(IUnit* Player, IUnit* target)
 {
 	return (Player->GetPosition() - target->GetPosition()).Length2D();

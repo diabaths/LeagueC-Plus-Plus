@@ -30,10 +30,12 @@ inline void LoadSpells()
 	if (strstr(slot1, "SummonerSmite"))
 	{
 		smite = GPluginSDK->CreateSpell2(kSummonerSlot1, kTargetCast, false, false, kCollidesWithNothing);
+		smite->SetOverrideRange(550.f);
 	}
 	if (strstr(slot2, "SummonerSmite"))
 	{
 		smite = GPluginSDK->CreateSpell2(kSummonerSlot2, kTargetCast, false, false, kCollidesWithNothing);
+		smite->SetOverrideRange(550.f);
 	}
 	
 	Titanic_Hydra = GPluginSDK->CreateItemForId(3748, 385);
