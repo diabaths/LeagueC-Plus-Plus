@@ -14,7 +14,7 @@ inline void laneclear()
 			if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))
 			{	//credits malachite
 				auto pred = FindBestLineCastPosition(vector<Vec3>{ myHero->GetPosition() }, Q->Range(), Q->Range(), 60, true, false);
-				if (pred.HitCount >= minminions->GetInteger() && pred.CastOnUnit != nullptr)
+				if (FarmQ->Enabled() && pred.HitCount >= minminions->GetInteger() && pred.CastOnUnit != nullptr)
 				{
 					Q->CastOnUnit(pred.CastOnUnit);
 				}
