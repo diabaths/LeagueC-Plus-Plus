@@ -1,5 +1,6 @@
 #pragma once
 #include "Extension.h"
+#include "malachite_Extension.h"
 
 inline void laneclear()
 {
@@ -10,25 +11,19 @@ inline void laneclear()
 		if (Q->IsReady() && !minions->IsWard())
 		{
 			auto dmg = GDamage->GetSpellDamage(myHero, minions, kSlotQ);
-			if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range())) //&& !minions->IsWard())
-			{
-				Vec3 pos;
-				int Qhit;
-				GPrediction->FindBestCastPosition(Q->Range(), Q->Radius(), false, true, false, pos, Qhit);
-				if (FarmQ->Enabled() && Qhit >= minminions->GetInteger())
+			if (minions != nullptr && myHero->IsValidTarget(minions, Q->Range()))
+			{	//credits malachite
+				auto pred = FindBestLineCastPosition(vector<Vec3>{ myHero->GetPosition() }, Q->Range(), Q->Range(), 60, true, false);
+				if (pred.HitCount >= minminions->GetInteger() && pred.CastOnUnit != nullptr)
 				{
-					Q->CastOnPosition(pos);
-					return;
-				}	
-				/*if (FarmQ->Enabled())
-				{
-					Q->AttackMinions(4);
-				}*/
+					Q->CastOnUnit(pred.CastOnUnit);
+				}
+
 				if (LastHitQ->Enabled() && minions->GetHealth() < dmg && GetDistance(myHero, minions) > myHero->AttackRange())
 				{
 					Q->CastOnUnit(minions);
 					return;
-				}				
+				}
 			}
 		}
 	}

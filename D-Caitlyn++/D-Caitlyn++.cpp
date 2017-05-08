@@ -20,6 +20,20 @@
 
 PluginSetup("D-Caitlyn++");
 
+static void CheatRito()
+{
+	if (ChangeSkin->Enabled())
+	{
+		if (myHero->GetSkinId() != SkinChangeid->GetInteger())
+		{
+			myHero->SetSkinId(SkinChangeid->GetInteger());
+		}
+	}
+	else
+	{
+		myHero->SetSkinId(myHero->GetSkinId());
+	}
+}
 
 PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
 {
@@ -90,6 +104,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	killsteal();
 	UseItems();
 	Usepotion();
+	CheatRito();
 }
 
 PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)

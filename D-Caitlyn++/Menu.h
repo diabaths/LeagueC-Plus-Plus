@@ -52,6 +52,8 @@ IMenuOption* eRangeColor;
 IMenuOption* rRangeColor;
 IMenuOption* harassFarmQ;
 IMenuOption* RMinenemies;
+IMenuOption* ChangeSkin; 
+IMenuOption* SkinChangeid;
 
 IUnit* myHero;
 
@@ -119,11 +121,14 @@ inline void  Menu()
 	Blade_Cutlass = ItemsMenu->CheckBox("Blade-Cutlass", true);
 	MyHpPreBlade = ItemsMenu->AddInteger("Use Blade-Cutlass if my HP <", 10, 100, 35);
 	EnemyHpPreBlade = ItemsMenu->AddInteger("Use Blade-Cutlass if Enemy HP <", 10, 100, 35);
-
-
+	
 	PotionMenu = MainMenu->AddMenu("Potion Setting");
 	usepotion = PotionMenu->CheckBox("Use potions", true);
 	usepotionhpper = PotionMenu->AddInteger("Use potions if HP <", 10, 100, 35);
+
+	MiscMenu = MainMenu->AddMenu("Misc Settings");
+	ChangeSkin = MiscMenu->CheckBox("Use Skin", true);
+	SkinChangeid = MiscMenu->AddInteger("Skin ID", 1, 10, 1);
 
 	Drawings = MainMenu->AddMenu("Drawings");
 	DrawReady = Drawings->CheckBox("Draw Only Ready Spells", true);

@@ -67,20 +67,3 @@ inline void CastQ(IUnit* target)
 		}
 	}
 }
-
-inline std::string ToLower(std::string StringToLower)
-{
-	auto Lowered = StringToLower;
-	for (int i = 0; i < Lowered[i]; i++)
-	{
-		Lowered[i] = tolower(Lowered[i]);
-	} return Lowered;
-}
-
-inline bool Contains(std::string Container, std::string Contained)
-{
-	auto LoweredContainer = ToLower(Container); auto LoweredContained = ToLower(Contained);
-	if (LoweredContainer.find(LoweredContained) != std::string::npos)
-		return true;
-	else return false;
-}
