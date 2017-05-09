@@ -30,7 +30,7 @@ inline void Combo()
 			}
 		}
 	}
-	if (ComboR->Enabled() && R->IsReady())
+	if (ComboR->Enabled() && R->IsReady() && GGame->TickCount() - QCastTime > 1000)
 	{
 		auto Rmin = RMin->GetInteger();
 		auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, RRange);
