@@ -25,7 +25,7 @@ PLUGIN_EVENT(void) OnCreateObject(IUnit* obj)
 			Qstack = 0;
 			ResetQ3();
 		}
-		if (strcmp(obj->GetObjectName(), "Riven_Base_W_03_Cast.troy") == 0)
+		if (strcmp(obj->GetObjectName(), "Riven_Base_W_Cast.troy") == 0)
 		{
 			ResetW();
 		}
