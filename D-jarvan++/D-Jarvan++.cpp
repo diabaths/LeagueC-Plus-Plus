@@ -418,11 +418,10 @@ void Combo()
 				E->RunPrediction(target, true, kCollidesWithYasuoWall | kCollidesWithMinions, &prediction_output);
 				if (E->IsReady() && prediction_output.HitChance >= kHitChanceHigh)
 				{
-					Vec3 Enemypos;
-					//auto Rstartcast = target->ServerPosition().Extend(target->ServerPosition(), 50);
-					GPrediction->GetFutureUnitPosition(target, 0.5, true, Enemypos);
-					E->CastOnPosition(Enemypos);
-					Q->CastOnPosition(Enemypos);
+					auto vector = target->GetPosition() - myHero->GetPosition();
+					auto Behind = prediction_output.CastPosition + vector.VectorNormalize() * 100;
+					E->CastOnPosition(Behind);
+					Q->CastOnPosition(Behind);
 				}
 			}
 		}

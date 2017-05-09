@@ -1,5 +1,19 @@
 #pragma once
 #include "Extensions.h"
+inline float Rdamage(IUnit* target)
+{
+	auto damage = 0;
+	if (myHero->GetSpellBook()->GetLevel(kSlotR) == 0)
+	{
+		return 0;
+	}
+	auto Rlvl = GEntityList->Player()->GetSpellLevel(kSlotR) - 1;
+	auto BaseDamage = std::vector<double>({ 200, 320, 440 }).at(Rlvl);
+	auto ADMultiplier = 1.07 * GEntityList->Player()->TotalPhysicalDamage();
+	auto TotalD = BaseDamage + ADMultiplier;
+	damage += TotalD;
+	return static_cast<float>(damage);
+}
 
 inline float TotalDamage(IUnit* target)
 {
@@ -22,12 +36,7 @@ inline float TotalDamage(IUnit* target)
 
 	if (R->IsReady())
 	{
-		auto Rlvl = GEntityList->Player()->GetSpellLevel(kSlotR) - 1;
-		auto BaseDamage = std::vector<double>({ 200, 320, 440 }).at(Rlvl);
-		auto ADMultiplier = 1.07 * GEntityList->Player()->TotalPhysicalDamage();
-		auto TotalD = BaseDamage + ADMultiplier;
-		damage += TotalD;
-		//damage +=Rdamage(target);
+		damage +=Rdamage(target);
 	}
 	damage += GDamage->GetAutoAttackDamage(myHero, target, true);
 		

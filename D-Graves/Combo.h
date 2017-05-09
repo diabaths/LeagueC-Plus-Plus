@@ -1,5 +1,6 @@
 #pragma once
 #include "Extensions.h"
+#include "Damage.h"
 
 inline void Combo()
 {
@@ -32,11 +33,11 @@ inline void Combo()
 			{
 				auto Rlvl = GEntityList->Player()->GetSpellLevel(kSlotR) - 1;
 				auto BaseDamage = std::vector<double>({ 200, 320, 440 }).at(Rlvl);
-				auto ADMultiplier = 1.1 * GEntityList->Player()->TotalPhysicalDamage();
+				auto ADMultiplier = 1.07 * GEntityList->Player()->TotalPhysicalDamage();
 				auto TotalD = BaseDamage + ADMultiplier;
 				if (myHero->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable())
 				{
-					if (Enemy->GetHealth() + 70 <= TotalD)
+					if (Enemy->GetHealth() <= Rdamage(Enemy))
 					{
 						R->CastOnTarget(Enemy, kHitChanceHigh);
 					}

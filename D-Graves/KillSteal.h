@@ -1,5 +1,6 @@
 #pragma once
 #include "Extensions.h"
+#include "Damage.h"
 
 inline void killsteal()
 {
@@ -38,7 +39,7 @@ inline void killsteal()
 					auto BaseDamage = std::vector<double>({ 200, 320, 440 }).at(Rlvl);
 					auto ADMultiplier = 1.07 * GEntityList->Player()->TotalPhysicalDamage();
 					auto TotalD = BaseDamage + ADMultiplier;
-					if (Enemy->GetHealth() + 70 <= TotalD)
+					if (Enemy->GetHealth()<= Rdamage(Enemy))
 					{
 						R->CastOnTarget(Enemy, kHitChanceHigh);
 					}

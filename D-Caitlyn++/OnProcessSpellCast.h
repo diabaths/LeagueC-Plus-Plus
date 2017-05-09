@@ -15,7 +15,7 @@ PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& spell)
 
 		if (std::string(spell.Name_) == "CaitlynPiltoverPeacemaker" || std::string(spell.Name_) == "CaitlynEntrapment")
 		{
-			QCastTime = GGame->CurrentTick();
+			QCastTime = GGame->TickCount();
 		}
 	}
 	if (spell.Caster_->IsEnemy(myHero))
