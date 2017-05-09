@@ -30,9 +30,9 @@ inline void Combo()
 		EDash(Enemy);
 	}
 	_Youmuu(Enemy);
-	/*if (Enemy != nullptr && ComboQ->Enabled() && Q->IsReady() && CanMoveMent(myHero) && Qstack == 0 &&
+	if (Enemy != nullptr && ComboQ->Enabled() && Q->IsReady() && CanMoveMent(myHero) && Qstack == 0 &&
 		GetDistance(myHero, Enemy) <= myHero->AttackRange() + Q->Range() &&
-		GetDistance(myHero, Enemy) > myHero->AttackRange() + 50 && GGame->CurrentTick() - LastQ > 900)
+		GetDistance(myHero, Enemy) > myHero->AttackRange() + 50 && GGame->TickCount() - LastQ > 1100)
 	{
 		if (!myHero->IsDashing())
 		{
@@ -43,7 +43,7 @@ inline void Combo()
 			AutoAttack = true;
 			ModeQ(Enemy);
 		}
-	}*/
+	}
 
 	if (ComboW->Enabled() && W->IsReady() && myHero->IsValidTarget(Enemy, W->Range()))
 	{
@@ -161,6 +161,17 @@ static void processCombo(CastedSpell const& spell)
 		}
 		if (std::string(spell.Name_) == "RivenFeint")
 		{
+			if (ComboW->Enabled() && W->IsReady() && myHero->IsValidTarget(Enemy, W->Range()))
+			{
+				W->CastOnPlayer();
+				return;
+			}
+			if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400))
+			{
+				ModeQ(Enemy);
+				AutoAttack = true;
+				return;
+			}
 			if (ComboR2->Enabled() && R->IsReady() && myHero->HasBuff("RivenFengShuiEngine") && R2Logic(Enemy))
 			{
 				return;

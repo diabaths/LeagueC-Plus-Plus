@@ -68,14 +68,18 @@ inline int CountEnemiesInRange(float range)
 	}
 	return enemies;
 }
+
+
+
 //Credits to hoola and Synx
 static void ResetQ1()
-{	
+{
 	GPluginSDK->DelayFunctionCall(Q1Delay, []()
-	{  
+	{
 		GOrbwalking->ResetAA();
 		GGame->Taunt(kDance);
-		GGame->IssueOrder(myHero, kAttackTo, GOrbwalking->GetLastTarget());
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+		//GGame->IssueOrder(myHero, kMoveTo, GOrbwalking->GetLastTarget());
 		GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
 	});
 }
@@ -86,7 +90,7 @@ static void ResetQ2()
 	{	
 		GOrbwalking->ResetAA();
 		GGame->Taunt(kDance);
-		GGame->IssueOrder(myHero, kAttackTo, GOrbwalking->GetLastTarget());
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
 		GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
 	});
 } 
@@ -97,7 +101,7 @@ static void ResetQ3()
 	{ 
 		GOrbwalking->ResetAA();
 		GGame->Taunt(kDance);
-		GGame->IssueOrder(myHero, kAttackTo, GOrbwalking->GetLastTarget());
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
 		GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
 	});
 }
@@ -108,7 +112,7 @@ static void ResetW()
 	{
 		GOrbwalking->ResetAA();
 		GGame->Taunt(kDance);
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition()); 
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
 	});
 }
 //Credits to hoola and Synx
@@ -119,8 +123,7 @@ static void ResetR1()
 	{
 		GOrbwalking->ResetAA();
 		GGame->Taunt(kDance);
-		GGame->IssueOrder(myHero, kAttackTo, GOrbwalking->GetLastTarget());
-		GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
 	});
 }
 //Credits to hoola and Synx
@@ -130,15 +133,14 @@ static void ResetR2()
 	{
 		GOrbwalking->ResetAA();
 		GGame->Taunt(kDance);
-		GGame->IssueOrder(myHero, kAttackTo, GOrbwalking->GetLastTarget());
-		GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
 	});
 }
 static void AAcancel()
 {
-	GPluginSDK->DelayFunctionCall(390, []()
+	GPluginSDK->DelayFunctionCall(190, []()
 	{
-		GOrbwalking->ResetAA();
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
 	});
 }
 inline std::string ToLower(std::string StringToLower)

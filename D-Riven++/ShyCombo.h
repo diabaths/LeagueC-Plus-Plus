@@ -71,7 +71,7 @@ inline void Burstshy()
 			});
 			if (isR2() && R->IsReady() && myHero->IsValidTarget(Enemy, R2->Range()))
 			{
-				GPluginSDK->DelayFunctionCall(55, []()
+				GPluginSDK->DelayFunctionCall(45, []()
 				{
 					auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
 					if (Enemy != nullptr && !Enemy->IsDead())
@@ -82,7 +82,7 @@ inline void Burstshy()
 			}
 			if (Q->IsReady())
 			{
-				GPluginSDK->DelayFunctionCall(59, []()
+				GPluginSDK->DelayFunctionCall(53, []()
 				{
 					auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
 					if (Enemy != nullptr && !Enemy->IsDead())
@@ -93,14 +93,14 @@ inline void Burstshy()
 			}
 			return;
 		}
-		if (Qstack < 2 && GGame->CurrentTick() - LastQ > 850)
+		if (Qstack < 2 && GGame->TickCount() - LastQ > 850)
 		{
 			ModeQ(Enemy);
 		}
 	}
-	else if (!UseFlash->Enabled())
+	else if (!UseFlash->Enabled() || !Flash->IsReady() || GetDistance(myHero, Enemy) < E->Range() + 100)
 	{
-		if (myHero->IsValidTarget(Enemy, 175 + Q->Range()) && Qstack == 0 && E->IsReady() && R->IsReady() && isR1() && W->IsReady())
+		if (myHero->IsValidTarget(Enemy, E->Range()))
 		{
 			if (Enemy != nullptr && !Enemy->IsDead() && E->IsReady())
 			{
@@ -108,11 +108,12 @@ inline void Burstshy()
 			}
 			if (R->IsReady())
 			{
-				GPluginSDK->DelayFunctionCall(1, []()
+				GPluginSDK->DelayFunctionCall(5, []()
 				{
 					R->CastOnPlayer();
 				});
 			}
+			
 			if (W->IsReady())
 			{
 				if (myHero->IsValidTarget(Enemy, W->Range()))
@@ -126,25 +127,25 @@ inline void Burstshy()
 			GPluginSDK->DelayFunctionCall(25, []()
 			{
 				auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
-				if (haveitems() && Enemy != nullptr && !Enemy->IsDead())
+				if (haveitems())
 				{
 					UseItems(Enemy);
 				}
 			});
 			if (isR2() && R->IsReady() && myHero->IsValidTarget(Enemy, R2->Range()))
 			{
-				GPluginSDK->DelayFunctionCall(45, []()
+				GPluginSDK->DelayFunctionCall(38, []()
 				{
 					auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
 					if (Enemy != nullptr && !Enemy->IsDead())
 					{
-						R2->CastOnPosition(Enemy->GetPosition());
+						R2->CastOnTarget(Enemy, kHitChanceHigh);
 					}
 				});
 			}
 			if (Q->IsReady())
 			{
-				GPluginSDK->DelayFunctionCall(49, []()
+				GPluginSDK->DelayFunctionCall(45, []()
 				{
 					auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
 					if (Enemy != nullptr && !Enemy->IsDead())
@@ -155,13 +156,9 @@ inline void Burstshy()
 			}
 			return;
 		}
-
-		if (myHero->IsValidTarget(Enemy, 780 + Q->Range()))
+		if (Qstack < 2 && GGame->TickCount() - LastQ > 850)
 		{
-			if (Qstack < 2 && GGame->CurrentTick() - LastQ >= 850)
-			{
-				ModeQ(Enemy);
-			}
+			ModeQ(Enemy);
 		}
 	}
 }

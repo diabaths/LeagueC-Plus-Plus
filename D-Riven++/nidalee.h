@@ -25,9 +25,9 @@ inline void Nidalee()
 	{
 		_Youmuu(Enemy);
 	}
-	if (Flash != nullptr && UseFlash->Enabled())
+	if (Flash != nullptr && UseFlash->Enabled() && GetDistance(myHero, Enemy) > 610)
 	{
-		if (myHero->IsValidTarget(Enemy, 600 + Q->Range()))
+		if (myHero->IsValidTarget(Enemy, 725 + Q->Range()))
 		{
 			if (Enemy != nullptr && !Enemy->IsDead() && E->IsReady())
 			{
@@ -35,12 +35,12 @@ inline void Nidalee()
 			}
 			if (R->IsReady())
 			{
-				GPluginSDK->DelayFunctionCall(5, []()
+				GPluginSDK->DelayFunctionCall(7, []()
 				{
 					R->CastOnPlayer();
 				});
 			}
-			if (Flash->IsReady() && GetDistance(myHero, Enemy) > E->Range() + 100)
+			if (Flash->IsReady() && UseFlash->Enabled() && GetDistance(myHero, Enemy) > E->Range() + 200)
 			{
 				GPluginSDK->DelayFunctionCall(10, []()
 				{
@@ -77,15 +77,75 @@ inline void Nidalee()
 			}
 			if (R2->IsReady() && isR2() && myHero->IsValidTarget(Enemy, R2->Range()))
 			{
-				GPluginSDK->DelayFunctionCall(55, []()
+				GPluginSDK->DelayFunctionCall(45, []()
 				{
 					auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
-					R2->CastOnTarget(Enemy,kHitChanceHigh);
+					R2->CastOnTarget(Enemy, kHitChanceHigh);
 				});
 			}
 			if (Q->IsReady())
 			{
-				GPluginSDK->DelayFunctionCall(56, []()
+				GPluginSDK->DelayFunctionCall(48, []()
+				{
+					auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
+					if (Enemy != nullptr && !Enemy->IsDead())
+					{
+						ModeQ(Enemy);
+					}
+				});
+			}
+		}
+	}
+	else if (!UseFlash->Enabled() || !Flash->IsReady() || GetDistance(myHero, Enemy) < 600)
+	{
+		if (myHero->IsValidTarget(Enemy, 600))
+		{
+			if (Enemy != nullptr && !Enemy->IsDead() && E->IsReady())
+			{
+				E->CastOnPosition(Enemy->GetPosition());
+			}
+			if (R->IsReady())
+			{
+				GPluginSDK->DelayFunctionCall(7, []()
+				{
+					R->CastOnPlayer();
+				});
+			}
+			if (W->IsReady())
+			{
+				if (myHero->IsValidTarget(Enemy, W->Range()))
+				{
+					GPluginSDK->DelayFunctionCall(20, []()
+					{
+						W->CastOnPlayer();
+					});
+				}
+			}
+			if (Q->IsReady())
+			{
+				if (myHero->IsValidTarget(Enemy, Q->Range()))
+				{
+					GPluginSDK->DelayFunctionCall(33, []()
+					{
+						auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
+						if (Enemy != nullptr && !Enemy->IsDead())
+						{
+							ModeQ(Enemy);
+						}
+					});
+				}
+			}
+			if (R2->IsReady() && isR2() && myHero->IsValidTarget(Enemy, R2->Range()))
+			{
+				GPluginSDK->DelayFunctionCall(45, []()
+				{
+					auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
+					R2->CastOnTarget(Enemy, kHitChanceHigh);
+				});
+			}
+			if (Q->IsReady())
+			{
+				GPluginSDK->DelayFunctionCall(48, []()
 				{
 					auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
 					if (Enemy != nullptr && !Enemy->IsDead())

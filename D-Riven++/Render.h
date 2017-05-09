@@ -27,26 +27,53 @@ PLUGIN_EVENT(void) OnRender()
 	{
 		Vec3 worldToScreen;
 		GGame->Projection(myHero->GetPosition(), &worldToScreen);
-
 		if (BurstMode == 0)
 		{
 			GRender->DrawTextW(Vec2(worldToScreen.x, worldToScreen.y), Vec4(255, 255, 0, 255), "Burst: Shy");
-			if (Drawburst->Enabled() && Flash->IsReady()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorbr, 600 + Q->Range()); }
+			if (Drawburst->Enabled())
+			{
+				if (Flash->IsReady() && UseFlash->Enabled())
+				{
+					GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorbr, 600+Q->Range());
+				}
+				else GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorbr, 600);
+			}
 		}
 		if (BurstMode == 1)
-		{
+		{			
 			GRender->DrawTextW(Vec2(worldToScreen.x, worldToScreen.y), Vec4(255, 255, 0, 255), "Burst: Werhli (Enable R1)");
-			if (Drawburst->Enabled() && Flash->IsReady()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorbr, 425 + E->Range()); }
+			if (Drawburst->Enabled())
+			{
+				if (Flash->IsReady() && UseFlash->Enabled())
+				{
+					GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorbr, R2->Range() - 50);
+				}
+				else GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorbr, 600);
+			}
 		}
 		if (BurstMode == 2)
 		{
 			GRender->DrawTextW(Vec2(worldToScreen.x, worldToScreen.y), Vec4(255, 255, 0, 255), "Burst: Sexy (Enable R1)");
-			if (Drawburst->Enabled() && Flash->IsReady()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorbr, R2->Range() - 50); }
+			if (Drawburst->Enabled())
+			{
+				if (Flash->IsReady() && UseFlash->Enabled())
+				{
+					GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorbr, R2->Range() - 50);
+				}
+				else GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorbr, 600);
+			}
 		}
 		if (BurstMode == 3)
 		{
 			GRender->DrawTextW(Vec2(worldToScreen.x, worldToScreen.y), Vec4(255, 255, 0, 255), "Burst: NidaleeJR");
-			if (Drawburst->Enabled() && Flash->IsReady()) { GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorbr, 600 + Q->Range()); }
+			if (Drawburst->Enabled())
+			{
+				if (Flash->IsReady() && UseFlash->Enabled())
+				{
+					GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorbr, 725 + Q->Range());
+				}
+				else GRender->DrawOutlinedCircle(GEntityList->Player()->GetPosition(), colorbr, 600);
+			}
 
 		}
 	}

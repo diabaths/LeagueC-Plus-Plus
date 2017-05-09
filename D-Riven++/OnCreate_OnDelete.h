@@ -9,16 +9,30 @@ PLUGIN_EVENT(void) OnCreateObject(IUnit* obj)
 		
 		if (strcmp(obj->GetObjectName(), "Riven_Base_Q_01_Wpn_Trail.troy") == 0)
 		{
+			LastQ = GGame->TickCount();
 			Qstack = 1;
+			ResetQ1();
 		}
 		if (strcmp(obj->GetObjectName(), "Riven_Base_Q_02_Wpn_Trail.troy") == 0)
 		{
+			LastQ = GGame->TickCount();
 			Qstack = 2;
+			ResetQ2();
 		}
 		if (strcmp(obj->GetObjectName(), "Riven_Base_Q_03_Wpn_Trail.troy") == 0)
 		{
+			LastQ = GGame->TickCount();
 			Qstack = 0;
+			ResetQ3();
 		}
+		if (strcmp(obj->GetObjectName(), "Riven_Base_W_03_Cast.troy") == 0)
+		{
+			ResetW();
+		}
+		if (strcmp(obj->GetObjectName(), "Riven_Base_R_Sword.troy") == 0)
+		{
+			ResetR1();
+		}		
 	}
 }
 PLUGIN_EVENT(void) OnDestroyObject(IUnit* obj)

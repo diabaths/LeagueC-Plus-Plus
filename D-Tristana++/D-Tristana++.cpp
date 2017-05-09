@@ -357,7 +357,7 @@ void killsteal()
 						R->CastOnTarget(Enemy);
 						return;
 					}
-					else if (Enemy->GetHealth() < DamageE(Enemy) ) return;
+					if (Enemy->GetHealth() < DamageE(Enemy) ) return;
 					if (Enemy->GetHealth() < dmg &&!Enemy->IsInvulnerable())
 					{
 						R->CastOnTarget(Enemy);

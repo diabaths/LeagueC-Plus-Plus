@@ -21,8 +21,7 @@ PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& spell)
 			return;
 		}
 		if (std::string(spell.Name_) == "RivenTriCleave")
-		{
-			LastQ = GGame->TickCount();
+		{			
 			if (Debug->Enabled())
 			{
 				GGame->PrintChat("LastQ");

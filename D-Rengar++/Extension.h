@@ -146,7 +146,9 @@ static void ResetQ()
 	GPluginSDK->DelayFunctionCall(290, []()
 	{
 		GOrbwalking->ResetAA();
-		GGame->IssueOrder(myHero, kAttackTo, GOrbwalking->GetLastTarget());
+		GGame->Taunt(kDance);
+		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+		GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
 
 	});
 }

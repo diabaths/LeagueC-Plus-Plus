@@ -41,7 +41,7 @@ inline void Harass()
 					GOrbwalking->GetLastTarget();
 				}
 
-				if (Qstack == 1 && GGame->CurrentTick() - LastQ > 600)
+				if (Qstack == 1 && GGame->TickCount() - LastQ > 600)
 				{
 					ModeQ(Enemy);
 					GOrbwalking->GetLastTarget();
@@ -56,7 +56,7 @@ inline void Harass()
 			}
 
 			if (Q->IsReady() && HarassQ->Enabled() && myHero->IsValidTarget(Enemy, Q->Range() + myHero->GetRealAutoAttackRange(Enemy)) && Qstack == 0 &&
-				GGame->CurrentTick() - LastQ > 500)
+				GGame->TickCount() - LastQ > 500)
 			{
 				ModeQ(Enemy);
 				GOrbwalking->GetLastTarget();

@@ -152,7 +152,7 @@ inline void  Menu()
 	HarassQ = QMenu->CheckBox("Use Q in Harass", true);
 	FarmQ = QMenu->CheckBox("Use Q in Laneclear", true);
 	JungleQ = QMenu->CheckBox("Use Q in JungleClear", true);
-	//Autoattackanimation = QMenu->CheckBox("Cancel AutoAttack Animation", true);
+	Autoattackanimation = QMenu->CheckBox("Cancel AutoAttack Animation", false);
 	QDelay1 = QMenu->AddInteger("Delay Q1", 50, 1000, 290);
 	QDelay2 = QMenu->AddInteger("Delay Q2", 50, 1000, 290);
 	QDelay3 = QMenu->AddInteger("Delay Q3", 50, 1000, 390);
@@ -193,8 +193,6 @@ inline void  Menu()
 				}
 			}
 		}}
-
-
 
 	RMenu = MainMenu->AddMenu("R Settings");
 	ComboR = RMenu->CheckBox("Use R1 Combo", true);
