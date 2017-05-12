@@ -25,12 +25,26 @@ inline float GetDistance(IUnit* Player, IUnit* target)
 	return (Player->GetPosition() - target->GetPosition()).Length2D();
 }
 
+inline float GetDistance(Vec3 from, Vec3 to)
+{
+	return (from - to).Length2D();
+}
+
+inline float GetDistance(IUnit* from, Vec3 to)
+{
+	return (from->GetPosition() - to).Length2D();
+}
+inline float GetDistance(Vec2 from, Vec2 to)
+{
+	return (from - to).Length();
+}
+
 inline int CountEnemiesInRange(float range)
 {
 	int enemies = 0;
 	for (auto enemy : GEntityList->GetAllHeros(false, true))
 	{
-		if (enemy != nullptr && GetDistance(GEntityList->Player(), enemy) <= range)
+		if (enemy != nullptr && !enemy->IsDead() && GetDistance(GEntityList->Player(), enemy) <= range)
 		{
 			enemies++;
 		}

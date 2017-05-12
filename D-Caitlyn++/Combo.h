@@ -39,7 +39,7 @@ inline void Combo()
 		if (myHero->IsValidTarget(Enemy, RRange) && Enemy != nullptr)
 		{
 			auto dmg = GDamage->GetSpellDamage(myHero, Enemy, kSlotR);
-			if (Enemy->GetHealth() < dmg && !Enemy->IsInvulnerable() && GetDistance(myHero, Enemy) > Rmin &&  CountEnemiesInRange(RMinenemies->GetInteger()) == 0)
+			if (Enemy->GetHealth() < dmg && !Enemy->IsInvulnerable() && GetDistance(myHero->GetPosition(), Enemy->GetPosition()) > Rmin &&  CountEnemiesInRange(RMinenemies->GetInteger()) == 0)
 			{
 				R->CastOnUnit(Enemy);
 			}
