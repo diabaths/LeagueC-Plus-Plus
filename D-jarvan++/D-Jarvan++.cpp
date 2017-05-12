@@ -88,7 +88,7 @@ ISpell2* R;
 
 
 ISpell* Ignite;
-ISpell* smite;
+ISpell2* smite;
 
 IInventoryItem* Titanic_Hydra; 
 IInventoryItem* Ravenous_Hydra; 
@@ -187,7 +187,7 @@ void LoadSpells()
 	E = GPluginSDK->CreateSpell2(kSlotE, kCircleCast, true, true, static_cast<eCollisionFlags> (kCollidesWithNothing));
 	E->SetSkillshot(0.50f, 50.f, FLT_MAX, 830.f);
 
-	R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, true, true, static_cast<eCollisionFlags>(kCollidesWithNothing));
+	R = GPluginSDK->CreateSpell2(kSlotR, kTargetCast, false, false, static_cast<eCollisionFlags>(kCollidesWithNothing));
 	R->SetOverrideRange(650);
 
 	auto slot1 = GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot1);
@@ -203,15 +203,16 @@ void LoadSpells()
 	}
 	else Ignite == nullptr;
 
-	if (strcmp(slot1, "SummonerSmite") == 0)
+	if (strstr(slot1, "SummonerSmite"))
 	{
-		smite = GPluginSDK->CreateSpell(kSummonerSlot1, 570);
+		smite = GPluginSDK->CreateSpell2(kSummonerSlot1, kTargetCast, false, false, kCollidesWithNothing);
+		smite->SetOverrideRange(550.f);
 	}
-	if (strcmp(slot2, "SummonerSmite") == 0)
+	if (strstr(slot2, "SummonerSmite"))
 	{
-		smite = GPluginSDK->CreateSpell(kSummonerSlot2, 570);
+		smite = GPluginSDK->CreateSpell2(kSummonerSlot2, kTargetCast, false, false, kCollidesWithNothing);
+		smite->SetOverrideRange(550.f);
 	}
-	else smite == nullptr;
 
 	Youmuu = GPluginSDK->CreateItemForId(3142, 0);
 	Titanic_Hydra = GPluginSDK->CreateItemForId(3748, 385);
@@ -312,24 +313,35 @@ void UseItems()
 				{
 					if (hextech->IsOwned() && hextech->IsReady())
 						hextech->CastOnTarget(enemy);
-
 				}
 			}
 
 			if (_tiamat->Enabled() && myHero->IsValidTarget(enemy, 385))
 			{
 				if (Tiamat->IsOwned() && Tiamat->IsReady())
-					Tiamat->CastOnPlayer();
+				{
+					Tiamat->CastOnTarget(enemy);
+					GOrbwalking->ResetAA();;
+					return;
+				}
 			}
 			if (Hydra->Enabled() && myHero->IsValidTarget(enemy, 385))
 			{
 				if (Titanic_Hydra->IsOwned() && Titanic_Hydra->IsReady())
-					Titanic_Hydra->CastOnPlayer();
+				{
+					Titanic_Hydra->CastOnTarget(enemy);
+					GOrbwalking->ResetAA();;
+					return;
+				}
 			}
 			if (RHydra->Enabled() && myHero->IsValidTarget(enemy, 385))
 			{
 				if (Ravenous_Hydra->IsOwned() && Ravenous_Hydra->IsReady())
-					Ravenous_Hydra->CastOnPlayer();
+				{
+					Ravenous_Hydra->CastOnTarget(enemy);
+					GOrbwalking->ResetAA();;
+					return;
+				}
 			}
 		}
 	}
@@ -412,7 +424,7 @@ void Combo()
 		if (Q->IsReady() && E->IsReady() && myHero->GetMana() > Q->ManaCost() + E->ManaCost())
 		{
 			auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, E->Range());
-			if (myHero->IsValidTarget(target, E->Range()) && target != nullptr)
+			if (myHero->IsValidTarget(target, E->Range()-50) && target != nullptr)
 			{
 				AdvPredictionOutput prediction_output;
 				E->RunPrediction(target, true, kCollidesWithYasuoWall | kCollidesWithMinions, &prediction_output);
@@ -527,17 +539,29 @@ void laneclear()
 			if (_tiamat->Enabled() && myHero->IsValidTarget(minions, 385))
 			{
 				if (Tiamat->IsOwned() && Tiamat->IsReady())
-					Tiamat->CastOnPlayer();
+				{
+					Tiamat->CastOnTarget(minions);
+					GOrbwalking->ResetAA();;
+					return;
+				}
 			}
 			if (Hydra->Enabled() && myHero->IsValidTarget(minions, 385))
 			{
 				if (Titanic_Hydra->IsOwned() && Titanic_Hydra->IsReady())
-					Titanic_Hydra->CastOnPlayer();
+				{
+					Titanic_Hydra->CastOnTarget(minions);
+					GOrbwalking->ResetAA();;
+					return;
+				}
 			}
 			if (RHydra->Enabled() && myHero->IsValidTarget(minions, 385))
 			{
 				if (Ravenous_Hydra->IsOwned() && Ravenous_Hydra->IsReady())
-					Ravenous_Hydra->CastOnPlayer();
+				{
+					Ravenous_Hydra->CastOnTarget(minions);
+					GOrbwalking->ResetAA();;
+					return;
+				}
 			}
 		}
 		if (myHero->ManaPercent() < FarmManaPercent->GetInteger())
@@ -586,19 +610,32 @@ void jungleclear()
 			if (_tiamat->Enabled() && myHero->IsValidTarget(jMinion, 385))
 			{
 				if (Tiamat->IsOwned() && Tiamat->IsReady())
-					Tiamat->CastOnPlayer();
+				{
+					Tiamat->CastOnTarget(jMinion);
+					GOrbwalking->ResetAA();;
+					return;
+				}
 			}
 			if (Hydra->Enabled() && myHero->IsValidTarget(jMinion, 385))
 			{
 				if (Titanic_Hydra->IsOwned() && Titanic_Hydra->IsReady())
-					Titanic_Hydra->CastOnPlayer();
+				{
+					Titanic_Hydra->CastOnTarget(jMinion);
+					GOrbwalking->ResetAA();;
+					return;
+				}
 			}
 			if (RHydra->Enabled() && myHero->IsValidTarget(jMinion, 385))
 			{
 				if (Ravenous_Hydra->IsOwned() && Ravenous_Hydra->IsReady())
-					Ravenous_Hydra->CastOnPlayer();
+				{
+					Ravenous_Hydra->CastOnTarget(jMinion);
+					GOrbwalking->ResetAA();;
+					return;
+				}
 			}
 		}
+		
 		if (myHero->ManaPercent() < JungleManaPercent->GetInteger())
 			return;
 		if (strstr(jMinion->GetObjectName(), "mini")) return;
@@ -640,17 +677,29 @@ void Harass()
 			if (_tiamat->Enabled() && myHero->IsValidTarget(target, 385))
 			{
 				if (Tiamat->IsOwned() && Tiamat->IsReady())
-					Tiamat->CastOnPlayer();
+				{
+					Tiamat->CastOnTarget(target);
+					GOrbwalking->ResetAA();;
+					return;
+				}
 			}
 			if (Hydra->Enabled() && myHero->IsValidTarget(target, 385))
 			{
 				if (Titanic_Hydra->IsOwned() && Titanic_Hydra->IsReady())
-					Titanic_Hydra->CastOnPlayer();
+				{
+					Titanic_Hydra->CastOnTarget(target);
+					GOrbwalking->ResetAA();;
+					return;
+				}
 			}
 			if (RHydra->Enabled() && myHero->IsValidTarget(target, 385))
 			{
 				if (Ravenous_Hydra->IsOwned() && Ravenous_Hydra->IsReady())
-					Ravenous_Hydra->CastOnPlayer();
+				{
+					Ravenous_Hydra->CastOnTarget(target);
+					GOrbwalking->ResetAA();;
+					return;
+				}
 			}
 		}
 	}

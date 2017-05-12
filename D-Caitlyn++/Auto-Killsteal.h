@@ -34,7 +34,7 @@ inline void killsteal()
 					}
 				}
 			}
-			if (KillstealR->Enabled() && R->IsReady())
+			if (KillstealR->Enabled() && R->IsReady() && !GUtility->IsPositionUnderTurret(myHero->GetPosition()))
 			{
 				auto Rmin = RMin->GetInteger();
 				if (myHero->IsValidTarget(Enemy, RRange) && Enemy != nullptr)

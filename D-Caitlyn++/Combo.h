@@ -17,20 +17,22 @@ inline void Combo()
 			{
 				AdvPredictionOutput prediction_output;
 				W->RunPrediction(Enemy, true, kCollidesWithNothing, &prediction_output);
-				if (prediction_output.HitChance >= kHitChanceVeryHigh && Enemy->IsFacing(myHero))
+				/*if (prediction_output.HitChance >= kHitChanceVeryHigh && Enemy->IsFacing(myHero))
 				{
-					W->CastOnPosition(prediction_output.CastPosition);
+					auto vector = Enemy->GetPosition() - myHero->GetPosition();
+					auto Behind = prediction_output.CastPosition - vector.VectorNormalize() * 100;
+					W->CastOnPosition(Behind);
 				}
 				if (prediction_output.HitChance >= kHitChanceVeryHigh && !Enemy->IsFacing(myHero))
 				{
 					auto vector = Enemy->GetPosition() - myHero->GetPosition();
 					auto Behind = prediction_output.CastPosition + vector.VectorNormalize() * 100;
 					W->CastOnPosition(Behind);
-				}
+				}*/
 			}
 		}
 	}
-	if (ComboR->Enabled() && R->IsReady() && GGame->TickCount() - QCastTime > 1000)
+	if (ComboR->Enabled() && R->IsReady() && GGame->TickCount() - QCastTime > 1000 && !GUtility->IsPositionUnderTurret(myHero->GetPosition()))
 	{
 		auto Rmin = RMin->GetInteger();
 		auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, RRange);
