@@ -1,12 +1,6 @@
 #pragma once
 #include "Menu.h"
 
-static bool InFountain(IUnit *unit)
-{
-	//TODO: Implement
-	return unit->HasBuff("kappachino");
-}
-
 
 inline float GetRealDistance(IUnit* sender, IUnit* target)
 {

@@ -13,12 +13,6 @@ inline float GetDistanceVectors(Vec3 from, Vec3 to)
 	return static_cast<float>(sqrt(pow((x2 - x1), 2.0) + pow((y2 - y1), 2.0) + pow((z2 - z1), 2.0)));
 }
 
-static bool InFountain(IUnit *unit)
-{
-	//TODO: Implement
-	return unit->HasBuff("kappachino");
-}
-
 inline int EnemiesInRange(IUnit* Source, float range)
 {
 	auto Targets = GEntityList->GetAllHeros(false, true);

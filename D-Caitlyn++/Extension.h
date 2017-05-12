@@ -1,13 +1,6 @@
 #pragma once
 #include "Menu.h"
 
-static bool InFountain(IUnit *unit)
-{
-	//TODO: Implement
-	return unit->HasBuff("kappachino");
-}
-
-
 inline int EnemiesInRange(IUnit* Source, float range)
 {
 	auto Targets = GEntityList->GetAllHeros(false, true);

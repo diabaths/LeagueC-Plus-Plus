@@ -163,11 +163,6 @@ void LoadSpells()
 	hunter = GPluginSDK->CreateItemForId(2032, 0);
 }
 
-static bool InFountain(IUnit *unit)
-{
-	//TODO: Implement
-	return unit->HasBuff("kappachino");
-}
 
 int EnemiesInRange(IUnit* Source, float range)
 {
@@ -382,11 +377,11 @@ void Usepotion()
 					|| myHero->GetBuffDataByName("ItemCrystalFlask") || myHero->GetBuffDataByName("RegenerationPotion") || myHero->HasBuff("ItemCrystalFlaskJungle"))
 					return;
 
-				if (Biscuit->IsOwned() && !InFountain(myHero) && Biscuit->IsReady())
+				if (Biscuit->IsOwned() && !GUtility->IsPositionInFountain(myHero->GetPosition()) && Biscuit->IsReady())
 				{
 					Biscuit->CastOnPlayer();
 				}
-				else if (HealthPot->IsOwned() && !InFountain(myHero) && HealthPot->IsReady())
+				else if (HealthPot->IsOwned() && !GUtility->IsPositionInFountain(myHero->GetPosition()) && HealthPot->IsReady())
 				{
 					HealthPot->CastOnPlayer();
 				}
