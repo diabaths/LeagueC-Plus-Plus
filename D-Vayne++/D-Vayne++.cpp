@@ -80,7 +80,7 @@ void  Menu()
 	UseQC = Qmenu->CheckBox("Use Q Combo", true);
 	UseQH = Qmenu->CheckBox("Use Q Harass", true);
 	KillstealQ = Qmenu->CheckBox("Use Q Killsteal", true);
-	restrictq = Qmenu->CheckBox("Restrict Q usage, false=ToMouse", true);
+	restrictq = Qmenu->CheckBox("Restrict Q usage, false=ToMouse", false);
 	UseQJ = Qmenu->CheckBox("Use Q to Farm", true);
 	AAreset = Qmenu->AddKey("AA->Q->AA", 84);
 	UseAAreset = Qmenu->CheckBox("Use AA->Q->AA if Enemy Has Silver Bolt", true);
