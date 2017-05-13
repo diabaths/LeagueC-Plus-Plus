@@ -76,17 +76,20 @@ inline void UseItems(IUnit* target)
 	}*/
 	if (Tiamat->IsOwned() && Tiamat->IsReady() && _tiamat->Enabled() && myHero->IsValidTarget(target, 385))
 	{
-		Tiamat->CastOnPlayer();
+		Tiamat->CastOnPosition(target->GetPosition());
+		GOrbwalking->ResetAA();
 		return;
 	}
 	if (Titanic_Hydra->IsOwned() && Titanic_Hydra->IsReady() && Hydra->Enabled() && myHero->IsValidTarget(target, 385))
 	{
-		Titanic_Hydra->CastOnPlayer();
+		Titanic_Hydra->CastOnPosition(target->GetPosition());
+		GOrbwalking->ResetAA();
 		return;
 	}
 	if (Ravenous_Hydra->IsOwned() && Ravenous_Hydra->IsReady() && RHydra->Enabled() && myHero->IsValidTarget(target, 385))
 	{
-		Ravenous_Hydra->CastOnPlayer();
+		Ravenous_Hydra->CastOnPosition(target->GetPosition());
+		GOrbwalking->ResetAA();
 	}	
 }
 
@@ -103,12 +106,12 @@ inline void Usepotion()
 					|| myHero->GetBuffDataByName("ItemCrystalFlask") || myHero->GetBuffDataByName("RegenerationPotion") || myHero->HasBuff("ItemCrystalFlaskJungle"))
 					return;
 
-				if (Biscuit->IsOwned() && !InFountain(myHero) && Biscuit->IsReady())
+				if (Biscuit->IsOwned() && !GUtility->IsPositionInFountain(myHero->GetPosition()) && Biscuit->IsReady())
 				{
 					Biscuit->CastOnPlayer();
 
 				}
-				else if (HealthPot->IsOwned() && !InFountain(myHero) && HealthPot->IsReady())
+				else if (HealthPot->IsOwned() && !GUtility->IsPositionInFountain(myHero->GetPosition()) && HealthPot->IsReady())
 				{
 					HealthPot->CastOnPlayer();
 				}

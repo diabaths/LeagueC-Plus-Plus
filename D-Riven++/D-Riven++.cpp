@@ -154,25 +154,30 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	if (GetAsyncKeyState(Burst_b->GetInteger()))
 	{
 		Burst();
+		return;
 	}
 	if (GetAsyncKeyState(Flee_b->GetInteger()))
 	{
 		Flee();
+		return;
 	}
-	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
-	{
-		Combo();
-	}
+	auto OrbMode = GOrbwalking->GetOrbwalkingMode();
 
-	if (GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+	switch (OrbMode)
 	{
+	case kModeMixed:
 		Harass();
-	}
-	if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear)
-	{
+		break;
+	case kModeLaneClear:
 		laneclear();
 		jungleclear();
-	}
+		break;
+	case kModeCombo:
+		Combo();
+		break;
+	default:
+		break;
+	}	
 	killsteal();
 	Usepotion();
 	ChangePriority();

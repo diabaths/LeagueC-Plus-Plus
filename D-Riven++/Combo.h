@@ -49,33 +49,10 @@ inline void Combo()
 	{
 		WLogic(Enemy);
 	}
-	if (haveitems() && myHero->IsValidTarget(Enemy, 380))
+	if (haveitems())
 	{
-		if (_tiamat->Enabled())
-		{
-			if (Tiamat->IsOwned() && Tiamat->IsReady())
-			{
-				Tiamat->CastOnPlayer();
-				GOrbwalking->ResetAA();
-				return;
-			}
-		}
-		if (RHydra->Enabled())
-		{
-			if (Ravenous_Hydra->IsOwned() && Ravenous_Hydra->IsReady())
-			{
-				Ravenous_Hydra->CastOnPlayer();
-				GOrbwalking->ResetAA();
-			}
-		}
-		if (Hydra->Enabled())
-		{
-			if (Titanic_Hydra->IsOwned() && Titanic_Hydra->IsReady())
-			{
-				Titanic_Hydra->CastOnTarget(Enemy);
-				GOrbwalking->ResetAA();
-			}
-		}
+		UseItems(Enemy);
+		return;
 	}
 	if (Enemy != nullptr  && R->IsReady())
 	{
@@ -128,7 +105,7 @@ inline void Combo()
 }*/
 static void processCombo(CastedSpell const& spell)
 {
-	auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 600);
+	auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, R2->Range());
 
 	if (spell.Data_ == nullptr) return;
 	if (spell.Target_ != nullptr && spell.Caster_ == myHero && spell.Target_->IsHero())
@@ -148,7 +125,7 @@ static void processCombo(CastedSpell const& spell)
 			}
 		}
 		if (std::string(spell.Name_) == "RivenMartyr")
-		{
+		{			
 			if (Q->IsReady() && myHero->IsValidTarget(Enemy, 400) && !myHero->IsWindingUp())
 			{
 				ModeQ(Enemy);
@@ -161,6 +138,19 @@ static void processCombo(CastedSpell const& spell)
 		}
 		if (std::string(spell.Name_) == "RivenFeint")
 		{
+			if (haveitems())
+			{
+				UseItems(Enemy);
+				return;
+			}
+			if (Enemy != nullptr  && R->IsReady())
+			{
+				if (Enemy->GetHealth() <TotalDamage(Enemy)*(DmgPercent->GetInteger() / 100) && ComboR->Enabled() && myHero->IsValidTarget(Enemy, 500))
+				{
+					R1Logic(Enemy);
+					return;
+				}
+			}
 			if (ComboW->Enabled() && W->IsReady() && myHero->IsValidTarget(Enemy, W->Range()))
 			{
 				W->CastOnPlayer();
@@ -200,12 +190,7 @@ static void afterattackCombo(IUnit* source, IUnit* target)
 {
 	
 	if (target != nullptr && myHero->IsValidTarget(target, 400))
-	{
-		if (haveitems())
-		{
-			UseItems(target);
-			return;
-		}
+	{		
 		if (Q->IsReady() && myHero->IsValidTarget(target, 400))
 		{
 			ModeQ(target);

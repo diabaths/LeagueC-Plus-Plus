@@ -93,6 +93,7 @@ IMenuOption* Autoattackanimation;
 IMenuOption* burstRangeColor;
 IMenuOption* Drawburst;
 IMenuOption* QMode;
+IMenuOption* deleayaa;
 
 
 IUnit* myHero;
@@ -129,6 +130,7 @@ float LastQJ;
 float LastE;
 float keyDown;
 bool AutoAttack;
+Vec3 pos;
 inline void  Menu()
 {
 	MainMenu = GPluginSDK->AddMenu("D-Riven++");
@@ -153,6 +155,7 @@ inline void  Menu()
 	FarmQ = QMenu->CheckBox("Use Q in Laneclear", true);
 	JungleQ = QMenu->CheckBox("Use Q in JungleClear", true);
 	Autoattackanimation = QMenu->CheckBox("Cancel AutoAttack Animation", false);
+	deleayaa =QMenu->AddInteger("aaaaaa Q1", 50, 1000, 290);
 	QDelay1 = QMenu->AddInteger("Delay Q1", 50, 1000, 290);
 	QDelay2 = QMenu->AddInteger("Delay Q2", 50, 1000, 290);
 	QDelay3 = QMenu->AddInteger("Delay Q3", 50, 1000, 390);

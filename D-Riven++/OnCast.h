@@ -11,7 +11,13 @@ PLUGIN_EVENT(void) OnDoCast(CastedSpell const& spell)
 	if (Equals(args.Name_, IsSecondR)) forceR2 = false;*/
 
 	auto Enemy = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, 900);
-
+	if (ManualAACancel->Enabled() || GOrbwalking->GetOrbwalkingMode() == kModeLaneClear || GOrbwalking->GetOrbwalkingMode() == kModeCombo || GetAsyncKeyState(Burst_b->GetInteger()) || GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+	{
+		if (spell.Caster_ == myHero && std::string(spell.Name_) == "RivenIzunaBlade")
+		{
+			ResetR2();
+		}
+	}
 	if (Enemy != nullptr && spell.Caster_ == myHero && Enemy->IsHero() && (GOrbwalking->GetOrbwalkingMode() == kModeMixed || GOrbwalking->GetOrbwalkingMode() == kModeCombo))
 	{		
 		

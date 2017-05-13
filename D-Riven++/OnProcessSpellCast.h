@@ -10,6 +10,17 @@ PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& spell)
 
 	if (spell.Caster_ == myHero)
 	{
+		if (Autoattackanimation->Enabled() &&  (GetAsyncKeyState(Burst_b->GetInteger()) || GOrbwalking->GetOrbwalkingMode() == kModeCombo))
+		{
+			if (std::string(spell.Name_) == "RivenBasicAttack" || std::string(spell.Name_) == "RivenBasicAttack2" || std::string(spell.Name_) == "RivenBasicAttack3")
+			{
+				if (Debug->Enabled())
+				{
+					GGame->PrintChat("AA_cancel");
+				}
+				AAcancel();
+			}
+		}
 		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 		{
 			processCombo(spell);

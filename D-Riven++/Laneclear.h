@@ -5,18 +5,6 @@ inline void laneclear()
 {
 	for (auto minions : GEntityList->GetAllMinions(false, true, false))
 	{
-		if (Itemsinlane->Enabled())
-		{
-			if (minions != nullptr && myHero->IsValidTarget(minions, 385))
-			{
-				if (haveitems())
-				{
-					UseItems(minions);
-					GOrbwalking->ResetAA();
-					return;
-				}
-			}
-		}
 		
 		if (W->IsReady() && FarmW->Enabled())
 		{
@@ -39,13 +27,6 @@ inline void laneclear()
 
 			}
 		}
-	}
-}
-
-inline void afterattacklane(IUnit* source, IUnit* target)
-{
-	for (auto minions : GEntityList->GetAllMinions(false, true, false))
-	{
 		if (Itemsinlane->Enabled())
 		{
 			if (minions != nullptr && myHero->IsValidTarget(minions, 385))
@@ -53,11 +34,17 @@ inline void afterattacklane(IUnit* source, IUnit* target)
 				if (haveitems())
 				{
 					UseItems(minions);
-					GOrbwalking->ResetAA();
 					return;
 				}
 			}
 		}
+	}
+}
+
+inline void afterattacklane(IUnit* source, IUnit* target)
+{
+	for (auto minions : GEntityList->GetAllMinions(false, true, false))
+	{		
 		if (Q->IsReady() && FarmQ->Enabled())
 		{
 			auto end = GBuffData->GetEndTime(myHero->GetBuffDataByName("RivenTriCleave"));

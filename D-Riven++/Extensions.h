@@ -13,12 +13,6 @@ inline float GetDistanceVectors(Vec3 from, Vec3 to)
 	return static_cast<float>(sqrt(pow((x2 - x1), 2.0) + pow((y2 - y1), 2.0) + pow((z2 - z1), 2.0)));
 }
 
-static bool InFountain(IUnit *unit)
-{
-	//TODO: Implement
-	return unit->HasBuff("kappachino");
-}
-
 inline int EnemiesInRange(IUnit* Source, float range)
 {
 	auto Targets = GEntityList->GetAllHeros(false, true);
@@ -69,7 +63,19 @@ inline int CountEnemiesInRange(float range)
 	return enemies;
 }
 
-
+inline void ModeQ(IUnit* target)
+{
+	if (QMode->GetInteger() == 0)
+	{
+		pos = target->ServerPosition();
+		Q->CastOnPosition(target->ServerPosition());
+	}
+	if (QMode->GetInteger() == 1)
+	{
+		pos = GGame->CursorPosition();
+		Q->CastOnPosition(GGame->CursorPosition());
+	}
+}
 
 //Credits to hoola and Synx
 static void ResetQ1()
@@ -78,7 +84,7 @@ static void ResetQ1()
 	{
 		GOrbwalking->ResetAA();
 		GGame->Taunt(kDance);
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+		GGame->IssueOrder(myHero, kMoveTo, pos);
 		//GGame->IssueOrder(myHero, kMoveTo, GOrbwalking->GetLastTarget());
 		GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
 	});
@@ -90,7 +96,7 @@ static void ResetQ2()
 	{	
 		GOrbwalking->ResetAA();
 		GGame->Taunt(kDance);
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+		GGame->IssueOrder(myHero, kMoveTo, pos);
 		GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
 	});
 } 
@@ -101,7 +107,7 @@ static void ResetQ3()
 	{ 
 		GOrbwalking->ResetAA();
 		GGame->Taunt(kDance);
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+		GGame->IssueOrder(myHero, kMoveTo, pos);
 		GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
 	});
 }
@@ -123,7 +129,7 @@ static void ResetR1()
 	{
 		GOrbwalking->ResetAA();
 		GGame->Taunt(kDance);
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+		GGame->IssueOrder(myHero, kMoveTo, pos);
 	});
 }
 //Credits to hoola and Synx
@@ -133,14 +139,14 @@ static void ResetR2()
 	{
 		GOrbwalking->ResetAA();
 		GGame->Taunt(kDance);
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+		GGame->IssueOrder(myHero, kMoveTo, pos);
 	});
 }
 static void AAcancel()
 {
-	GPluginSDK->DelayFunctionCall(190, []()
+	GPluginSDK->DelayFunctionCall(deleayaa->GetColor(), []()
 	{
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+		GGame->IssueOrder(myHero, kMoveTo, pos);
 	});
 }
 inline std::string ToLower(std::string StringToLower)
@@ -360,14 +366,4 @@ static bool HaveUlti2()
 
 	return false;
 }
-inline void ModeQ(IUnit* target)
-{
-	if (QMode->GetInteger() == 0)
-	{
-		Q->CastOnPosition(target->ServerPosition());
-	}
-	if (QMode->GetInteger() == 1)
-	{
-		Q->CastOnPosition(GGame->CursorPosition());
-	}
-}
+
