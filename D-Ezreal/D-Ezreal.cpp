@@ -114,7 +114,7 @@ void  Menu()
 	JungleManaPercent = JungleMenu->AddInteger("Mana Percent for Farm", 10, 100, 70);
 
 	MiscMenu = MainMenu->AddMenu("Misc Setting");
-	//SemiR = MiscMenu->AddKey("Semi-Manual R", 84);
+	SemiR = MiscMenu->AddKey("Semi-Manual R", 84);
 	Wally = MiscMenu->CheckBox("W on Ally To Push Tower", true);
 	manaally = MiscMenu->AddInteger("Mana Percentto Use W in ally", 10, 100, 70);
 	StackTear = MiscMenu->CheckBox("Stack Tear", true);
@@ -604,6 +604,14 @@ PLUGIN_EVENT(void) OnGameUpdate()
 			R->CastOnTargetAoE(target, 3, kHitChanceHigh);
 		}
 	}*/
+	if (GetAsyncKeyState(SemiR->GetInteger()) && R->IsReady())
+	{
+		auto target = GTargetSelector->FindTarget(QuickestKill, PhysicalDamage, R->Range());
+		if (target != nullptr && myHero->IsValidTarget(target, R->Range()))
+		{
+			R->CastOnTarget(target, kHitChanceHigh);
+		}
+	}
 	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 	{
 		Combo();
