@@ -29,7 +29,7 @@ inline void Combo()
 		{
 			if (myHero->IsValidTarget(Enemy, Q->Range()))
 			{
-				Q->CastOnUnit(Enemy);
+				Q->CastOnTarget(Enemy);
 				return;
 			}
 		}
@@ -45,10 +45,12 @@ inline void Combo()
 			if (myHero->HasBuff("VladimirE") && myHero->IsValidTarget(Enemy, E->Range()))
 			{
 				E->CastOnPlayer();
+				return;
 			}
 			if (myHero->HasBuff("VladimirE") && myHero->IsValidTarget(Enemy, E->Range() && Distance > E->Range()-100 && !Enemy->IsFacing(myHero)))
 			{
 				E->CastOnPlayer();
+				return;
 			}
 		}
 		if (ComboR->Enabled() && R->IsReady())

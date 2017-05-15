@@ -17,6 +17,7 @@ inline void killsteal()
 					if (Enemy->GetHealth() <= dmgQ)
 					{
 						Q->CastOnUnit(Enemy);
+						return;
 					}
 				}
 			}
@@ -29,23 +30,23 @@ inline void killsteal()
 					if (Enemy->GetHealth() <= dmgE)
 					{
 						E->CastOnPlayer();
+						return;
 					}
 				}
 			}
 
 			if (KillstealR->Enabled() && R->IsReady())
-			{				
-					AdvPredictionOutput RPred;
-					R->RunPrediction(Enemy, true, kCollidesWithNothing, &RPred);
-					if (myHero->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable())
-					{						
-						if (RPred.HitChance >= kHitChanceHigh)
+			{
+				AdvPredictionOutput RPred;
+				R->RunPrediction(Enemy, true, kCollidesWithNothing, &RPred);
+				if (myHero->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable())
+				{
+					if (RPred.HitChance >= kHitChanceHigh)
+					{
+						if (Enemy->GetHealth() < RDamage(Enemy))
 						{
-							if (Enemy->GetHealth() <RDamage(Enemy))
-							{
 							R->CastOnPosition(RPred.CastPosition);
 							return;
-
 						}
 					}
 				}
