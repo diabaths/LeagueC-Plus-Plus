@@ -22,17 +22,20 @@
 
 PluginSetup("D-Ekko++");
 
-/*PLUGIN_EVENT(void) OnGapcloser(GapCloserSpell const& args)
+static void CheatRito()
 {
-if (args.Source->IsEnemy(myHero) && args.Source->IsHero())
-{
-if (AutoEGapcloser->Enabled() && E->IsReady() && !args.IsTargeted && myHero->IsValidTarget(args.Source, 250))
-{
-E->CastOnPosition(args.Source->ServerPosition());
-GOrbwalking->ResetAA();
+	if (ChangeSkin->Enabled())
+	{
+		if (myHero->GetSkinId() != SkinChangeid->GetInteger())
+		{
+			myHero->SetSkinId(SkinChangeid->GetInteger());
+		}
+	}
+	else
+	{
+		myHero->SetSkinId(myHero->GetSkinId());
+	}
 }
-}
-}*/
 
 
 PLUGIN_EVENT(void) OnGameUpdate()
@@ -42,7 +45,13 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	//recallinlane();
 	//}
 	if (GGame->IsChatOpen() || myHero->IsDead() || myHero->IsRecalling()) return;
-
+	for (auto RMisspos : GEntityList->GetAllUnits())
+	{
+		if (!strcmp(RMisspos->GetObjectName(), "Ekko") && RMisspos->IsVisible())
+		{
+			Rpos = RMisspos;
+		}
+	}
 	if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 	{
 		Combo();
@@ -73,7 +82,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	UseItems();
 	Usepotion();
 	smitestatus();
-	
+	CheatRito();	
 }
 
 PLUGIN_API void OnLoad(IPluginSDK* PluginSDK)

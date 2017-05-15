@@ -36,19 +36,19 @@ inline void Combo()
 
 		if (ComboE->Enabled() && E->IsReady() && myHero->HealthPercent() > UseEHPC->GetInteger())
 		{
-			if (myHero->IsValidTarget(Enemy, E->Range() + 100) && Enemy->IsFacing(myHero))
+			auto Distance = (myHero->GetPosition() - Enemy->GetPosition()).Length();
+			if (myHero->IsValidTarget(Enemy, E->Range()) && !myHero->HasBuff("VladimirE"))
 			{
-				E->CastOnPlayer();
-				return;
-			}
-			if (myHero->IsValidTarget(Enemy, E->Range()))
-			{
-				E->CastOnPlayer();
+				E->StartCharging();
 				return;
 			}
 			if (myHero->HasBuff("VladimirE") && myHero->IsValidTarget(Enemy, E->Range()))
 			{
-				E->StartCharging();
+				E->CastOnPlayer();
+			}
+			if (myHero->HasBuff("VladimirE") && myHero->IsValidTarget(Enemy, E->Range() && Distance > E->Range()-100 && !Enemy->IsFacing(myHero)))
+			{
+				E->CastOnPlayer();
 			}
 		}
 		if (ComboR->Enabled() && R->IsReady())
@@ -68,7 +68,7 @@ inline void Combo()
 				}
 			}
 		}
-		if (ComboRAOE  && R->IsReady())
+		if (ComboRAOE->Enabled()  && R->IsReady())
 		{
 			int heros = 0;
 			Vec3 pos = Vec3();

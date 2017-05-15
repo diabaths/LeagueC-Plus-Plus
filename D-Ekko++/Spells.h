@@ -27,15 +27,16 @@ inline void LoadSpells()
 		Ignite = GPluginSDK->CreateSpell(kSummonerSlot2, 600);
 	}
 	else Ignite == nullptr;
-	if (strcmp(slot1, "SummonerSmite") == 0)
+	if (strstr(slot1, "SummonerSmite"))
 	{
-		smite = GPluginSDK->CreateSpell(kSummonerSlot1, 570);
+		smite = GPluginSDK->CreateSpell2(kSummonerSlot1, kTargetCast, false, false, kCollidesWithNothing);
+		smite->SetOverrideRange(550.f);
 	}
-	if (strcmp(slot2, "SummonerSmite") == 0)
+	if (strstr(slot2, "SummonerSmite"))
 	{
-		smite = GPluginSDK->CreateSpell(kSummonerSlot2, 570);
+		smite = GPluginSDK->CreateSpell2(kSummonerSlot2, kTargetCast, false, false, kCollidesWithNothing);
+		smite->SetOverrideRange(550.f);
 	}
-	else smite == nullptr;
 
 	zhonyas = GPluginSDK->CreateItemForId(3157, 0);
 	blade = GPluginSDK->CreateItemForId(3153, 550);

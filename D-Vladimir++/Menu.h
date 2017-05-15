@@ -83,6 +83,8 @@ IMenuOption* Burst;
 IMenuOption* Burstdraw;
 IMenuOption* UseFlash;
 std::map<std::string, IMenuOption*> MenuOptions;
+IMenuOption* ChangeSkin; 
+IMenuOption* SkinChangeid; 
 
 IUnit* myHero;
 
@@ -177,6 +179,8 @@ inline void  Menu()
 	MiscMenu = MainMenu->AddMenu("Misc Settings");
 	Burst = MiscMenu->AddKey("Burst Combo(work if you have Protobelt)", 75);
 	UseFlash = MiscMenu->CheckBox("Use Flash In Burst", true);
+	ChangeSkin = MiscMenu->CheckBox("Use Skin", true);
+	SkinChangeid = MiscMenu->AddInteger("Skin ID", 1, 7, 1);
 	
 	//FleeKey = MiscMenu->AddKey("Flee Key", 76);
 		

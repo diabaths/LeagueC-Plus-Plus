@@ -15,7 +15,7 @@ PLUGIN_EVENT(void) OnDestroyObject(IUnit* obj)
 {
 	if (obj != nullptr)
 	{
-		if (strcmp(obj->GetObjectName(), "Ekko_Base_R_TrailEnd.troy") == 0)
+		if (strcmp(obj->GetObjectName(), "Ekko_Base_R_Disappear.troy") == 0)
 		{
 			Rpos = nullptr;
 		}

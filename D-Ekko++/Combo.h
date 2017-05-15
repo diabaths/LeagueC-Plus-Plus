@@ -61,14 +61,12 @@ inline void Combo()
 		if (ComboR->Enabled() && R->IsReady())
 		{
 			if (Rpos != nullptr)
-			{
-				if (Enemy->GetHealth() < TotalDamage(Enemy))
-				{					
-					if (Enemy->IsValidTarget(Rpos, R->Range()))
+			{				
+				if (Rpos->IsValidTarget(Enemy, R->Range()))
+				{
+					if (Enemy->GetHealth() < TotalDamage(Enemy))
 					{
-						
-							R->CastOnPlayer();
-						
+						R->CastOnPlayer();
 					}
 				}
 				if (myHero->HealthPercent() <= 4)
@@ -95,7 +93,7 @@ inline void Combo()
 				}
 			}
 		}
-		if (ComboRAOE  && R->IsReady())
+		if (ComboRAOE->Enabled()  && R->IsReady())
 		{
 			if (Rpos != nullptr)
 			{

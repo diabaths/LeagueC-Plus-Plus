@@ -67,7 +67,7 @@ ISpell2* W;
 ISpell2* E;
 ISpell2* R;
 
-ISpell* smite;
+ISpell2* smite;
 
 
 IInventoryItem* blade;

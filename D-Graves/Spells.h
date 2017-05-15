@@ -29,15 +29,16 @@ inline void LoadSpells()
 
 	auto slot1 = GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot1);
 	auto slot2 = GPluginSDK->GetEntityList()->Player()->GetSpellName(kSummonerSlot2);
-	if (strcmp(slot1, "SummonerSmite") == 0)
+	if (strstr(slot1, "SummonerSmite"))
 	{
-		smite = GPluginSDK->CreateSpell(kSummonerSlot1, 570);
+		smite = GPluginSDK->CreateSpell2(kSummonerSlot1, kTargetCast, false, false, kCollidesWithNothing);
+		smite->SetOverrideRange(550.f);
 	}
-	if (strcmp(slot2, "SummonerSmite") == 0)
+	if (strstr(slot2, "SummonerSmite"))
 	{
-		smite = GPluginSDK->CreateSpell(kSummonerSlot2, 570);
+		smite = GPluginSDK->CreateSpell2(kSummonerSlot2, kTargetCast, false, false, kCollidesWithNothing);
+		smite->SetOverrideRange(550.f);
 	}
-	else smite == nullptr;
 
 	blade = GPluginSDK->CreateItemForId(3153, 550);
 	Cutlass = GPluginSDK->CreateItemForId(3144, 550);

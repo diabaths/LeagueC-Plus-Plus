@@ -158,6 +158,11 @@ public:
 	{
 		return ((x * vecOther.x) + (y * vecOther.y));
 	}
+
+	Vec2 Perpendicular()
+	{
+		return Vec2(y, -x);
+	}
 };
 
 class Vec3
@@ -190,6 +195,16 @@ public:
 		this->x = 0;
 		this->y = 0;
 		this->z = 0;
+	}
+
+	Vec3 Perpendicular()
+	{
+		return Vec3(z, y, -x);
+	}
+
+	Vec2 To2D() const
+	{
+		return Vec2(x, z);
 	}
 
 	float operator[](int index) const

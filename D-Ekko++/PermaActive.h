@@ -7,43 +7,44 @@ inline void killsteal()
 	if (GGame->IsChatOpen()) return;
 	for (auto Enemy : GEntityList->GetAllHeros(false, true))
 	{
-		if (Enemy != nullptr && !Enemy->IsDead())
+		if (Enemy->IsVisible())
 		{
-			if (KillstealQ->Enabled())
+			if (Enemy != nullptr && !Enemy->IsDead())
 			{
-				auto dmgQ = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotQ);
-				if (myHero->IsValidTarget(Enemy, Q->Range()) && !Enemy->IsInvulnerable())
+				if (KillstealQ->Enabled())
 				{
-					if (Enemy->GetHealth() <= dmgQ && Q->IsReady())
+					auto dmgQ = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotQ);
+					if (myHero->IsValidTarget(Enemy, Q->Range()) && !Enemy->IsInvulnerable())
 					{
-						Q->CastOnTarget(Enemy, kHitChanceHigh);
-					}
-				}
-			}
-
-			if (KillstealE->Enabled() && E->IsReady())
-			{
-				auto dmgE = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotE);
-				if (myHero->IsValidTarget(Enemy, E->Range() + 475) && !Enemy->IsInvulnerable())
-				{
-					if (Enemy->GetHealth() <= dmgE)
-					{
-						E->CastOnPosition(Enemy->GetPosition());
-					}
-				}
-			}
-			if (KillstealR->Enabled() && R->IsReady())
-			{
-
-				auto dmgR = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotR);
-				if (Rpos != nullptr)
-				{
-					if (Enemy->IsValidTarget(Rpos, R->Range()) && !Enemy->IsInvulnerable())
-					{
-						if (Enemy->GetHealth() <= dmgR)
+						if (Enemy->GetHealth() <= dmgQ && Q->IsReady())
 						{
-															R->CastOnPlayer();
-							
+							Q->CastOnTarget(Enemy, kHitChanceHigh);
+						}
+					}
+				}
+
+				if (KillstealE->Enabled() && E->IsReady())
+				{
+					auto dmgE = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotE);
+					if (myHero->IsValidTarget(Enemy, E->Range() + 475) && !Enemy->IsInvulnerable())
+					{
+						if (Enemy->GetHealth() <= dmgE)
+						{
+							E->CastOnPosition(Enemy->GetPosition());
+						}
+					}
+				}
+				if (KillstealR->Enabled() && R->IsReady())
+				{
+					if (Rpos != nullptr)
+					{
+						if (Rpos->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable())
+						{
+							auto dmgR = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotR);
+							if (Enemy->GetHealth() <= dmgR)
+							{
+								R->CastOnPlayer();
+							}
 						}
 					}
 				}

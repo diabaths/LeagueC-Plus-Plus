@@ -78,6 +78,8 @@ IMenuOption* UseProtojungle;
 IMenuOption* AutoE;
 IMenuOption* smitekey;
 IMenuOption* DrawSmite;
+IMenuOption* ChangeSkin;
+IMenuOption* SkinChangeid;
 std::map<std::string, IMenuOption*> MenuOptions;
 inline bool GetMenuBoolean(std::string name)
 {
@@ -85,8 +87,9 @@ inline bool GetMenuBoolean(std::string name)
 }
 inline void AddCheckBox(std::string name, std::string title, bool value)
 {
-	MenuOptions[name] = WMenu->CheckBox(title.c_str(), value);
+	MenuOptions[name] = EMenu->CheckBox(title.c_str(), value);
 }
+
 
 IUnit* Rpos;
 IUnit* myHero;
@@ -98,7 +101,7 @@ ISpell2* R;
 
 
 ISpell* Ignite;
-ISpell* smite;
+ISpell2* smite;
 
 IInventoryItem* blade;
 IInventoryItem* Cutlass;
@@ -148,7 +151,7 @@ inline void  Menu()
 	AoeE = EMenu->CheckBox("Use E if X Enemys Around", true);
 	AoeEEnemys = EMenu->AddInteger("Dont Use E if Enemys Around =>", 1, 5, 3);
 	UseEHP = EMenu->AddInteger("Dont Use E if HP% <=", 1, 100, 1);
-	AutoE = EMenu->CheckBox("Use E to dodge Skills", true);
+	AutoE = EMenu->CheckBox("Use E to dodge Skills", false);
 	{
 		for (auto unit : GEntityList->GetAllHeros(false, true))
 		{
@@ -178,6 +181,8 @@ inline void  Menu()
 
 	MiscMenu = MainMenu->AddMenu("Misc Settings");
 	FleeKey = MiscMenu->AddKey("Flee Key", 76);
+	ChangeSkin = MiscMenu->CheckBox("Use Skin", true);
+	SkinChangeid = MiscMenu->AddInteger("Skin ID", 1, 3, 1);
 	
 	ManaMenu = MainMenu->AddMenu("Mana Settings");
 	HarassManaPercent = ManaMenu->AddInteger("Mana Percent for harass", 10, 100, 70);
