@@ -2428,6 +2428,8 @@ public:
 
 	/// <summary>
 	/// Logs the formatted text to a file.
+	/// File name is expected to be plain text (0-9, a-z, A-Z) and anything else will cause it to fail
+	/// File extension will automatically be set to .log
 	/// </summary>
 	/// <param name="Filename">The filename as stored in the "Logs" directory.</param>
 	/// <param name="Fmt">The formatted text.</param>
@@ -2436,6 +2438,8 @@ public:
 
 	/// <summary>
 	/// Clears the log file.
+	/// File name is expected to be plain text (0-9, a-z, A-Z) and anything else will cause it to fail
+	/// File extension will automatically be set to .log
 	/// </summary>
 	/// <param name="Filename">The filename as stored in the "Logs" directory.</param>
 	virtual void ClearLogFile(const char* Filename) = 0;
@@ -2460,6 +2464,81 @@ public:
 	/// <param name="RecallSpellName">Name of the recall spell.</param>
 	/// <returns>Recall duration.</returns>
 	virtual int GetRecallDuration(const char* RecallSpellName) = 0;
+
+	/// <summary>
+	/// Determines whether [is key down] [the specified key code].
+	/// </summary>
+	/// <param name="KeyCode">The key code.</param>
+	/// <returns>
+	///   <c>true</c> if [is key down] [the specified key code]; otherwise, <c>false</c>.
+	/// </returns>
+	virtual bool IsKeyDown(int KeyCode) = 0;
+
+	/// <summary>
+	/// Determines whether [is key pressed] [the specified key code].
+	/// </summary>
+	/// <param name="KeyCode">The key code.</param>
+	/// <returns>
+	///   <c>true</c> if [is key pressed] [the specified key code]; otherwise, <c>false</c>.
+	/// </returns>
+	virtual bool IsKeyPressed(int KeyCode) = 0;
+
+	/// <summary>
+	/// Determines whether [is key released] [the specified key code].
+	/// </summary>
+	/// <param name="KeyCode">The key code.</param>
+	/// <returns>
+	///   <c>true</c> if [is key released] [the specified key code]; otherwise, <c>false</c>.
+	/// </returns>
+	virtual bool IsKeyReleased(int KeyCode) = 0;
+
+	/// <summary>
+	/// Check if a given directory exists in the L++ root directory
+	/// Sub paths are acceptable (e.g DoesDirectoryExist("Textures\\Awareness\\Icons"))
+	/// </summary>
+	/// <param name="DirectoryName">Name of the directory.</param>
+	/// <returns></returns>
+	virtual bool DoesDirectoryExist(const char* DirectoryName) = 0;
+
+	/// <summary>
+	/// Check if a given file exists in the L++ root directory
+	/// Sub paths are acceptable (e.g DoesFileExit("Textures\\Awareness\\Icons\\Icon1.png"))
+	/// </summary>
+	/// <param name="FileName">Name of the file.</param>
+	/// <returns></returns>
+	virtual bool DoesFileExist(const char* FileName) = 0;
+
+	/// <summary>
+	/// Creates the given directory in the L++ root directory
+	/// Sub paths are acceptable (e.g CreateSubDirectory("Textures\\Awareness\\Icons"))
+	/// </summary>
+	/// <param name="DirectoryName">Name of the directory.</param>
+	/// <returns></returns>
+	virtual bool CreateNewirectory(const char* DirectoryName) = 0;
+
+	/// <summary>
+	/// Reads from the given file in the L++ root directory
+	/// Sub paths are acceptable (e.g ReadFromFile("Textures\\Awareness\\Icons\\Icon1.png", read_data))
+	/// </summary>
+	/// <param name="FileName">The filename.</param>
+	/// <param name="OutputFileData">The output file data.</param>
+	/// <returns></returns>
+	virtual bool ReadFromFile(const char* FileName, std::vector<uint8_t>& OutputFileData) = 0;
+
+	/// <summary>
+	/// Writes to the given file in the L++ root directory
+	/// Sub paths are acceptable (e.g WriteToFile("Textures\\Awareness\\Icons\\Icon1.png", write_data))
+	/// </summary>
+	/// <param name="FileName">The filename.</param>
+	/// <param name="InputFileData">The input file data.</param>
+	/// <returns></returns>
+	virtual bool WriteToFile(const char* FileName, std::vector<uint8_t>& InputFileData) = 0;
+
+	/// <summary>
+	/// Get the current cursor position
+	/// </summary>
+	/// <param name="Output">The output.</param>
+	virtual void GetCursorPosition(POINT& Output) = 0;
 };
 
 /// <summary>

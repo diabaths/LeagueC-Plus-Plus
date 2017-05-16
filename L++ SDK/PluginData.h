@@ -40,6 +40,27 @@ struct OnTeleportArgs
 	int Duration;	// The duration of the teleport in ms
 };
 
+/// <summary>
+/// Structure containing information used for OnStopCast event.
+/// </summary>
+struct OnStopCastArgs
+{
+	IUnit* Source;
+	bool StopAnimation;
+	bool ExecuteCastFrame;
+	bool ForceStop;
+	bool DestroyMissile;
+};
+
+/// <summary>
+/// Structure containing information used for OnUpdateBuffCount event
+/// </summary>
+struct OnBuffUpdateCountArgs
+{
+	IUnit* Source;		// Source unit of the buff
+	void* BuffData;		// Data to be passed to GPluginBuffData for more information
+};
+
 struct AdvPredictionInput
 {
 	Vec3 FromPosition;				// Start position for casting

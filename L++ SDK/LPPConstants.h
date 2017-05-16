@@ -154,8 +154,7 @@ enum eSpellState
 	NoMana = (1 << 6), // 64 (You do not have enough mana to cast the spell)
 	Unknown128 = (1 << 7), // 128 (Unsure, used in UnableToCast flags)
 
-						   // if (Spell.Flags == 0 || !(Spell.Flags & UnableToCast)) { Spell.Ready = true; }
-	UnableToCast = (Unknown128 | Cooldown | NotLearned | NotReady)
+	UnableToCast = (Unknown128 | Cooldown | NotLearned | NotReady) // if (Spell.Flags == 0 || !(Spell.Flags & UnableToCast)) { Spell.Ready = true; }
 };
 
 enum eUnitTeam
@@ -245,7 +244,9 @@ enum eLeagueEvents
 	kEventOnPauseAnimation,
 	kEventOnJungleNotification,
 	kEventOnNewPath,
-	kEventOnTeleport
+	kEventOnTeleport,
+	kEventOnStopCast,
+	kEventOnBuffUpdateCount
 };
 
 enum eTargetPriority
