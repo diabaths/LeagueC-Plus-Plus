@@ -2,6 +2,15 @@
 #include "Menu.h"
 #include "Spells.h"
 
+inline bool ModeOn()
+{
+	if (GOrbwalking->GetOrbwalkingMode() == kModeLaneClear || GOrbwalking->GetOrbwalkingMode() == kModeCombo || GetAsyncKeyState(Burst_b->GetInteger()) || GOrbwalking->GetOrbwalkingMode() == kModeMixed)
+	{
+		return true;
+	}
+	return false;
+}
+
 inline float GetDistanceVectors(Vec3 from, Vec3 to)
 {
 	float x1 = from.x;
@@ -67,12 +76,10 @@ inline void ModeQ(IUnit* target)
 {
 	if (QMode->GetInteger() == 0)
 	{
-		pos = target->ServerPosition();
 		Q->CastOnPosition(target->ServerPosition());
 	}
 	if (QMode->GetInteger() == 1)
 	{
-		pos = GGame->CursorPosition();
 		Q->CastOnPosition(GGame->CursorPosition());
 	}
 }
@@ -80,75 +87,94 @@ inline void ModeQ(IUnit* target)
 //Credits to hoola and Synx
 static void ResetQ1()
 {
-	GPluginSDK->DelayFunctionCall(Q1Delay, []()
+	if (ModeOn())
 	{
-		GOrbwalking->ResetAA();
-		GGame->Taunt(kDance);
-		GGame->IssueOrder(myHero, kMoveTo, pos);
-		//GGame->IssueOrder(myHero, kMoveTo, GOrbwalking->GetLastTarget());
-		GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
-	});
+		GPluginSDK->DelayFunctionCall(Q1Delay, []()
+		{
+			GOrbwalking->ResetAA();
+			GGame->Taunt(kDance);
+			GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+			//GGame->IssueOrder(myHero, kMoveTo, GOrbwalking->GetLastTarget());
+			GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
+		});
+	}
 }
 //Credits to hoola and Synx
 static void ResetQ2()
 {
-	GPluginSDK->DelayFunctionCall(Q2Delay, []()
-	{	
-		GOrbwalking->ResetAA();
-		GGame->Taunt(kDance);
-		GGame->IssueOrder(myHero, kMoveTo, pos);
-		GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
-	});
-} 
+	if (ModeOn())
+	{
+		GPluginSDK->DelayFunctionCall(Q2Delay, []()
+		{
+			GOrbwalking->ResetAA();
+			GGame->Taunt(kDance);
+			GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+			GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
+		});
+	}
+}
 
 static void ResetQ3()
 {
-	GPluginSDK->DelayFunctionCall(Q3Delay, []()
-	{ 
-		GOrbwalking->ResetAA();
-		GGame->Taunt(kDance);
-		GGame->IssueOrder(myHero, kMoveTo, pos);
-		GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
-	});
+	if (ModeOn())
+	{
+		GPluginSDK->DelayFunctionCall(Q3Delay, []()
+		{
+			GOrbwalking->ResetAA();
+			GGame->Taunt(kDance);
+			GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+			GOrbwalking->SetOverridePosition(Vec3(0, 0, 0));
+		});
+	}
 }
 //Credits to hoola and Synx
 static void ResetW()
 {
-	GPluginSDK->DelayFunctionCall(DelayAA, []()
+	if (ModeOn())
 	{
-		GOrbwalking->ResetAA();
-		GGame->Taunt(kDance);
-		GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
-	});
+		GPluginSDK->DelayFunctionCall(DelayAA, []()
+		{
+			GOrbwalking->ResetAA();
+			GGame->Taunt(kDance);
+			GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+		});
+	}
 }
 //Credits to hoola and Synx
 
 static void ResetR1()
 {
-	GPluginSDK->DelayFunctionCall(50, []()
+	if (ModeOn())
 	{
-		GOrbwalking->ResetAA();
-		GGame->Taunt(kDance);
-		GGame->IssueOrder(myHero, kMoveTo, pos);
-	});
+		GPluginSDK->DelayFunctionCall(50, []()
+		{
+			GOrbwalking->ResetAA();
+			GGame->Taunt(kDance);
+			GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+		});
+	}
 }
 //Credits to hoola and Synx
 static void ResetR2()
 {
-	GPluginSDK->DelayFunctionCall(150, []()
+	if (ModeOn())
 	{
-		GOrbwalking->ResetAA();
-		GGame->Taunt(kDance);
-		GGame->IssueOrder(myHero, kMoveTo, pos);
-	});
+		GPluginSDK->DelayFunctionCall(150, []()
+		{
+			GOrbwalking->ResetAA();
+			GGame->Taunt(kDance);
+			GGame->IssueOrder(myHero, kMoveTo, GGame->CursorPosition());
+		});
+	}
 }
-static void AAcancel()
+
+/*static void AAcancel()
 {
 	GPluginSDK->DelayFunctionCall(deleayaa->GetColor(), []()
 	{
 		GGame->IssueOrder(myHero, kMoveTo, pos);
 	});
-}
+}*/
 inline std::string ToLower(std::string StringToLower)
 {
 	auto Lowered = StringToLower;

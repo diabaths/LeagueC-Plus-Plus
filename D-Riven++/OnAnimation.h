@@ -2,8 +2,8 @@
 #include "Extensions.h"
 
 PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
-{
-	/*if (Autoattackanimation->Enabled() && Source == myHero &&(GetAsyncKeyState(Burst_b->GetInteger())|| GOrbwalking->GetOrbwalkingMode() == kModeCombo))
+{/*
+	*if (Autoattackanimation->Enabled() && Source == myHero &&(GetAsyncKeyState(Burst_b->GetInteger())|| GOrbwalking->GetOrbwalkingMode() == kModeCombo))
 	{
 		if (Contains(Args, "56b") || Contains(Args, "58b") || Contains(Args, "59b"))
 		{
@@ -13,7 +13,7 @@ PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 			}
 			AAcancel();
 		}
-	}*/
+	}
 	if (ManualAACancel->Enabled() || GOrbwalking->GetOrbwalkingMode() == kModeLaneClear|| GOrbwalking->GetOrbwalkingMode() == kModeCombo || GetAsyncKeyState(Burst_b->GetInteger()) || GOrbwalking->GetOrbwalkingMode() == kModeMixed)
 	{
 		if (Source == myHero)
@@ -73,5 +73,5 @@ PLUGIN_EVENT(void) OnPlayAnimation(IUnit* Source, std::string const Args)
 				//ResetR2();
 			}
 		}
-	}
+	}*/
 }

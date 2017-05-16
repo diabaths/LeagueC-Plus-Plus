@@ -10,7 +10,7 @@ PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& spell)
 
 	if (spell.Caster_ == myHero)
 	{
-		if (Autoattackanimation->Enabled() &&  (GetAsyncKeyState(Burst_b->GetInteger()) || GOrbwalking->GetOrbwalkingMode() == kModeCombo))
+		/*if (Autoattackanimation->Enabled() &&  (GetAsyncKeyState(Burst_b->GetInteger()) || GOrbwalking->GetOrbwalkingMode() == kModeCombo))
 		{
 			if (std::string(spell.Name_) == "RivenBasicAttack" || std::string(spell.Name_) == "RivenBasicAttack2" || std::string(spell.Name_) == "RivenBasicAttack3")
 			{
@@ -20,7 +20,7 @@ PLUGIN_EVENT(void) OnProcessSpellCast(CastedSpell const& spell)
 				}
 				AAcancel();
 			}
-		}
+		}*/
 		if (GOrbwalking->GetOrbwalkingMode() == kModeCombo)
 		{
 			processCombo(spell);

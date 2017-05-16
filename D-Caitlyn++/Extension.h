@@ -63,7 +63,7 @@ inline void CastQ(IUnit* target)
 			Q->RunPrediction(target, true, kCollidesWithYasuoWall, &prediction_output);
 			if (prediction_output.HitChance >= kHitChanceHigh && CountEnemiesInRange(400) == 0 && !myHero->GetRealAutoAttackRange(target))
 			{
-				if (target->GetHealth() < dmg)
+				if (target->GetHealth() < dmg && !target->IsWard())
 				{
 					Q->CastOnTarget(target);
 				}

@@ -89,11 +89,9 @@ IMenuOption* BurstModeChange;
 IMenuOption*ChangeSkin;
 IMenuOption* SkinChangeid;
 IMenuOption* ManualAACancel;
-IMenuOption* Autoattackanimation;
 IMenuOption* burstRangeColor;
 IMenuOption* Drawburst;
 IMenuOption* QMode;
-IMenuOption* deleayaa;
 
 
 IUnit* myHero;
@@ -130,7 +128,6 @@ float LastQJ;
 float LastE;
 float keyDown;
 bool AutoAttack;
-Vec3 pos;
 inline void  Menu()
 {
 	MainMenu = GPluginSDK->AddMenu("D-Riven++");
@@ -144,7 +141,6 @@ inline void  Menu()
 	UseFlash = BurstMenu->CheckBox("Use Flash In Burst", true);
 	Flee_b = BurstMenu->AddKey("Flee", 76);
 	HarassMode = BurstMenu->AddSelection("Harass Mode:", 0, { "Smart", "Normal"});
-	ManualAACancel = BurstMenu->CheckBox("Cancel Q animation when manual use it", true);
 	ChangeSkin = BurstMenu->CheckBox("Use Skin", true);
 	SkinChangeid = BurstMenu->AddInteger("Skin ID", 1, 8, 1);
 
@@ -154,11 +150,9 @@ inline void  Menu()
 	HarassQ = QMenu->CheckBox("Use Q in Harass", true);
 	FarmQ = QMenu->CheckBox("Use Q in Laneclear", true);
 	JungleQ = QMenu->CheckBox("Use Q in JungleClear", true);
-	Autoattackanimation = QMenu->CheckBox("Cancel AutoAttack Animation", false);
-	deleayaa =QMenu->AddInteger("aaaaaa Q1", 50, 1000, 290);
-	QDelay1 = QMenu->AddInteger("Delay Q1", 50, 1000, 290);
+	QDelay1 = QMenu->AddInteger("Delay Q1", 50, 1000, 280);
 	QDelay2 = QMenu->AddInteger("Delay Q2", 50, 1000, 290);
-	QDelay3 = QMenu->AddInteger("Delay Q3", 50, 1000, 390);
+	QDelay3 = QMenu->AddInteger("Delay Q3", 50, 1000, 380);
 	AutoSetDelay = QMenu->CheckBox("Q Delay Inlcude the Ping ?", true);
 	KeepQ = QMenu->CheckBox("Keep Q Alive", false);
 
