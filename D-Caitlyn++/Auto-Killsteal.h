@@ -28,7 +28,7 @@ inline void killsteal()
 				auto dmg = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotQ);
 				if (myHero->IsValidTarget(Enemy, Q->Range()) && !Enemy->IsInvulnerable())
 				{
-					if (Enemy->GetHealth() <= dmg )
+					if (Enemy->GetHealth() <= dmg && GetDistance(myHero->GetPosition(), Enemy->GetPosition()) > 700)
 					{
 						Q->CastOnTarget(Enemy, kHitChanceHigh);
 					}
