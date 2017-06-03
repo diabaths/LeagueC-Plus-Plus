@@ -62,7 +62,7 @@ inline void Combo()
 		{
 			if (Rpos != nullptr)
 			{				
-				if (Rpos->IsValidTarget(Enemy, R->Range()))
+				if (CountEnemiesInRange(Rpos->GetPosition(), R->Radius()>=1))
 				{
 					if (Enemy->GetHealth() < TotalDamage(Enemy))
 					{
@@ -97,7 +97,7 @@ inline void Combo()
 		{
 			if (Rpos != nullptr)
 			{
-				if (CountEnemiesInPositionRange(Rpos->GetPosition(), R->Range()) >= ComboRAOEUse->GetInteger())
+				if (CountEnemiesInPositionRange(Rpos->GetPosition(), R->Radius()) >= ComboRAOEUse->GetInteger())
 				{
 					R->CastOnPlayer();
 				}

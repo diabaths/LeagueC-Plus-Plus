@@ -43,10 +43,12 @@ IMenuOption* DrawQ;
 IMenuOption* DrawW;
 IMenuOption* DrawE;
 IMenuOption* DrawR;
+IMenuOption* DrawRpos;
 IMenuOption* qRangeColor;
 IMenuOption* wRangeColor;
 IMenuOption* eRangeColor;
 IMenuOption* rRangeColor;
+IMenuOption* RposRangeColor;
 IMenuOption* DrawCombomode;
 IMenuOption* FarmW;
 IMenuOption* minminionsW;
@@ -220,6 +222,8 @@ inline void  Menu()
 	eRangeColor = Drawings->AddColor("W Range Color", 3.f, 252.f, 19.f, 255.f);
 	DrawR = Drawings->CheckBox("Draw R", true);
 	rRangeColor = Drawings->AddColor("R Range Color", 3.f, 252.f, 19.f, 255.f);
+	DrawRpos = Drawings->CheckBox("Draw R Position", true);
+	RposRangeColor = Drawings->AddColor("R Position Color", 3.f, 252.f, 19.f, 255.f);
 	Drawhealthbar = Drawings->CheckBox("Draw Damage", true);
 	healRangeColor = Drawings->AddColor("Damage (Healthbar) Color", 3.f, 252.f, 19.f, 255.f);
 }

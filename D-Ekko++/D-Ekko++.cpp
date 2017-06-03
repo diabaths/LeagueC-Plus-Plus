@@ -44,6 +44,13 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	//{
 	//recallinlane();
 	//}
+	for (auto Missile : GEntityList->GetAllUnits())
+	{
+		if (!strcmp(Missile->GetObjectName(), "Ekko") && Missile->IsVisible())
+		{
+			Rpos = Missile;
+		}
+	}
 	if (GGame->IsChatOpen() || myHero->IsDead() || myHero->IsRecalling()) return;
 	for (auto RMisspos : GEntityList->GetAllUnits())
 	{

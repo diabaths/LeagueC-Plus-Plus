@@ -38,7 +38,7 @@ inline void killsteal()
 				{
 					if (Rpos != nullptr)
 					{
-						if (Rpos->IsValidTarget(Enemy, R->Range()) && !Enemy->IsInvulnerable())
+						if (CountEnemiesInRange(Rpos->GetPosition(), R->Radius() >= 1) && !Enemy->IsInvulnerable())
 						{
 							auto dmgR = GDamage->GetSpellDamage(GEntityList->Player(), Enemy, kSlotR);
 							if (Enemy->GetHealth() <= dmgR)

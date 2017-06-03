@@ -179,7 +179,7 @@ public:
 	/// <param name="Size">The size.</param>
 	/// <param name="Width">The width.</param>
 	/// <param name="Color">The color (RGBA, 0-255).</param>
-	virtual void DrawOutinedBox(Vec2 const& Position, Vec2 const& Size, float Width, Vec4 const& Color) = 0;
+	virtual void DrawOutlinedBox(Vec2 const& Position, Vec2 const& Size, float Width, Vec4 const& Color) = 0;
 
 	/// <summary>
 	/// Draws outlined circle.
@@ -2502,7 +2502,7 @@ public:
 
 	/// <summary>
 	/// Check if a given file exists in the L++ root directory
-	/// Sub paths are acceptable (e.g DoesFileExit("Textures\\Awareness\\Icons\\Icon1.png"))
+	/// Sub paths are acceptable (e.g DoesFileExist("Textures\\Awareness\\Icons\\Icon1.png"))
 	/// </summary>
 	/// <param name="FileName">Name of the file.</param>
 	/// <returns></returns>
@@ -2514,7 +2514,7 @@ public:
 	/// </summary>
 	/// <param name="DirectoryName">Name of the directory.</param>
 	/// <returns></returns>
-	virtual bool CreateNewirectory(const char* DirectoryName) = 0;
+	virtual bool CreateNewDirectory(const char* DirectoryName) = 0;
 
 	/// <summary>
 	/// Reads from the given file in the L++ root directory

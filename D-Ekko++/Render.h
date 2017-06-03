@@ -13,10 +13,12 @@ PLUGIN_EVENT(void) OnRender()
 	Vec4 colorw;
 	Vec4 colore;
 	Vec4 colorr;
+	Vec4 colorrpos;
 	qRangeColor->GetColor(&color);
 	wRangeColor->GetColor(&colorw);
 	eRangeColor->GetColor(&colore);
 	rRangeColor->GetColor(&colorr);
+	RposRangeColor->GetColor(&colorrpos);
 	if (DrawSmite->Enabled())
 	{
 		if (smitejungle->Enabled())
@@ -30,6 +32,10 @@ PLUGIN_EVENT(void) OnRender()
 			if (GGame->Projection(myHero->GetPosition(), &pos))
 				GRender->DrawTextW(Vec2(pos.x + 72, pos.y + 10), Vec4(255, 0, 0, 255), "SMITE: OFF");
 		}
+	}
+	if(Rpos !=nullptr && DrawRpos->Enabled())
+	{
+		GRender->DrawOutlinedCircle(Rpos->GetPosition(), colorrpos, R->Radius());
 	}
 	/*if (DrawCombomode->Enabled())
 	{

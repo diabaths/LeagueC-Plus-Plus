@@ -81,7 +81,7 @@ PLUGIN_EVENT(void) OnGameUpdate()
 	{
 		burst();
 	}
-	if (GetAsyncKeyState(USEE->GetInteger()))
+	if (GUtility->IsKeyDown(USEE->GetInteger()))
 	{
 		auto position = myHero->ServerPosition() - (GGame->CursorPosition() - myHero->ServerPosition());
 		E->CastOnPosition(position);

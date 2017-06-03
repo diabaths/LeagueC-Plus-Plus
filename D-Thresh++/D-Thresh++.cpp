@@ -280,21 +280,22 @@ int CountallyInRange(float range)
 	}
 	return allys;
 }
-static bool HaveQ1()
+bool HaveQ1()
 {
 	if (myHero->GetSpellBook()->GetLevel(kSlotQ) > 0)
 	{
-		return strcmp(GEntityList->Player()->GetSpellBook()->GetName(kSlotQ), "ThreshQ") == 0;
+		if (GEntityList->Player()->GetSpellBook()->GetName(kSlotQ), "ThreshQ")
+			return true;
 	}
-
 	return false;
 }
 
-static bool HaveQ2()
+ bool HaveQ2()
 {
 	if (myHero->GetSpellBook()->GetLevel(kSlotQ) > 0)
 	{
-		return strcmp(GEntityList->Player()->GetSpellBook()->GetName(kSlotQ), "threshqleap") == 0;
+		if (GEntityList->Player()->GetSpellBook()->GetName(kSlotQ), "threshqleap")
+			return true;
 	}
 	return false;
 }
@@ -332,12 +333,16 @@ void Pull()
 		E->CastOnPosition(target->GetPosition().Extend(myHero->GetPosition(), GetDistanceVectors(target->GetPosition(), myHero->GetPosition()) + 400));
 	}
 }
-static bool IsImmune(IUnit* target)
+bool IsImmune(IUnit* target)
 {
-	return target->HasBuff("BlackShield") || target->HasBuff("SivirE") || target->HasBuff("NocturneShroudofDarkness") ||
-		target->HasBuff("deathdefiedbuff");
-
+	if (target->HasBuff("BlackShield") || target->HasBuff("SivirE") || target->HasBuff("NocturneShroudofDarkness") ||
+		target->HasBuff("deathdefiedbuff"))
+	{
+		return true;
+	}
+	return false;
 }
+
 void CastQ(IUnit* target)
 {
 	AdvPredictionOutput prediction_output;
@@ -347,7 +352,7 @@ void CastQ(IUnit* target)
 		Q->CastOnTarget(target, kHitChanceCollision);
 	}
 }
-static void CheckRComboCast()
+ void CheckRComboCast()
 {
 	auto min = Combormin->GetInteger();;
 	int Enemies2;
@@ -657,7 +662,7 @@ void Usepotion()
 		}
 	}
 }
-static bool HaveCC(IUnit* Ally)
+ bool HaveCC(IUnit* Ally)
 {
 	if((Ally->HasBuffOfType(BUFF_Charm)&& Wcharm->Enabled()) || (Ally->HasBuffOfType(BUFF_CombatDehancer) && WCombatdehancer->Enabled())||
 		(Ally->HasBuffOfType(BUFF_Fear) && Wfear->Enabled() )|| (Ally->HasBuffOfType(BUFF_Knockback) && Wknockback->Enabled()) ||
