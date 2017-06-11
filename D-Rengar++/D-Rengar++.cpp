@@ -17,6 +17,7 @@
 #include "Laneclear.h"
 #include "JungleClear.h"
 #include "Harass.h"
+#include "Flee.h"
 
 
 PluginSetup("D-Rengar++");

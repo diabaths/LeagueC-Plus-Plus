@@ -105,14 +105,14 @@ std::function<void()> Item_Delay = [&]() -> void {
 
 PLUGIN_EVENT(void) OnBuffAdd(IUnit* Source)
 {
-	if (Source->GetNetworkId() == myHero->GetNetworkId() && (Source->HasBuffOfType(BUFF_Charm) 
+	if (Source->GetNetworkId() == myHero->GetNetworkId() && (Source->HasBuffOfType(BUFF_Charm)
 		|| Source->HasBuffOfType(BUFF_Fear) || Source->HasBuffOfType(BUFF_Snare)
 		|| Source->HasBuffOfType(BUFF_Stun) || Source->HasBuffOfType(BUFF_Taunt)))
 	{
 		{
 			GPluginSDK->DelayFunctionCall(300, []()
 			{
-			if (W->IsReady() && AutoW->Enabled() && myHero->GetMana() == 4)
+				if (W->IsReady() && AutoW->Enabled() && myHero->GetMana() == 4)
 				{
 					W->CastOnPlayer();
 				}

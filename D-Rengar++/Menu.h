@@ -89,6 +89,7 @@ IMenuOption* AutoW;
 IMenuOption* Comboprio;
 IMenuOption* ChangeSkin;
 IMenuOption* SkinChangeid;
+IMenuOption* Flee_b;
 
 IUnit* Rpos;
 IUnit* myHero;

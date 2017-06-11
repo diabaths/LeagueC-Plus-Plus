@@ -1,11 +1,6 @@
 #pragma once
 #include "Menu.h"
-
-static bool InFountain(IUnit *unit)
-{
-	//TODO: Implement
-	return unit->HasBuff("kappachino");
-}
+#include <algorithm>
 
 inline float GetRealDistance(IUnit* sender, IUnit* target)
 {
@@ -199,60 +194,23 @@ inline int CountEnemiesInPositionRange(Vec3 position, int range)
 }
 
 
-static bool UseE(Vec3 pos)
+
+
+// compare units
+inline bool CompareDistanceToCursor(IUnit * a, IUnit * b)
 {
-	auto lowHP = UseEHP->GetInteger(); //Dont Use E if HP% <=", 1, 100, 1);
-	auto undertower = EnemyUndertowerE->Enabled(); //target is under tower
-	auto enemies = AoeE->Enabled(); //use E if Enemies arount
-	auto enemiesarount = AoeEEnemys->GetInteger(); //set the number of enemies
-	if (!undertower && GUtility->IsPositionUnderTurret(pos))
-	{
-		return false;
-	}
-	if (myHero->HealthPercent() < lowHP)
-	{
-		return false;
-	}
-	if (enemies)
-	{
-		return	CountEnemiesInPositionRange(pos, 600) <= enemiesarount;
-	}
-	return false;
+	return Distance(a->ServerPosition(), GGame->CursorPosition()) < Distance(b->ServerPosition(), GGame->CursorPosition());
 }
 
-inline void WLogic(IUnit* Enemy)
+inline IUnit * MinionNearPosition(Vec3 position, float range)
 {
-	if (!CanMove(Enemy))
-	{
-		W->CastOnUnit(Enemy);
-	}
-	if (CanMove(Enemy))
-	{
-		if (myHero->IsFacing(Enemy) && !Enemy->IsFacing(myHero))
-		{
-			W->CastOnPosition(myHero->GetPosition().Extend(myHero->GetPosition(), W->Range()));
-		}
-		if (Enemy->IsFacing(myHero) && !myHero->IsFacing(Enemy))
-		{
-			W->CastOnPosition(myHero->GetPosition().Extend(Enemy->GetPosition(), W->Range() / 2));
-		}
-		else if (Enemy->IsFacing(myHero) && Enemy->IsMelee() && GetDistance(myHero, Enemy) <= 250)
-		{
-			W->CastOnPosition(myHero->GetPosition());
-		}
+	auto v = GEntityList->GetAllMinions(false, true, true);
 
-		else
-		{
-			AdvPredictionOutput WPred;
-			W->RunPrediction(Enemy, true, kCollidesWithNothing, &WPred);
+	// remove every minion from list thats out of range
+	v.erase(std::remove_if(v.begin(), v.end(), [&](IUnit * a) { return Distance(position, a->ServerPosition()) > range; }));
 
-			if (WPred.HitChance >= kHitChanceHigh)
-			{
-				Vec3 Enemypos;
-				GPrediction->GetFutureUnitPosition(Enemy, 0.9, true, Enemypos);
-				W->CastOnPosition(Enemypos);
-			}
-		}
-	}
+	// sort closest to cursor
+	std::sort(v.begin(), v.end(), [&](IUnit * a, IUnit * b) { return CompareDistanceToCursor(a, b); });
+
+	return v.front();
 }
-
